@@ -1,7 +1,7 @@
 import path from 'path';
 import Server from './server';
 
-new Server(path.join(__dirname, 'database.sqlite'))
+new Server(path.join(__dirname, 'database.sqlite'), 3000)
   .start()
   .then((port) => {
     console.log(`Server running on port ${port}`);

@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import http from 'http';
+import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import Endpoints, {
   EndpointURL,
@@ -22,6 +23,7 @@ export default class Server implements Endpoints {
   public httpServer?: http.Server;
 
   constructor(dbPath: string, port = 3000) {
+    console.log(dbPath);
     this.database = new Sequelize({
       dialect: 'sqlite',
       storage: dbPath,
@@ -87,6 +89,7 @@ export default class Server implements Endpoints {
     return new Promise((resolve, reject) => {
       const { app } = this;
       app.use(bodyParser.json());
+      app.use(express.static(path.resolve(__dirname, '..', 'dist')));
       // TODO: Fix the URL mess
       app.post(`/${EndpointURL.createPost}`, async (req, res) => {
         res.send(await this.createPost(req.body));
@@ -106,7 +109,7 @@ export default class Server implements Endpoints {
     });
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
     return new Promise((resolve) => {
       if (this.httpServer !== undefined) {
         this.httpServer.close(() => {
