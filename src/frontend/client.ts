@@ -1,9 +1,5 @@
 import axios from 'axios';
-import Endpoints, {
-  EndpointURL,
-  CreatePostResponse,
-  GetPostResponse,
-} from '../types/Endpoints';
+import Endpoints, { EndpointURL, CreatePostResponse, GetPostResponse } from '../types/Endpoints';
 import PostData from '../types/PostData';
 
 export default class Client implements Endpoints {
@@ -13,7 +9,7 @@ export default class Client implements Endpoints {
     this.baseUrl = baseUrl;
   }
 
-  private async get<T>(endpoint: string, data: any) {
+  private async get<D, T>(endpoint: string, data: D) {
     try {
       return (
         await axios.get(`${this.baseUrl}/${endpoint}`, {
@@ -28,7 +24,7 @@ export default class Client implements Endpoints {
     }
   }
 
-  private async post<T>(endpoint: string, data: any) {
+  private async post<D, T>(endpoint: string, data: D) {
     try {
       return (await axios.post(`${this.baseUrl}/${endpoint}`, data)).data as T;
     } catch (err) {
@@ -40,11 +36,11 @@ export default class Client implements Endpoints {
   }
 
   async createPost(data: PostData): Promise<CreatePostResponse> {
-    return this.post<CreatePostResponse>(EndpointURL.createPost, data);
+    return this.post<PostData, CreatePostResponse>(EndpointURL.createPost, data);
   }
 
   async getPost(id: string): Promise<GetPostResponse> {
-    return this.get<GetPostResponse>(EndpointURL.getPost, {
+    return this.get<{ id: string }, GetPostResponse>(EndpointURL.getPost, {
       id,
     });
   }
