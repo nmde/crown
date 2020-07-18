@@ -3,9 +3,8 @@ import VueRouter from 'vue-router';
 import 'vue-tsx-support/enable-check';
 import App from './App';
 import Home from './views/Home';
+import './boostrap';
 import './registerServiceWorker';
-
-Vue.use(VueRouter);
 
 const container = document.createElement('div');
 container.id = 'app';
@@ -20,11 +19,6 @@ new Vue({
         path: '/',
         name: 'Home',
         component: Home,
-      },
-      {
-        path: '/about',
-        name: 'About',
-        component: () => import(/* webpackChunkName: "about" */ './views/About'),
       },
     ],
   }),

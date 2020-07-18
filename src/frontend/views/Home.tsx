@@ -4,7 +4,7 @@ import { VNode } from 'vue';
 export default component({
   render(): VNode {
     return (
-      <div class="home">Home</div>
+      <div>Home</div>
     );
   },
 });

@@ -23,7 +23,7 @@ export default class Post extends Model<Post> implements PostData {
   @Column({
     type: DataType.DATE,
   })
-  expires!: string;
+  expires!: Date;
 
   @Column({
     defaultValue: DataType.UUIDV4,
@@ -31,4 +31,7 @@ export default class Post extends Model<Post> implements PostData {
     type: DataType.UUIDV4,
   })
   id!: string;
+
+  @Column(DataType.DATE)
+  date!: Date;
 }
