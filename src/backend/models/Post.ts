@@ -5,33 +5,25 @@ import PostData from '../../types/PostData';
 
 @Table
 export default class Post extends Model<Post> implements PostData {
-  @Column({
-    type: DataType.INTEGER,
-  })
-  author!: number;
+  @Column(DataType.INTEGER)
+  public author!: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  media!: string;
+  @Column(DataType.STRING)
+  public media!: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
-  text!: string;
+  @Column(DataType.STRING)
+  public text!: string;
 
-  @Column({
-    type: DataType.DATE,
-  })
-  expires!: Date;
+  @Column(DataType.STRING)
+  public expires!: string;
 
   @Column({
     defaultValue: DataType.UUIDV4,
     primaryKey: true,
     type: DataType.UUIDV4,
   })
-  id!: string;
+  public id!: string;
 
-  @Column(DataType.DATE)
-  date!: Date;
+  @Column(DataType.STRING)
+  public date!: string;
 }

@@ -17,8 +17,8 @@ const emptyPost: PostData = {
   text: 'Post contents',
   expires: moment()
     .add(1, 'week')
-    .toDate(),
-  date: new Date(),
+    .toISOString(),
+  date: new Date().toISOString(),
 };
 
 export const withText = () => ({

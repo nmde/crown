@@ -2,8 +2,8 @@ interface PostData {
   author: number;
   media: string;
   text: string;
-  expires: Date;
-  date: Date;
+  expires: string;
+  date: string;
 }
 
 export default PostData;

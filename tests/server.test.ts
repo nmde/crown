@@ -1,4 +1,5 @@
 import fsExtra from 'fs-extra';
+import moment from 'moment';
 import path from 'path';
 import Client from '../src/frontend/client';
 import Server from '../src/backend/server';
@@ -20,6 +21,7 @@ function stripPost(data: Post): PostData {
     expires: data.expires,
     media: data.media,
     text: data.text,
+    date: data.date,
   };
 }
 
@@ -33,7 +35,8 @@ describe('posts', () => {
     author: 0,
     media: 'media.jpg',
     text: 'Hello, World!',
-    expires: new Date().toISOString(),
+    expires: moment().add(1, 'day').toISOString(),
+    date: new Date().toISOString(),
   };
   let postId = '';
   test('create a post', async () => {
@@ -54,6 +57,16 @@ describe('posts', () => {
       expect(stripPost(response.data)).toMatchObject(emptyPost);
     }
     expect(response.success).toBeTruthy();
+  });
+});
+
+describe('users', () => {
+  test('create a user', async () => {
+    await client.createUser({
+      username: 'user1',
+      password: '1234567',
+      displayName: 'John Smith',
+    });
   });
 });
 

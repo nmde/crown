@@ -1,11 +1,14 @@
 import axios from 'axios';
-import Endpoints, { EndpointURL, CreatePostResponse, GetPostResponse } from '../types/Endpoints';
+import Endpoints, {
+  EndpointURL, CreatePostResponse, GetPostResponse, CreateUserResponse,
+} from '../types/Endpoints';
 import PostData from '../types/PostData';
+import UserData from '../types/UserData';
 
 export default class Client implements Endpoints {
   private baseUrl: string;
 
-  constructor(baseUrl: string) {
+  public constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
@@ -35,11 +38,15 @@ export default class Client implements Endpoints {
     }
   }
 
-  async createPost(data: PostData): Promise<CreatePostResponse> {
+  public async createPost(data: PostData): Promise<CreatePostResponse> {
     return this.post<PostData, CreatePostResponse>(EndpointURL.createPost, data);
   }
 
-  async getPost(id: string): Promise<GetPostResponse> {
+  public async createUser(data: UserData): Promise<CreateUserResponse> {
+    return this.post<UserData, CreateUserResponse>(EndpointURL.createUser, data);
+  }
+
+  public async getPost(id: string): Promise<GetPostResponse> {
     return this.get<{ id: string }, GetPostResponse>(EndpointURL.getPost, {
       id,
     });

@@ -3,26 +3,29 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
+import UserData from '@/types/UserData';
 import Endpoints, {
   EndpointURL,
   CreatePostResponse,
   GetPostResponse,
+  CreateUserResponse,
 } from '../types/Endpoints';
 import PostData from '../types/PostData';
 import Post from './models/Post';
+import User from './models/User';
 
 export default class Server implements Endpoints {
   private app = express();
 
   private database: Sequelize;
 
-  private models = { Post };
+  private models = { Post, User };
 
   private port: number;
 
   public httpServer?: http.Server;
 
-  constructor(dbPath: string, port = 3000) {
+  public constructor(dbPath: string, port = 3000) {
     console.log(dbPath);
     this.database = new Sequelize({
       dialect: 'sqlite',
@@ -46,7 +49,7 @@ export default class Server implements Endpoints {
     });
   }
 
-  async createPost(data: PostData): Promise<CreatePostResponse> {
+  public async createPost(data: PostData): Promise<CreatePostResponse> {
     try {
       return {
         success: true,
@@ -60,7 +63,21 @@ export default class Server implements Endpoints {
     }
   }
 
-  async getPost(id: string): Promise<GetPostResponse> {
+  public async createUser(data: UserData): Promise<CreateUserResponse> {
+    try {
+      return {
+        success: true,
+        data: await (new this.models.User(data)).save(),
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err,
+      };
+    }
+  }
+
+  public async getPost(id: string): Promise<GetPostResponse> {
     try {
       const result = await this.models.Post.findOne({
         where: {
@@ -85,7 +102,7 @@ export default class Server implements Endpoints {
     }
   }
 
-  start(): Promise<number> {
+  public start(): Promise<number> {
     return new Promise((resolve, reject) => {
       const { app } = this;
       app.use(bodyParser.json());
@@ -109,7 +126,7 @@ export default class Server implements Endpoints {
     });
   }
 
-  stop(): Promise<void> {
+  public stop(): Promise<void> {
     return new Promise((resolve) => {
       if (this.httpServer !== undefined) {
         this.httpServer.close(() => {

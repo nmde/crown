@@ -11,11 +11,6 @@ export default class Post extends Vue {
   @Prop()
   public post!: PostData;
 
-  private get expires() {
-    const expires = this.post.expires.valueOf();
-    return ((expires - new Date().valueOf()) / (expires - this.post.date.valueOf())) * 100;
-  }
-
   public render(): VNode {
     return (
       <v-card width={500}>
