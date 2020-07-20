@@ -1,9 +1,14 @@
 import axios from 'axios';
 import Endpoints, {
-  EndpointURL, CreatePostResponse, GetPostResponse, CreateUserResponse,
+  EndpointURL,
+  CreatePostResponse,
+  GetPostResponse,
+  CreateUserResponse,
+  LoginResponse,
 } from '../types/Endpoints';
 import PostData from '../types/PostData';
 import UserData from '../types/UserData';
+import LoginData from '../types/LoginData';
 
 export default class Client implements Endpoints {
   private baseUrl: string;
@@ -50,5 +55,9 @@ export default class Client implements Endpoints {
     return this.get<{ id: string }, GetPostResponse>(EndpointURL.getPost, {
       id,
     });
+  }
+
+  public async login(data: LoginData): Promise<LoginResponse> {
+    return this.post<LoginData, LoginResponse>(EndpointURL.login, data);
   }
 }

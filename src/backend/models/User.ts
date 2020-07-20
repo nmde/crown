@@ -14,6 +14,7 @@ export default class User extends Model<User> implements UserData {
   @Column(DataType.STRING)
   public displayName!: string;
 
+  // TODO basic security
   @Column(DataType.STRING)
   public password!: string;
 }

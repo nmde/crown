@@ -13,5 +13,5 @@ This will download the latest version of all the code to your computer, and then
 
 ## Step 4: Setting up
 In VS Code, press ctrl+shift+` to open a new terminal in the project folder. In the new terminal, run:
-`npm install`
+`npm install && npm run build`
 This will take a while, but once its done, you can run `npm start` to start the app's server on your computer. You can then access the app in your browser at http://localhost:3000/.

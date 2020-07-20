@@ -9,10 +9,12 @@ import Endpoints, {
   CreatePostResponse,
   GetPostResponse,
   CreateUserResponse,
+  LoginResponse,
 } from '../types/Endpoints';
 import PostData from '../types/PostData';
 import Post from './models/Post';
 import User from './models/User';
+import LoginData from '../types/LoginData';
 
 export default class Server implements Endpoints {
   private app = express();
@@ -102,14 +104,45 @@ export default class Server implements Endpoints {
     }
   }
 
+  public async login(data: LoginData): Promise<LoginResponse> {
+    try {
+      const match = await this.models.User.findOne({
+        where: {
+          ...data,
+        },
+      });
+      if (match === null) {
+        return {
+          success: false,
+          error: new Error('Incorrect username or password'),
+        };
+      }
+      return {
+        success: true,
+        data: match,
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err,
+      };
+    }
+  }
+
   public start(): Promise<number> {
     return new Promise((resolve, reject) => {
       const { app } = this;
       app.use(bodyParser.json());
       app.use(express.static(path.resolve(__dirname, '..', 'dist')));
-      // TODO: Fix the URL mess
+      // TODO fix this mess
       app.post(`/${EndpointURL.createPost}`, async (req, res) => {
         res.send(await this.createPost(req.body));
+      });
+      app.post(`/${EndpointURL.createUser}`, async (req, res) => {
+        res.send(await this.createUser(req.body));
+      });
+      app.post(`/${EndpointURL.login}`, async (req, res) => {
+        res.send(await this.login(req.body));
       });
       app.get(`/${EndpointURL.getPost}`, async (req, res) => {
         res.send(await this.getPost(req.query.id as string));

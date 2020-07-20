@@ -6,7 +6,13 @@ import Store from '../store';
 @Observer
 @Component
 export default class Login extends Vue {
+  private dialog = false;
+
   private displayName = '';
+
+  private error?: Error;
+
+  private loading = false;
 
   private password = '';
 
@@ -30,7 +36,23 @@ export default class Login extends Vue {
                     <v-text-field label="Password" type="password" vModel={this.password} />
                   </v-card-text>
                   <v-card-actions>
-                    <v-btn color="primary">Submit</v-btn>
+                    <v-btn color="primary" loading={this.loading} onClick={async () => {
+                      this.loading = true;
+                      const query = await this.store.client.login({
+                        username: this.username,
+                        password: this.password,
+                      });
+                      if (query.success) {
+                        this.$router.back();
+                      } else {
+                        console.log(query);
+                        this.loading = false;
+                        this.dialog = true;
+                        this.error = query.error;
+                      }
+                    }}>
+                      Submit
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-tab-item>
@@ -50,12 +72,25 @@ export default class Login extends Vue {
                   <v-card-actions>
                     <v-btn
                       color="primary"
+                      loading={this.loading}
                       onClick={async () => {
-                        await this.store.client.createUser({
+                        // TODO form validation
+                        this.loading = true;
+                        const query = await this.store.client.createUser({
                           displayName: this.displayName,
                           username: this.username,
                           password: this.password,
                         });
+                        if (query.success) {
+                          this.$router.back();
+                        } else {
+                          this.loading = false;
+                          this.dialog = true;
+                          this.error = query.error;
+                          if (query.error?.name === 'SequelizeUniqueConstraintError') {
+                            this.error = new Error('Username is unavaiable!');
+                          }
+                        }
                       }}
                     >
                       Submit
@@ -66,6 +101,24 @@ export default class Login extends Vue {
             </v-tabs>
           </v-col>
         </v-row>
+        <v-dialog max-width={500} vModel={this.dialog}>
+          <v-card>
+            <v-card-title>Something went wrong</v-card-title>
+            <v-card-text>
+              Sorry, something went wrong with your request.
+              <span class="overline error--text">{this.error?.message}</span>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                onClick={() => {
+                  this.dialog = false;
+                }}
+              >
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-container>
     );
   }
