@@ -111,6 +111,7 @@ export default class Server implements Endpoints {
           ...data,
         },
       });
+      // TODO: Incomplete error information
       if (match === null) {
         return {
           success: false,
