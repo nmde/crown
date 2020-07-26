@@ -18,9 +18,8 @@ export default class Post extends Model<Post> implements PostData {
   public expires!: string;
 
   @Column({
-    defaultValue: DataType.UUIDV4,
     primaryKey: true,
-    type: DataType.UUIDV4,
+    type: DataType.STRING,
   })
   public id!: string;
 

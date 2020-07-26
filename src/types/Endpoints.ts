@@ -1,34 +1,44 @@
+import UserData from './UserData';
 import LoginData from './LoginData';
 import PostData from './PostData';
-import Post from '../backend/models/Post';
-import User from '../backend/models/User';
-import UserData from './UserData';
 
-interface GenericResponse<T> {
+export type GenericResponse<T> = {
   success: boolean;
   data?: T;
   error?: string;
-}
-
-export type CreatePostResponse = GenericResponse<Post>;
-export type CreateUserResponse = GenericResponse<User>;
-export type GetPostResponse = GenericResponse<Post>;
-export type LoginResponse = GenericResponse<User>;
-
-interface Endpoints {
-  createPost: (data: PostData) => Promise<CreatePostResponse>;
-  createUser: (data: UserData) => Promise<CreateUserResponse>;
-  getPost: (id: string) => Promise<GetPostResponse>;
-  login: (data: LoginData) => Promise<LoginResponse>;
-}
-
-export const EndpointURL: {
-  [key in keyof Endpoints]: string;
-} = {
-  createPost: 'post/createPost',
-  createUser: 'post/createUser',
-  getPost: 'get/getPost',
-  login: 'post/login',
 };
 
-export default Endpoints;
+export type Endpoints = {
+  post: {
+    login: {
+      data: LoginData;
+      response: UserData;
+    };
+    createPost: {
+      data: PostData;
+      response: PostData;
+    };
+    createUser: {
+      data: UserData;
+      response: UserData;
+    };
+  };
+  get: {
+    getPost: {
+      data: {
+        id: string;
+      };
+      response: PostData;
+    };
+  };
+};
+
+export type EndpointProvider = {
+  [key in keyof Endpoints['post']]: (
+    data: Endpoints['post'][key]['data'],
+  ) => Promise<GenericResponse<Endpoints['post'][key]['response']>>;
+} & {
+  [key in keyof Endpoints['get']]: (
+    data: Endpoints['get'][key]['data'],
+  ) => Promise<GenericResponse<Endpoints['get'][key]['response']>>;
+};

@@ -31,6 +31,7 @@ describe('posts', () => {
       .add(1, 'day')
       .toISOString(),
     date: new Date().toISOString(),
+    id: '1234',
   };
   let postId = '';
   test('create a post', async () => {
@@ -50,7 +51,9 @@ describe('posts', () => {
     expect(response.success).toBeTruthy();
   });
   test('get a post', async () => {
-    const response = await client.getPost(postId);
+    const response = await client.getPost({
+      id: postId,
+    });
     if (response.success === false) {
       console.log(response.error);
     } else if (response.data !== undefined) {

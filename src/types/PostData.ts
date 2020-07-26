@@ -4,6 +4,7 @@ interface PostData {
   text: string;
   expires: string;
   date: string;
+  id: string;
 }
 
 export default PostData;

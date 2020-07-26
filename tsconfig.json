@@ -27,6 +27,11 @@
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "plugins": [
+      {
+        "transform": "ts-transformer-keys/transformer"
+      }
     ]
   },
   "include": [
@@ -35,7 +40,8 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "build/*.js"
+    "build/*.js",
+    "/.js"
   ],
   "exclude": [
     "node_modules"

@@ -14,7 +14,15 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: ['babel-loader', 'ts-loader'],
+        loader: [
+          'babel-loader',
+          {
+            loader: 'ts-loader',
+            options: {
+              compiler: 'ttypescript',
+            },
+          },
+        ],
       },
     ],
   },

@@ -19,6 +19,7 @@ const emptyPost: PostData = {
     .add(1, 'week')
     .toISOString(),
   date: new Date().toISOString(),
+  id: '1234',
 };
 
 export const withText = () => ({

@@ -3,20 +3,15 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
-import UserData from '@/types/UserData';
-import Endpoints, {
-  EndpointURL,
-  CreatePostResponse,
-  GetPostResponse,
-  CreateUserResponse,
-  LoginResponse,
-} from '../types/Endpoints';
+import { keys } from 'ts-transformer-keys';
+import UserData from '../types/UserData';
+import { Endpoints, EndpointProvider, GenericResponse } from '../types/Endpoints';
 import PostData from '../types/PostData';
 import Post from './models/Post';
 import User from './models/User';
 import LoginData from '../types/LoginData';
 
-export default class Server implements Endpoints {
+export default class Server implements EndpointProvider {
   private app = express();
 
   private database: Sequelize;
@@ -51,7 +46,7 @@ export default class Server implements Endpoints {
     });
   }
 
-  public async createPost(data: PostData): Promise<CreatePostResponse> {
+  public async createPost(data: PostData): Promise<GenericResponse<Post>> {
     try {
       return {
         success: true,
@@ -65,7 +60,7 @@ export default class Server implements Endpoints {
     }
   }
 
-  public async createUser(data: UserData): Promise<CreateUserResponse> {
+  public async createUser(data: UserData): Promise<GenericResponse<UserData>> {
     try {
       return {
         success: true,
@@ -79,7 +74,7 @@ export default class Server implements Endpoints {
     }
   }
 
-  public async getPost(id: string): Promise<GetPostResponse> {
+  public async getPost({ id }: { id: string }): Promise<GenericResponse<PostData>> {
     try {
       const result = await this.models.Post.findOne({
         where: {
@@ -104,7 +99,7 @@ export default class Server implements Endpoints {
     }
   }
 
-  public async login(data: LoginData): Promise<LoginResponse> {
+  public async login(data: LoginData): Promise<GenericResponse<UserData>> {
     try {
       const match = await this.models.User.findOne({
         where: {
@@ -134,19 +129,20 @@ export default class Server implements Endpoints {
       const { app } = this;
       app.use(bodyParser.json());
       app.use(express.static(path.resolve(__dirname, '..', 'dist')));
-      // TODO fix this mess
-      app.post(`/${EndpointURL.createPost}`, async (req, res) => {
-        res.send(await this.createPost(req.body));
+
+      // Sets up the API endpoints
+      keys<Endpoints['post']>().forEach((key) => {
+        console.log(`/api/${key}`);
+        app.post(`/api/${key}`, async (req, res) => {
+          res.send(await this[key](req.body));
+        });
       });
-      app.post(`/${EndpointURL.createUser}`, async (req, res) => {
-        res.send(await this.createUser(req.body));
+      keys<Endpoints['get']>().forEach((key) => {
+        app.get(`/api/${key}`, async (req, res) => {
+          res.send(await this[key](req.query as Endpoints['get'][typeof key]['data']));
+        });
       });
-      app.post(`/${EndpointURL.login}`, async (req, res) => {
-        res.send(await this.login(req.body));
-      });
-      app.get(`/${EndpointURL.getPost}`, async (req, res) => {
-        res.send(await this.getPost(req.query.id as string));
-      });
+
       this.connectToDatabase()
         .then(() => {
           this.httpServer = app.listen(this.port, () => {

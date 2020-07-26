@@ -1,16 +1,10 @@
 import axios from 'axios';
-import Endpoints, {
-  EndpointURL,
-  CreatePostResponse,
-  GetPostResponse,
-  CreateUserResponse,
-  LoginResponse,
-} from '../types/Endpoints';
+import { EndpointProvider, GenericResponse } from '../types/Endpoints';
 import PostData from '../types/PostData';
 import UserData from '../types/UserData';
 import LoginData from '../types/LoginData';
 
-export default class Client implements Endpoints {
+export default class Client implements EndpointProvider {
   private baseUrl: string;
 
   public constructor(baseUrl: string) {
@@ -20,10 +14,10 @@ export default class Client implements Endpoints {
   private async get<D, T>(endpoint: string, data: D) {
     try {
       return (
-        await axios.get(`${this.baseUrl}/${endpoint}`, {
+        await axios.get(`${this.baseUrl}${endpoint}`, {
           params: data,
         })
-      ).data as T;
+      ).data as GenericResponse<T>;
     } catch (err) {
       return {
         success: false,
@@ -34,7 +28,7 @@ export default class Client implements Endpoints {
 
   private async post<D, T>(endpoint: string, data: D) {
     try {
-      return (await axios.post(`${this.baseUrl}/${endpoint}`, data)).data as T;
+      return (await axios.post(`${this.baseUrl}${endpoint}`, data)).data as GenericResponse<T>;
     } catch (err) {
       return {
         success: false,
@@ -43,21 +37,19 @@ export default class Client implements Endpoints {
     }
   }
 
-  public async createPost(data: PostData): Promise<CreatePostResponse> {
-    return this.post<PostData, CreatePostResponse>(EndpointURL.createPost, data);
+  public async createPost(data: PostData): Promise<GenericResponse<PostData>> {
+    return this.post<PostData, PostData>('/api/createPost', data);
   }
 
-  public async createUser(data: UserData): Promise<CreateUserResponse> {
-    return this.post<UserData, CreateUserResponse>(EndpointURL.createUser, data);
+  public async createUser(data: UserData): Promise<GenericResponse<UserData>> {
+    return this.post<UserData, UserData>('/api/createUser', data);
   }
 
-  public async getPost(id: string): Promise<GetPostResponse> {
-    return this.get<{ id: string }, GetPostResponse>(EndpointURL.getPost, {
-      id,
-    });
+  public async getPost(query: { id: string }): Promise<GenericResponse<PostData>> {
+    return this.get<typeof query, PostData>('/api/getPost', query);
   }
 
-  public async login(data: LoginData): Promise<LoginResponse> {
-    return this.post<LoginData, LoginResponse>(EndpointURL.login, data);
+  public async login(data: LoginData): Promise<GenericResponse<UserData>> {
+    return this.post<LoginData, UserData>('/api/login', data);
   }
 }
