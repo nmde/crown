@@ -28,10 +28,10 @@ export default class Server implements Endpoints {
   public httpServer?: http.Server;
 
   public constructor(dbPath: string, port = 3000) {
-    console.log(dbPath);
     this.database = new Sequelize({
       dialect: 'sqlite',
       storage: dbPath,
+      logging: false,
     });
     this.port = port;
   }
@@ -89,7 +89,7 @@ export default class Server implements Endpoints {
       if (result === null) {
         return {
           success: false,
-          error: new Error(`No post found with ID ${id}`),
+          error: `No post found with ID ${id}`,
         };
       }
       return {
@@ -111,11 +111,10 @@ export default class Server implements Endpoints {
           ...data,
         },
       });
-      // TODO: Incomplete error information
       if (match === null) {
         return {
           success: false,
-          error: new Error('Incorrect username or password'),
+          error: 'Incorrect username or password',
         };
       }
       return {

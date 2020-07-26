@@ -14,7 +14,7 @@ export default class Login extends Vue {
 
   private displayName = '';
 
-  private error?: Error;
+  private error?: string;
 
   private form = {
     password: '',
@@ -135,9 +135,12 @@ export default class Login extends Vue {
                           this.loading = false;
                           this.dialog = true;
                           this.error = query.error;
+                          console.log(query.error);
+                          /*
                           if (query.error?.name === 'SequelizeUniqueConstraintError') {
                             this.error = new Error('Username is unavaiable!');
                           }
+                          */
                         }
                       }}
                     >
@@ -154,7 +157,7 @@ export default class Login extends Vue {
             <v-card-title>Something went wrong</v-card-title>
             <v-card-text>
               Sorry, something went wrong with your request.
-              <div class="overline error--text">{this.error?.message}</div>
+              <div class="overline error--text">{this.error}</div>
             </v-card-text>
             <v-card-actions>
               <v-btn

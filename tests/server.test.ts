@@ -79,6 +79,25 @@ describe('users', () => {
         }),
       ).not.toBeNull();
     }
+    expect(response.success).toBeTruthy();
+  });
+  test('sign in', async () => {
+    const response = await client.login({
+      username: emptyUser.username,
+      password: emptyUser.password,
+    });
+    if (response.success === false) {
+      console.log(response.error);
+    }
+    expect(response.success).toBeTruthy();
+  });
+  test('incorrect login details', async () => {
+    const response = await client.login({
+      username: emptyUser.username,
+      password: 'wrong_password',
+    });
+    expect(response.success).toBeFalsy();
+    expect(response.error).toEqual('Incorrect username or password');
   });
 });
 

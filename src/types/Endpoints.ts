@@ -7,7 +7,7 @@ import UserData from './UserData';
 interface GenericResponse<T> {
   success: boolean;
   data?: T;
-  error?: Error;
+  error?: string;
 }
 
 export type CreatePostResponse = GenericResponse<Post>;
