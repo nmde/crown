@@ -4,7 +4,7 @@
   "description": "A social media app",
   "main": "dist/backend.js",
   "scripts": {
-    "build": "./build.sh",
+    "build": "build.sh",
     "start": "node dist/backend.js",
     "test": "jest",
     "storybook": "start-storybook -p 6006",

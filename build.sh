@@ -1,2 +1,2 @@
-yarn webpack --config ./build/frontend.config.js
-yarn webpack --config ./build/backend.config.js
+./node_modules/.bin/webpack --config ./build/frontend.config.js
+./node_modules/.bin/webpack --config ./build/backend.config.js
