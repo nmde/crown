@@ -2,6 +2,7 @@ import { Observer } from 'mobx-vue';
 import Vue, { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import Store from '../store';
+import UserData from '../../types/UserData';
 
 function required(value: string) {
   return () => value !== '' || 'Field cannot be empty';
@@ -73,6 +74,7 @@ export default class Login extends Vue {
                           password: this.form.password,
                         });
                         if (query.success) {
+                          this.store.setUser(query?.data as UserData);
                           this.$router.back();
                         } else {
                           console.log(query);

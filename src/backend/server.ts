@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import http from 'http';
+import jwt from 'jsonwebtoken';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import { keys } from 'ts-transformer-keys';
@@ -29,6 +30,17 @@ export default class Server implements EndpointProvider {
       logging: false,
     });
     this.port = port;
+  }
+
+  public auth(data: {
+    token: string;
+  }): Promise<GenericResponse<UserData>> {
+    this.models.User.findOne({
+      where: 
+    });
+    jwt.sign({
+
+    })
   }
 
   private connectToDatabase(): Promise<Sequelize> {

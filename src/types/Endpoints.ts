@@ -30,6 +30,12 @@ export type Endpoints = {
       };
       response: PostData;
     };
+    auth: {
+      data: {
+        token: string;
+      };
+      response: UserData;
+    };
   };
 };
 
