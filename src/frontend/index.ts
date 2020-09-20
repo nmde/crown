@@ -4,7 +4,7 @@ import 'vue-tsx-support/enable-check';
 import Vuetify from 'vuetify';
 import App from './App';
 import Home from './views/Home';
-import './boostrap';
+import './bootstrap';
 import './registerServiceWorker';
 
 const container = document.createElement('div');
