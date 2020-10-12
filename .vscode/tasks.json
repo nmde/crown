@@ -3,13 +3,13 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
+			"script": "build:dev",
 			"problemMatcher": [
 				"$tsc"
 			],
 			"group": "build",
-			"label": "npm: build",
-			"detail": "yarn webpack"
+			"label": "npm: build:dev",
+			"detail": "./node_modules/.bin/webpack --config build/frontend.config.js"
 		}
 	]
 }

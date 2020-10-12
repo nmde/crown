@@ -1,7 +1,8 @@
-import path from 'path';
 import Server from './server';
 
-new Server(path.join(__dirname, 'database.sqlite'), 3000)
+// Starts the central server
+// TODO: change port for deployment
+new Server()
   .start()
   .then((port) => {
     console.log(`Server running on port ${port}`);

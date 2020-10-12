@@ -148,3 +148,6 @@ tests/test.sqlite
 
 # Keys
 src/secret.ts
+
+# Built Storybook
+storybook-static

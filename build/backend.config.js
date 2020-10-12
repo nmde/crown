@@ -1,6 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const repl = require('repl');
+const { merge } = require('webpack-merge');
 const packageJson = require('../package.json');
 const common = require('./common');
 
@@ -14,11 +16,10 @@ exclude
     externals[lib] = `commonjs ${lib}`;
   });
 
-module.exports = {
-  ...common,
+module.exports = merge(common, {
   entry: {
     backend: path.resolve(__dirname, '..', 'src', 'backend', 'index.ts'),
   },
   externals,
   node: false,
-};
+});
