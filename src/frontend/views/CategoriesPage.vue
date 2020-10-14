@@ -11,6 +11,13 @@
 </template>
 
 <script>
+/* 
+    CategoriesPage: 
+        - displays page of all 6 (at the moment) categories
+        - Local Variables: 
+            - category - object to hold values for props when using Category component
+            - categoryList - holds category objects
+*/
 import category from '../components/Category.vue';
 
 export default {
