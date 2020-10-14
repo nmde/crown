@@ -58,7 +58,7 @@
  *     SELECT follower_time, follower_user_id FROM ig_app_data.follower 
  *     WHERE user_id = :user_id; 
  * */
-public class Follower extends Table {
+class Follower {
 
     
   
@@ -72,14 +72,10 @@ public class Follower extends Table {
      *   follower_user_id) VALUES (:user_id, :follower_time, 
      *   :follower_user_id); 
      */
-    private static final String kInsertName =
-      "insert";
-    private static final String kInsertDescription =
+    kInsertName = "insert";
+    kInsertDescription =
       "inserts a new follower ";
-    private static final String kInsertPreparedStatement =
-      "INSERT INTO ig_app_data.follower (user_id, follower_time, "
-      + "follower_user_id) VALUES (:user_id, :follower_time, "
-      + ":follower_user_id); ";
+    kInsertPreparedStatement = "INSERT INTO ig_app_data.follower (user_id follower_time, " + "follower_user_id) VALUES (:user_id, :follower_time, " + ":follower_user_id); ";
   
     /**
      * Query:
@@ -91,14 +87,9 @@ public class Follower extends Table {
      *   follower_time = :follower_time AND follower_user_id = 
      *   :follower_user_id; 
      */
-    private static final String kDeleteName =
-      "delete";
-    private static final String kDeleteDescription =
-      "deletes an unfollowing follower ";
-    private static final String kDeletePreparedStatement =
-      "DELETE FROM ig_app_data.follower WHERE user_id = :user_id AND "
-      + "follower_time = :follower_time AND follower_user_id = "
-      + ":follower_user_id; ";
+    kDeleteName = "delete";
+    kDeleteDescription = "deletes an unfollowing follower ";
+    kDeletePreparedStatement = "DELETE FROM ig_app_data.follower WHERE user_id = :user_id AND " + "follower_time = :follower_time AND follower_user_id = " + ":follower_user_id; ";
   
     /**
      * Query:
@@ -110,14 +101,9 @@ public class Follower extends Table {
      *   SELECT follower_time, follower_user_id FROM ig_app_data.follower 
      *   WHERE user_id = :user_id LIMIT 30; 
      */
-    private static final String kSelectRecentLimitName =
-      "select_recent_limit";
-    private static final String kSelectRecentLimitDescription =
-      "selects the most recent follower users where the returned count is "
-      + "limited by the value of limit (e.g.: 10) ";
-    private static final String kSelectRecentLimitPreparedStatement =
-      "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE "
-      + "user_id = :user_id LIMIT 30; ";
+    kSelectRecentLimitName = "select_recent_limit";
+    kSelectRecentLimitDescription = "selects the most recent follower users where the returned count is " + "limited by the value of limit (e.g.: 10) ";
+    kSelectRecentLimitPreparedStatement = "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE " + "user_id = :user_id LIMIT 30; ";
   
     /**
      * Query:
@@ -130,15 +116,9 @@ public class Follower extends Table {
      *   WHERE user_id = :user_id AND follower_time <= :follower_time 
      *   LIMIT 30; 
      */
-    private static final String kSelectAtOrBeforeTimeLimitName =
-      "select_at_or_before_time_limit";
-    private static final String kSelectAtOrBeforeTimeLimitDescription =
-      "selects follower users at-or-before a specified time where the "
-      + "returned count is limited by the value of limit (e.g.: 10) ";
-    private static final String kSelectAtOrBeforeTimeLimitPreparedStatement =
-      "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE "
-      + "user_id = :user_id AND follower_time <= :follower_time LIMIT "
-      + "30; ";
+    kSelectAtOrBeforeTimeLimitName = "select_at_or_before_time_limit";
+    kSelectAtOrBeforeTimeLimitDescription = "selects follower users at-or-before a specified time where the " + "returned count is limited by the value of limit (e.g.: 10) ";
+    kSelectAtOrBeforeTimeLimitPreparedStatement = "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE " + "user_id = :user_id AND follower_time <= :follower_time LIMIT " + "30; ";
   
     /**
      * Query:
@@ -150,22 +130,16 @@ public class Follower extends Table {
      *   SELECT follower_time, follower_user_id FROM ig_app_data.follower 
      *   WHERE user_id = :user_id; 
      */
-    private static final String kSelectAllName =
-      "select_all";
-    private static final String kSelectAllDescription =
-      "selects all the followers of a user, NOTE: use paging when using this "
-      + "query ";
-    private static final String kSelectAllPreparedStatement =
-      "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE "
-      + "user_id = :user_id; ";
+    kSelectAllName = "select_all";
+    kSelectAllDescription = "selects all the followers of a user, NOTE: use paging when using this " + "query ";
+    kSelectAllPreparedStatement = "SELECT follower_time, follower_user_id FROM ig_app_data.follower WHERE " + "user_id = :user_id; ";
   
     /**
      * Constructor Follower
      * @return new Follower Object
      * @throws Exception
      */
-    private Follower () throws Exception {
-  
+    constructor() {
       super (
         kKeySpaceName,
         kTableName,
@@ -191,7 +165,7 @@ public class Follower extends Table {
           kSelectAllPreparedStatement));
     }
   
-    private static Follower instance = null;
+    instance: Follower = null;
   
     /**
      * loadTable

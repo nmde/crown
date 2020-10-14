@@ -20,7 +20,7 @@ import Vue, { VNode } from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 // TODO add to node_modules
-import { VCard } from '../../../../../vuetify-tsx/lib';
+//import { VCard } from '../../../../../vuetify-tsx/lib';
 import BarChart from './BarChart';
 
 type Events = {
@@ -140,7 +140,7 @@ export default class Chart extends Vue {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const chart = this;
     return (
-      <VCard maxWidth="100%">
+      //<VCard maxWidth="100%">
         <BarChart
           chart={{
             labels: this.labels,
@@ -190,7 +190,7 @@ export default class Chart extends Vue {
             },
           }}
         />
-      </VCard>
+      //</VCard>
     );
   }
 }
