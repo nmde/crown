@@ -1,3 +1,4 @@
+import {v4 as uuid} from 'uuid';
 /*  
 User
 Properties:
@@ -30,10 +31,10 @@ Methods:
 
 class User {
   username: string;
-  uuid: any; // change any to uuid type
+  id: uuid;
   profilePic: string;
   bio: string;
-  posts: any[]; // change any to Post type
+  posts: Post[];
   followers: User[];
   following: User[];
   likedHashtags: string[];
@@ -42,6 +43,7 @@ class User {
 
   constructor(setUsername: string, setProfilePic: string, setBio: string) {
     this.username = setUsername;
+    this.id = uuid.v4();
     this.profilePic = setProfilePic;
     this.bio = setBio;
     this.posts = [];
@@ -52,13 +54,13 @@ class User {
     this.postsViewed = 0;
   }
   // creates a new post and appends it to posts
-  makePost(newPost: any) {
+  makePost(newPost: Post) {
     this.posts.push(newPost);
   }
 
   // removes post from posts
-  deletePost(removePost: any) {
-    this.posts.filter((post: any) =>{
+  deletePost(removePost: Post) {
+    this.posts.filter((post: Post) =>{
       return post != removePost;
     });
   }
@@ -153,7 +155,7 @@ class Post {
   content: {src: string, type: string}
   caption: string;
   hashtags: string[];
-  comments: any[]; // change any to Comment type
+  comments: Comment[];
   likes: number;
   views: number;
   shares: number;
@@ -219,7 +221,43 @@ class Post {
   }
 
   // allows user to add a comment to this post
-  addComment(newComment: any) {
+  addComment(newComment: Comment) {
     this.comments.push(newComment);
+  }
+}
+
+/* 
+Comment
+Properties:
+- owner: user who posted this comment
+- message: content of the comment
+- likes
+- replies: array of replies to this comment
+
+Methods:
+- incrementLikes: increments likes by 1
+- addReply: appends new Comment to replies
+*/
+class Comment {
+  owner: string;
+  message: string;
+  likes: number;
+  replies: Comment[];
+  
+  constructor(setOwner: string, setMessage: string) {
+    this.owner = setOwner;
+    this.message = setMessage;
+    this.likes = 0;
+    this.replies = []
+  }
+
+  // increment likes by 1
+  incrementLikes() {
+    this.likes++;
+  }
+
+  // add new reply to replies
+  addReply(newReply: Comment) {
+    this.replies.push(newReply);
   }
 }
