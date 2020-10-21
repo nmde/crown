@@ -1,45 +1,37 @@
 <template>
-    <div id="category" v-bind:class="props.categoryName">
-        <div id="category-img"  />
+    <div :class="name">
+        <h1>{{ name }}</h1>
     </div>
 </template>
 
 <script>
-/* 
-    Category: 
-        - boxes on the categories page, holds an image and has a specific background color based on category name
-        - Props: 
-            categoryName - name of category, used to determine background color
-            imgSrc - holds the path to the category's icon image file
-        - Future Features: @click routes to specific category page
-*/
 export default {
-    name: Category,
-    props: ['categoryName', 'imgSrc'],
+    name: 'Category',
+    props: ['name', 'src']
 }
 </script>
 
 <style scoped>
-    #category {
-        display: flex;
-        justify-content: center;
+    * {
+        width: 295px;
+        height: 376px;
     }
     .sports {
-        background-color: yellow;
+        background: yellow;
     }
     .feel-good {
-        background-color: green;
+        background: green;
     }
     .music {
-        background-color: purple;
+        background: purple;
     }
     .gaming {
-        background-color: red;
+        background: red;
     }
-    .photagraphy {
-        background-color: blue;
+    .photography {
+        background: blue;
     }
     .food {
-        background-color: green;
+        background: lightgreen;
     }
 </style>

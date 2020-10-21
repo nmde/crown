@@ -1,38 +1,26 @@
 <template>
     <div id="categories">
         <Category 
-            v-for="(categoryName, imgSrc, id) in categoryList"
-            v-bind:categoryName="categoryName"
-            v-bind:imgSrc="imgSrc"
-            v-bind:key="id"
-            v-bind:class="'section'+id"
+            v-for="category in categoryList"
+            :key="category.id"
+            v-bind:name="category.name"   
         />
     </div>
 </template>
 
 <script>
-/* 
-    CategoriesPage: 
-        - displays page of all 6 (at the moment) categories
-        - Local Variables: 
-            - category - object to hold values for props when using Category component
-            - categoryList - holds category objects
-*/
-import category from '../components/Category.vue';
-
+import Category from '../components/Category.vue';
 export default {
-    name: Categories,
+    name: 'CategoriesPage',
     data() {
         return {
-            category = {categoryName, imgSrc, id},
-
-            categoryList = [
-                {categoryName: 'sports', imgSrc: '', id: 0},
-                {categoryName: 'feel-good', imgSrc: '', id: 1},
-                {categoryName: 'music', imgSrc: '', id: 2},
-                {categoryName: 'gaming', imgSrc: '', id: 3},
-                {categoryName: 'photography', imgSrc: '', id: 4},
-                {categoryName: 'food', imgSrc: '', id: 5},
+            categoryList: [
+                {name: 'sports', src: '', id: 1},
+                {name: 'feel-good', src: '', id: 2},
+                {name: 'music', src: '', id: 3},
+                {name: 'gaming', src: '', id: 4},
+                {name: 'photography', src: '', id: 5},
+                {name: 'food', src: '', id: 6},
             ]
         }
     },
@@ -44,27 +32,9 @@ export default {
 
 <style scoped>
     #categories {
-        display: grid;
-        grid-template-areas: 
-            'section0 section1 section2'
-            'section3 section4 section5'
-    }
-    .section0 {
-        grid-area: section1;
-    }
-    .section1 {
-        grid-area: section1;
-    }
-    .section2 {
-        grid-area: section2;
-    }
-    .section3 {
-        grid-area: section3;
-    }
-    .section4 {
-        grid-area: section4;
-    }
-    .section5 {
-        grid-area: section5;
+        position: absolute;
+        top: 5%;
+        display: flex;
+        flex-wrap: wrap;
     }
 </style>
