@@ -31,7 +31,7 @@ Methods:
 
 class User {
   username: string;
-  id: uuid;
+  id: string;
   profilePic: string;
   bio: string;
   posts: Post[];
@@ -43,7 +43,7 @@ class User {
 
   constructor(setUsername: string, setProfilePic: string, setBio: string) {
     this.username = setUsername;
-    this.id = uuid.v4();
+    this.id = uuid();
     this.profilePic = setProfilePic;
     this.bio = setBio;
     this.posts = [];
