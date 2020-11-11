@@ -11,4 +11,6 @@ react-native run-android
 ## Tools & Libraries
 
 - [React Native](https://reactnative.dev/)
+- [Metro](https://facebook.github.io/metro/)
+
 - [Vue Native](https://vue-native.io/)
