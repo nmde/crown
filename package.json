@@ -43,6 +43,7 @@
     "fastify": "^3.8.0",
     "react": "16.8.3",
     "react-native": "^0.59.0",
+    "vue": "^2.6.12",
     "vue-native-core": "^0.1.4",
     "vue-native-helper": "^0.1.4"
   }
