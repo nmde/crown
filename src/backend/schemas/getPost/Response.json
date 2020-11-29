@@ -1,0 +1,13 @@
+{
+  "title": "getPost-Response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

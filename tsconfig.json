@@ -13,11 +13,11 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "isolatedModules": true,
     "noEmit": true,
+    "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types",
       "src/types"
@@ -27,17 +27,12 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ],
-    "plugins": [
-      {
-        "transform": "ts-transformer-keys/transformer"
-      }
     ]
   },
   "include": [
     "node_modules/vue-tsx-support/enable-check.d.ts",
     "src",
-    "build/*.js",
-    "/.js"
+    "./*.js",
+    "./*.ts"
   ]
 }

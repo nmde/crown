@@ -551,3 +551,6 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/react,linux,macos,vuejs,gradle,android,windows,reactnative,androidstudio,visualstudiocode,buck
+
+# Auto-generated schemas
+src/types/schemas
