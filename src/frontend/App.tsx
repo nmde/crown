@@ -7,7 +7,9 @@ import { VNode } from 'vue';
 export default component({
   render(): VNode {
     return (
-      <div>App</div>
+      <div>
+        <h1>App</h1>
+      </div>
     );
   },
 });
