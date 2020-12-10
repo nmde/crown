@@ -1,0 +1,10 @@
+{
+  "title": "createAccount-Response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": false
+}

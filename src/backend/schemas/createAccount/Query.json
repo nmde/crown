@@ -1,0 +1,11 @@
+{
+  "title": "createAccount-Query",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["username"]
+}
