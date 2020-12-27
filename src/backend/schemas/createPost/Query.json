@@ -1,17 +1,17 @@
 {
-  "title": "createAccount-Query",
+  "title": "createPost-Query",
   "type": "object",
   "properties": {
-    "username": {
+    "author": {
       "type": "string"
     },
-    "password": {
+    "expires": {
       "type": "string"
     },
-    "email": {
+    "media": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["username", "password", "email"]
+  "required": ["author", "expires", "media"]
 }

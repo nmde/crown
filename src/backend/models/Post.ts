@@ -5,13 +5,16 @@ import {
 @Table
 export default class User extends Model<User> {
   @Column(DataType.STRING)
-  public username!: string;
+  public media!: string;
 
   @Column(DataType.STRING)
-  public password!: string;
+  public author!: string;
 
   @Column(DataType.STRING)
-  public email!: string;
+  public created!: string;
+
+  @Column(DataType.STRING)
+  public expires!: string;
 
   @Column({
     primaryKey: true,

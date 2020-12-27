@@ -1,16 +1,26 @@
 /* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
 import fastify, { FastifySchema, RouteShorthandMethod } from 'fastify';
+import fastifyMultipart from 'fastify-multipart';
+import fs from 'fs-extra';
+import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
+import { pipeline } from 'stream';
 import { keys } from 'ts-transformer-keys';
+import util from 'util';
+import { v4 as uuid } from 'uuid';
 import models from './models';
 import schemas from './schemas';
-import { Endpoints, EndpointProvider } from '../types/Endpoints';
+import { Endpoints, EndpointProvider, EndpointResponse } from '../types/Endpoints';
 
 type GET = Endpoints['GET'];
 type POST = Endpoints['POST'];
 
 dotenv.config();
+
+const { env } = process;
+// TODO: this needs to be set to something else when we actually host it
+const media = path.resolve(__dirname, 'media');
 
 /**
  * The main server class
@@ -23,6 +33,21 @@ export default class Server implements EndpointProvider {
   public app = fastify({
     logger: true,
   });
+
+  /**
+   * ORM for interacting with the database
+   */
+  public database = new Sequelize(
+    `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
+    {
+      models: Object.values(models),
+    },
+  );
+
+  public constructor() {
+    // TODO: set upload size limits
+    this.app.register(fastifyMultipart);
+  }
 
   /**
    * Generic API endpoint handler
@@ -77,7 +102,10 @@ export default class Server implements EndpointProvider {
    * @param port The port to run the server on (defaults to 3000)
    */
   public async start(port = 3000): Promise<number> {
-    const { app } = this;
+    const { app, database } = this;
+
+    // Ensure media directory exists
+    await fs.ensureDir(media);
 
     // Automatically creates endpoints based on Endpoints.ts
     keys<GET>().forEach((endpoint) => {
@@ -87,14 +115,23 @@ export default class Server implements EndpointProvider {
       this.createEndpoint('POST', endpoint);
     });
 
-    // Connect to the database
-    const { env } = process;
-    const database = new Sequelize(
-      `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
-      {
-        models: Object.values(models),
-      },
-    );
+    // Uploading media has special instructions & can't be automatically generated
+    app.post('/api/media', async (request) => {
+      const id = uuid();
+      // TODO: multiple MIME types, validation
+      await util.promisify(pipeline)(
+        (await request.file()).file,
+        fs.createWriteStream(path.join(media, `${id}.mp4`)),
+      );
+      const response: EndpointResponse<{
+        id: string;
+      }> = {
+        data: {
+          id,
+        },
+      };
+      return response;
+    });
 
     // Start the server & establish database connection
     try {
@@ -123,22 +160,76 @@ export default class Server implements EndpointProvider {
   public async createAccount(
     params: POST['createAccount']['query'],
   ): Promise<POST['createAccount']['response']> {
-    await new models.User({
-      username: params.username,
-    }).save();
+    // Check that username isn't already in use
+    const results = await models.User.findOne({
+      where: {
+        username: params.username,
+      },
+    });
+    if (results === null) {
+      // TODO: sanitize params, 2 step encryption & https
+      const user = await new models.User(params).save();
+      return {
+        data: {
+          id: user.get('id'),
+        },
+      };
+    }
     return {
-      id: 1234,
+      data: {
+        id: '',
+      },
+      error: 'Username exists',
     };
   }
 
   /**
+   * Creates a post
+   * @param params Post metadata
+   */
+  public async createPost(
+    params: POST['createPost']['query'],
+  ): Promise<POST['createPost']['response']> {
+    // TODO: auth with tokens
+  }
+
+  /**
    * Retrieves information about a specific post
-   * @param param Contains the requested post ID
+   * @param params Contains the requested post ID
    */
   public async getPost(params: GET['getPost']['query']): Promise<GET['getPost']['response']> {
     return {
-      id: params.id,
-      text: 'ayy lmao',
+      data: {
+        id: params.id,
+        text: 'ayy lmao',
+      },
+    };
+  }
+
+  /**
+   * Signs the user in
+   * @param params Username & password
+   */
+  public async signIn(params: POST['signIn']['query']): Promise<POST['signIn']['response']> {
+    // TODO: handle tokens
+    const results = await models.User.findOne({
+      where: {
+        username: params.username,
+        password: params.password,
+      },
+    });
+    if (results !== null) {
+      return {
+        data: {
+          id: results.get('id'),
+        },
+      };
+    }
+    return {
+      data: {
+        id: '',
+      },
+      error: 'Incorrect username or password',
     };
   }
 }
