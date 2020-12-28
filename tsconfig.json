@@ -17,7 +17,6 @@
     "baseUrl": "./src",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "noEmit": true,
     "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types",
@@ -33,6 +32,7 @@
   "include": [
     "node_modules/vue-tsx-support/enable-check.d.ts",
     "src",
+    "config",
     "./*.js",
     "./*.ts",
     "tests"
