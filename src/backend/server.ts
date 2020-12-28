@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 import fastify, { FastifySchema, RouteShorthandMethod } from 'fastify';
 import fastifyMultipart from 'fastify-multipart';
+import fastifyStatic from 'fastify-static';
 import fs from 'fs-extra';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
@@ -45,8 +46,12 @@ export default class Server implements EndpointProvider {
   );
 
   public constructor() {
+    const { app } = this;
     // TODO: set upload size limits
-    this.app.register(fastifyMultipart);
+    app.register(fastifyMultipart);
+    app.register(fastifyStatic, {
+      root: __dirname,
+    });
   }
 
   /**

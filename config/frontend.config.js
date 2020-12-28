@@ -10,7 +10,11 @@ module.exports = merge(common, {
   entry: {
     frontend: path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
   },
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/frontend/index.html',
+    }),
+  ],
   module: {
     rules: [
       {
