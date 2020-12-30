@@ -19,12 +19,12 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.css$/,
-        use: ['vue-style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.s(c|a)ss$/,
         use: [
-          'vue-style-loader',
+          'style-loader',
           'css-loader',
           {
             loader: 'sass-loader',

@@ -8,7 +8,9 @@ export default component({
   render(): VNode {
     return (
       <v-app>
-        <router-view />
+        <v-main>
+          <router-view />
+        </v-main>
       </v-app>
     );
   },

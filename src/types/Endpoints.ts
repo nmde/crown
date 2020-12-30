@@ -7,10 +7,10 @@ import { GetPostResponse } from './schemas/getPost/Response';
 import { SignInQuery } from './schemas/signIn/Query';
 import { SignInResponse } from './schemas/signIn/Response';
 
-export type EndpointResponse<T> = {
+export type EndpointResponse<T> = Promise<{
   data: T;
   error?: string;
-};
+}>;
 
 export type Endpoints = {
   GET: {
@@ -35,12 +35,11 @@ export type Endpoints = {
   };
 };
 
+export type GET = Endpoints['GET'];
+export type POST = Endpoints['POST'];
+
 export type EndpointProvider = {
-  [method in keyof Endpoints['GET']]: (
-    params: Endpoints['GET'][method]['query'],
-  ) => Promise<Endpoints['GET'][method]['response']>;
+  [method in keyof GET]: (params: GET[method]['query']) => GET[method]['response'];
 } & {
-  [method in keyof Endpoints['POST']]: (
-    params: Endpoints['POST'][method]['query'],
-  ) => Promise<Endpoints['POST'][method]['response']>;
+  [method in keyof POST]: (params: POST[method]['query']) => POST[method]['response'];
 };

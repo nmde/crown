@@ -24,6 +24,7 @@ react-native run-android
 - [Fastify](https://www.fastify.io/)
 - [Jest](https://jestjs.io/en/)
 - [Metro](https://facebook.github.io/metro/)
+- [Mobx](https://github.com/mobxjs/mobx/blob/mobx4and5/docs/README.md)
 - [Postgres](https://node-postgres.com/)
   - [pgadmin](https://www.pgadmin.org/) / <http://127.0.0.1/pgadmin4>
 - [Sequelize](https://sequelize.org/master/)

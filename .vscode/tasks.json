@@ -9,7 +9,7 @@
 			],
 			"group": "build",
 			"label": "build",
-			"detail": "./node_modules/.bin/ts-node ./fuse.ts"
+			"detail": "bash build.sh"
 		}
 	]
 }

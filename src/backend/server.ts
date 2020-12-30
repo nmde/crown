@@ -12,7 +12,7 @@ import util from 'util';
 import { v4 as uuid } from 'uuid';
 import models from './models';
 import schemas from './schemas';
-import { Endpoints, EndpointProvider, EndpointResponse } from '../types/Endpoints';
+import { Endpoints, EndpointProvider } from '../types/Endpoints';
 
 type GET = Endpoints['GET'];
 type POST = Endpoints['POST'];
@@ -128,14 +128,11 @@ export default class Server implements EndpointProvider {
         (await request.file()).file,
         fs.createWriteStream(path.join(media, `${id}.mp4`)),
       );
-      const response: EndpointResponse<{
-        id: string;
-      }> = {
+      return {
         data: {
           id,
         },
       };
-      return response;
     });
 
     // Start the server & establish database connection
@@ -164,7 +161,7 @@ export default class Server implements EndpointProvider {
    */
   public async createAccount(
     params: POST['createAccount']['query'],
-  ): Promise<POST['createAccount']['response']> {
+  ): POST['createAccount']['response'] {
     // Check that username isn't already in use
     const results = await models.User.findOne({
       where: {
@@ -194,7 +191,7 @@ export default class Server implements EndpointProvider {
    */
   public async createPost(
     params: POST['createPost']['query'],
-  ): Promise<POST['createPost']['response']> {
+  ): POST['createPost']['response'] {
     // TODO: auth with tokens
   }
 
@@ -202,7 +199,7 @@ export default class Server implements EndpointProvider {
    * Retrieves information about a specific post
    * @param params Contains the requested post ID
    */
-  public async getPost(params: GET['getPost']['query']): Promise<GET['getPost']['response']> {
+  public async getPost(params: GET['getPost']['query']): GET['getPost']['response'] {
     return {
       data: {
         id: params.id,
@@ -215,7 +212,7 @@ export default class Server implements EndpointProvider {
    * Signs the user in
    * @param params Username & password
    */
-  public async signIn(params: POST['signIn']['query']): Promise<POST['signIn']['response']> {
+  public async signIn(params: POST['signIn']['query']): POST['signIn']['response'] {
     // TODO: handle tokens
     const results = await models.User.findOne({
       where: {
