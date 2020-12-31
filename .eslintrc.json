@@ -21,7 +21,8 @@
     "jest": true
   },
   "rules": {
-    "@typescript-eslint/explicit-member-accessibility": "warn"
+    "@typescript-eslint/explicit-member-accessibility": "warn",
+    "no-console": "off"
   },
   "settings": {
     "import/resolver": {

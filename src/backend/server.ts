@@ -1,6 +1,5 @@
-/* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
-import fastify, { FastifySchema, RouteShorthandMethod } from 'fastify';
+import fastify from 'fastify';
 import fastifyMultipart from 'fastify-multipart';
 import fastifyStatic from 'fastify-static';
 import fs from 'fs-extra';
@@ -12,10 +11,11 @@ import util from 'util';
 import { v4 as uuid } from 'uuid';
 import models from './models';
 import schemas from './schemas';
-import { Endpoints, EndpointProvider } from '../types/Endpoints';
-
-type GET = Endpoints['GET'];
-type POST = Endpoints['POST'];
+import {
+  Endpoints, EndpointProvider, Query, Response,
+} from '../types/Endpoints';
+import apiPath from '../util/apiPath';
+import errors from '../util/errors';
 
 dotenv.config();
 
@@ -42,8 +42,11 @@ export default class Server implements EndpointProvider {
     `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
     {
       models: Object.values(models),
+      logging: false,
     },
   );
+
+  private models = models;
 
   public constructor() {
     const { app } = this;
@@ -51,54 +54,6 @@ export default class Server implements EndpointProvider {
     app.register(fastifyMultipart);
     app.register(fastifyStatic, {
       root: __dirname,
-    });
-  }
-
-  /**
-   * Generic API endpoint handler
-   * @param type The request type this endpoint expects (GET or POST)
-   * @param endpoint The name of the endpoint
-   */
-  private async createEndpoint(type: 'GET' | 'POST', endpoint: keyof GET | keyof POST) {
-    const schema: FastifySchema = {
-      response: {
-        '2xx': schemas[endpoint].response,
-      },
-    };
-    let method: RouteShorthandMethod;
-    let dataKey: 'query' | 'body';
-
-    // Endpoints are created slightly differently depending on if they're GET or POST
-    if (type === 'GET') {
-      schema.querystring = schemas[endpoint].query;
-      method = this.app.get;
-      dataKey = 'query';
-    } else {
-      schema.body = schemas[endpoint].query;
-      method = this.app.post;
-      dataKey = 'body';
-    }
-    method.call(this.app, `/api/${endpoint}`, {
-      schema,
-      handler: async (request) => {
-        let message = 'OK';
-        let error;
-        let statusCode;
-        try {
-          statusCode = 200;
-        } catch (err) {
-          message = err.message;
-          error = 'API error';
-          statusCode = 500;
-        }
-        const response = {
-          message,
-          error,
-          statusCode,
-          data: request[dataKey],
-        };
-        return response;
-      },
     });
   }
 
@@ -113,15 +68,42 @@ export default class Server implements EndpointProvider {
     await fs.ensureDir(media);
 
     // Automatically creates endpoints based on Endpoints.ts
-    keys<GET>().forEach((endpoint) => {
-      this.createEndpoint('GET', endpoint);
-    });
-    keys<POST>().forEach((endpoint) => {
-      this.createEndpoint('POST', endpoint);
+    type QueryKeys = {
+      [key in keyof Endpoints]: keyof Endpoints[key]['query'];
+    };
+    keys<Endpoints>().forEach((endpoint) => {
+      this.app.post<{
+        Body: Record<QueryKeys[typeof endpoint], string>;
+      }>(apiPath(endpoint), {
+        schema: {
+          body: schemas[endpoint].query,
+          response: {
+            '2xx': {
+              title: endpoint,
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: schemas[endpoint].response.properties,
+                },
+              },
+              required: ['data'],
+            },
+          },
+        },
+        handler: async (request) => {
+          let response: Response<typeof endpoint> = {};
+          try {
+            response = await this[endpoint](request.body);
+          } catch (err) {
+            response.error = err;
+          }
+          return response;
+        },
+      });
     });
 
     // Uploading media has special instructions & can't be automatically generated
-    app.post('/api/media', async (request) => {
+    app.post(apiPath('media'), async (request) => {
       const id = uuid();
       // TODO: multiple MIME types, validation
       await util.promisify(pipeline)(
@@ -141,7 +123,7 @@ export default class Server implements EndpointProvider {
       await database.sync();
       await app.listen(port);
     } catch (err) {
-      app.log.error(err);
+      console.error(err);
       process.exit(1);
     }
 
@@ -159,11 +141,9 @@ export default class Server implements EndpointProvider {
    * Creates a new user account
    * @param params Contains POSTed account details
    */
-  public async createAccount(
-    params: POST['createAccount']['query'],
-  ): POST['createAccount']['response'] {
+  public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check that username isn't already in use
-    const results = await models.User.findOne({
+    const results = await this.models.User.findOne({
       where: {
         username: params.username,
       },
@@ -178,33 +158,7 @@ export default class Server implements EndpointProvider {
       };
     }
     return {
-      data: {
-        id: '',
-      },
-      error: 'Username exists',
-    };
-  }
-
-  /**
-   * Creates a post
-   * @param params Post metadata
-   */
-  public async createPost(
-    params: POST['createPost']['query'],
-  ): POST['createPost']['response'] {
-    // TODO: auth with tokens
-  }
-
-  /**
-   * Retrieves information about a specific post
-   * @param params Contains the requested post ID
-   */
-  public async getPost(params: GET['getPost']['query']): GET['getPost']['response'] {
-    return {
-      data: {
-        id: params.id,
-        text: 'ayy lmao',
-      },
+      error: errors.USER_EXISTS,
     };
   }
 
@@ -212,9 +166,9 @@ export default class Server implements EndpointProvider {
    * Signs the user in
    * @param params Username & password
    */
-  public async signIn(params: POST['signIn']['query']): POST['signIn']['response'] {
+  public async signIn(params: Query<'signIn'>): Promise<Response<'signIn'>> {
     // TODO: handle tokens
-    const results = await models.User.findOne({
+    const results = await this.models.User.findOne({
       where: {
         username: params.username,
         password: params.password,
@@ -228,9 +182,6 @@ export default class Server implements EndpointProvider {
       };
     }
     return {
-      data: {
-        id: '',
-      },
       error: 'Incorrect username or password',
     };
   }

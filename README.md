@@ -19,6 +19,7 @@ react-native run-android
 
 ## Tools & Libraries
 
+- [AJV](https://ajv.js.org/)
 - [Babel](https://babeljs.io/)
 - [ESLint](https://eslint.org/)
 - [Fastify](https://www.fastify.io/)
