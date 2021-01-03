@@ -22,6 +22,7 @@ import {
   Endpoints, EndpointProvider, Query, Response,
 } from '../types/Endpoints';
 import apiPath from '../util/apiPath';
+import currentTokenTime from '../util/currentTokenTime';
 import errors from '../util/errors';
 
 dotenv.config();
@@ -84,11 +85,17 @@ export default class Server implements EndpointProvider {
       this.token = new Tokenize(env.AUTHKEY);
       app.register(fastifyTokenize, {
         fastifyAuth: true,
-        fetchAccount: async (id) => this.models.User.findOne({
-          where: {
-            id,
-          },
-        }),
+        fetchAccount: async (id) => {
+          const results = await this.models.User.findOne({
+            where: {
+              id,
+            },
+          });
+          if (results === null) {
+            return {};
+          }
+          return results.toJSON();
+        },
         secret: env.AUTHKEY,
       });
     }
@@ -161,7 +168,6 @@ export default class Server implements EndpointProvider {
       await app.listen(port);
     } catch (err) {
       console.error(err);
-      process.exit(1);
     }
 
     return port;
@@ -187,7 +193,10 @@ export default class Server implements EndpointProvider {
     });
     if (results === null) {
       // TODO: sanitize params, 2 step encryption & https
-      const user = await new models.User(params).save();
+      const user = await new models.User({
+        ...params,
+        lastTokenReset: currentTokenTime(),
+      }).save();
       return {
         data: {
           id: user.get('id'),
@@ -213,6 +222,9 @@ export default class Server implements EndpointProvider {
     });
     if (results !== null) {
       const id = results.get('id');
+      // Update lastTokenReset to the current time
+      results.set('lastTokenReset', currentTokenTime());
+      await results.save();
       return {
         data: {
           id,
