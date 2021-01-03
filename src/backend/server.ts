@@ -1,10 +1,14 @@
+import Tokenize from '@cyyynthia/tokenize';
 import dotenv from 'dotenv';
 import fastify from 'fastify';
+import fastifyAuth from 'fastify-auth';
+import fastifyCookie from 'fastify-cookie';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
 import fastifyRateLimit from 'fastify-rate-limit';
 import fastifySensible from 'fastify-sensible';
 import fastifyStatic from 'fastify-static';
+import fastifyTokenize from 'fastify-tokenize';
 import fs from 'fs-extra';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
@@ -41,18 +45,27 @@ export default class Server implements EndpointProvider {
   /**
    * ORM for interacting with the database
    */
-  public database = new Sequelize(
-    `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
-    {
-      models: Object.values(models),
-      logging: false,
-    },
-  );
+  public database: Sequelize;
 
   private models = models;
 
+  private token: Tokenize;
+
   public constructor() {
     const { app } = this;
+    if (env.PGUSER === undefined) {
+      throw new Error('Missing Postgres user!');
+    } else {
+      this.database = new Sequelize(
+        `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
+        {
+          models: Object.values(models),
+          logging: false,
+        },
+      );
+    }
+    app.register(fastifyAuth);
+    app.register(fastifyCookie);
     app.register(fastifyHelmet);
     // TODO: set upload size limits
     app.register(fastifyMultipart);
@@ -65,6 +78,20 @@ export default class Server implements EndpointProvider {
     app.register(fastifyStatic, {
       root: __dirname,
     });
+    if (env.AUTHKEY === undefined) {
+      throw new Error('Missing auth key!');
+    } else {
+      this.token = new Tokenize(env.AUTHKEY);
+      app.register(fastifyTokenize, {
+        fastifyAuth: true,
+        fetchAccount: async (id) => this.models.User.findOne({
+          where: {
+            id,
+          },
+        }),
+        secret: env.AUTHKEY,
+      });
+    }
   }
 
   /**
@@ -164,7 +191,6 @@ export default class Server implements EndpointProvider {
       return {
         data: {
           id: user.get('id'),
-          token: '',
         },
       };
     }
@@ -177,18 +203,20 @@ export default class Server implements EndpointProvider {
    * Signs the user in
    * @param params Username & password
    */
-  public async signIn(params: Query<'signIn'>): Promise<Response<'signIn'>> {
+  public async signIn({ username, password }: Query<'signIn'>): Promise<Response<'signIn'>> {
     // TODO: handle tokens
     const results = await this.models.User.findOne({
       where: {
-        username: params.username,
-        password: params.password,
+        username,
+        password,
       },
     });
     if (results !== null) {
+      const id = results.get('id');
       return {
         data: {
-          id: results.get('id'),
+          id,
+          token: this.token.generate(id),
         },
       };
     }

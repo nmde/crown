@@ -1,12 +1,14 @@
 {
-    "title": "signIn-Response",
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "string"
-      }
+  "title": "signIn-Response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
     },
-    "additionalProperties": false,
-    "required": ["id"]
-  }
-  
+    "token": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["id", "token"]
+}

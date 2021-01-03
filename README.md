@@ -20,8 +20,12 @@ react-native run-android
 ## Tools & Libraries
 
 - [Fastify](https://www.fastify.io/)
+  - [fastify-auth](https://github.com/fastify/fastify-auth)
+  - [fastify-cookie](https://github.com/fastify/fastify-cookie)
   - [fastify-helmet](https://github.com/fastify/fastify-helmet)
     - [Helmet](https://helmetjs.github.io/)
   - [fastify-multipart](https://github.com/fastify/fastify-multipart)
   - [fastify-rate-limit](https://github.com/fastify/fastify-rate-limit)
   - [fastify-static](https://github.com/fastify/fastify-static)
+  - [fastify-tokenize](https://github.com/cyyynthia/fastify-tokenize)
+    - [Tokenize](https://github.com/cyyynthia/tokenize)
