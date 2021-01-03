@@ -19,19 +19,9 @@ react-native run-android
 
 ## Tools & Libraries
 
-- [AJV](https://ajv.js.org/)
-- [Babel](https://babeljs.io/)
-- [ESLint](https://eslint.org/)
 - [Fastify](https://www.fastify.io/)
-- [Jest](https://jestjs.io/en/)
-- [Metro](https://facebook.github.io/metro/)
-- [Mobx](https://github.com/mobxjs/mobx/blob/mobx4and5/docs/README.md)
-- [Postgres](https://node-postgres.com/)
-  - [pgadmin](https://www.pgadmin.org/) / <http://127.0.0.1/pgadmin4>
-- [Sequelize](https://sequelize.org/master/)
-- [Vue](https://vuejs.org/)
-  - [Vue-Router](https://router.vuejs.org/)
-- [Vue Native](https://vue-native.io/)
-  - [React Native](https://reactnative.dev/)
-- [Vuetify](https://vuetifyjs.com/en/)
-- [Webpack](https://webpack.js.org/)
+  - [fastify-helmet](https://github.com/fastify/fastify-helmet)
+    - [Helmet](https://helmetjs.github.io/)
+  - [fastify-multipart](https://github.com/fastify/fastify-multipart)
+  - [fastify-rate-limit](https://github.com/fastify/fastify-rate-limit)
+  - [fastify-static](https://github.com/fastify/fastify-static)

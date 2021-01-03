@@ -95,6 +95,12 @@ describe('createAccount', () => {
   });
 });
 
+describe('signIn', () => {
+  it('signs in directly', async () => {
+    
+  });
+});
+
 it('signs in', async () => {
   // Normal case - All the required information present & correct
   const s1 = await server.signIn({

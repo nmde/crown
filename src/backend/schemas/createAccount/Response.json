@@ -4,8 +4,11 @@
   "properties": {
     "id": {
       "type": "string"
+    },
+    "token": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["id"]
+  "required": ["id", "token"]
 }

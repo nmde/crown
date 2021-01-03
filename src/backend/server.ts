@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 import fastify from 'fastify';
+import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
+import fastifyRateLimit from 'fastify-rate-limit';
+import fastifySensible from 'fastify-sensible';
 import fastifyStatic from 'fastify-static';
 import fs from 'fs-extra';
 import path from 'path';
@@ -50,8 +53,15 @@ export default class Server implements EndpointProvider {
 
   public constructor() {
     const { app } = this;
+    app.register(fastifyHelmet);
     // TODO: set upload size limits
     app.register(fastifyMultipart);
+    // TODO: determine reasonable rate limit
+    app.register(fastifyRateLimit, {
+      max: 100,
+      timeWindow: '1 minute',
+    });
+    app.register(fastifySensible);
     app.register(fastifyStatic, {
       root: __dirname,
     });
@@ -154,6 +164,7 @@ export default class Server implements EndpointProvider {
       return {
         data: {
           id: user.get('id'),
+          token: '',
         },
       };
     }
