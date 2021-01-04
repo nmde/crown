@@ -7,7 +7,6 @@ import {
   Endpoints, EndpointProvider, Query, Response,
 } from '../src/types/Endpoints';
 import apiPath from '../src/util/apiPath';
-import errors from '../src/util/errors';
 
 const port = 3001;
 const token = new Tokenize(process.env.AUTHKEY as string);
@@ -55,7 +54,6 @@ describe('createAccount', () => {
     // 1 - test output directly
     const res = await server.createAccount(credentials1);
     expect(res.data).toHaveProperty('id');
-    expect(res.error).toBeUndefined();
     // 2 - check the database
     const query = await User.findAndCountAll({
       where: {
@@ -70,7 +68,6 @@ describe('createAccount', () => {
     // 1 - test API response
     const res = await post<'createAccount'>('createAccount', credentials2);
     expect(res.data).toHaveProperty('id');
-    expect(res.error).toBeUndefined();
     // 2 - check the database
     const query = await User.findAndCountAll({
       where: {
@@ -82,17 +79,9 @@ describe('createAccount', () => {
   });
   it('fails because username is already in use', async () => {
     // Error case - Username is already present in the database
-    // 1 - test output for correct error message
-    const res = await server.createAccount(credentials1);
-    expect(res.data).toBeUndefined();
-    expect(res.error).toBe(errors.USER_EXISTS);
-    // 2 - test that nothing changed in the database
-    const query = await User.findAndCountAll({
-      where: {
-        username: credentials1.username,
-      },
-    });
-    expect(query.count).toBe(1);
+    expect(async () => {
+      await server.createAccount(credentials1);
+    }).rejects.toThrow();
   });
   it('fails because required information is missing', async () => {
     // Error case - API should fail if required information is not present
@@ -112,7 +101,6 @@ describe('signIn', () => {
     const res = await server.signIn(credentials1);
     expect(res.data).toHaveProperty('id');
     expect(res.data).toHaveProperty('token');
-    expect(res.error).toBeUndefined();
     // Make sure the token is correct
     if (res.data && res.data.token) {
       const user = await token.validate(res.data.token, async (id) => {

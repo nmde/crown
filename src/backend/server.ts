@@ -1,7 +1,10 @@
 import Tokenize from '@cyyynthia/tokenize';
+import { Boom } from '@hapi/boom';
 import dotenv from 'dotenv';
 import fastify from 'fastify';
 import fastifyAuth from 'fastify-auth';
+import fastifyBlipp from 'fastify-blipp';
+import fastifyBoom from 'fastify-boom';
 import fastifyCookie from 'fastify-cookie';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
@@ -50,7 +53,7 @@ export default class Server implements EndpointProvider {
 
   private models = models;
 
-  private token: Tokenize;
+  private token!: Tokenize;
 
   public constructor() {
     const { app } = this;
@@ -65,7 +68,11 @@ export default class Server implements EndpointProvider {
         },
       );
     }
+
+    // Set up Fastify plugins
     app.register(fastifyAuth);
+    app.register(fastifyBlipp);
+    app.register(fastifyBoom);
     app.register(fastifyCookie);
     app.register(fastifyHelmet);
     // TODO: set upload size limits
@@ -79,10 +86,11 @@ export default class Server implements EndpointProvider {
     app.register(fastifyStatic, {
       root: __dirname,
     });
+
     if (env.AUTHKEY === undefined) {
-      throw new Error('Missing auth key!');
+      throw new Error('Missing encryption key!');
     } else {
-      this.token = new Tokenize(env.AUTHKEY);
+      this.token = new Tokenize(env.AUTHKEY as string);
       app.register(fastifyTokenize, {
         fastifyAuth: true,
         fetchAccount: async (id) => {
@@ -139,15 +147,15 @@ export default class Server implements EndpointProvider {
           try {
             response = await this[endpoint](request.body);
           } catch (err) {
-            response.error = err;
+            throw new Boom(err);
           }
           return response;
         },
       });
     });
 
-    // Uploading media has special instructions & can't be automatically generated
-    app.post(apiPath('media'), async (request) => {
+    // Uploading has special instructions & can't be automatically generated
+    app.post(apiPath('upload'), async (request) => {
       const id = uuid();
       // TODO: multiple MIME types, validation
       await util.promisify(pipeline)(
@@ -159,6 +167,15 @@ export default class Server implements EndpointProvider {
           id,
         },
       };
+    });
+
+    // Retrieves media from the media directoryd
+    app.get<{
+      Querystring: {
+        id: string;
+      };
+    }>(path.join(apiPath('media'), ':id'), async (request) => {
+      console.log(`fetching media ${request.query.id}`);
     });
 
     // Start the server & establish database connection
@@ -203,9 +220,7 @@ export default class Server implements EndpointProvider {
         },
       };
     }
-    return {
-      error: errors.USER_EXISTS,
-    };
+    throw new Boom(errors.USER_EXISTS);
   }
 
   /**
@@ -213,7 +228,6 @@ export default class Server implements EndpointProvider {
    * @param params Username & password
    */
   public async signIn({ username, password }: Query<'signIn'>): Promise<Response<'signIn'>> {
-    // TODO: handle tokens
     const results = await this.models.User.findOne({
       where: {
         username,
@@ -232,8 +246,6 @@ export default class Server implements EndpointProvider {
         },
       };
     }
-    return {
-      error: 'Incorrect username or password',
-    };
+    throw new Boom(errors.INVALID_CREDS);
   }
 }

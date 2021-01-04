@@ -5,7 +5,6 @@ import { SignInResponse } from './schemas/signIn/Response';
 
 export type EndpointResponse<T> = {
   data?: T;
-  error?: string;
 };
 
 export type Endpoints = {
