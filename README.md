@@ -22,8 +22,6 @@ react-native run-android
 - [Fastify](https://www.fastify.io/)
   - [fastify-auth](https://github.com/fastify/fastify-auth)
   - [fastify-blipp](https://github.com/PavelPolyakov/fastify-blipp)
-  - [fastify-boom](https://github.com/jeromemacias/fastify-boom)
-    - [Boom](https://github.com/hapijs/boom/blob/master/API.md)
   - [fastify-cookie](https://github.com/fastify/fastify-cookie)
   - [fastify-helmet](https://github.com/fastify/fastify-helmet)
     - [Helmet](https://helmetjs.github.io/)

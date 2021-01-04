@@ -1,10 +1,8 @@
 import Tokenize from '@cyyynthia/tokenize';
-import { Boom } from '@hapi/boom';
 import dotenv from 'dotenv';
 import fastify from 'fastify';
 import fastifyAuth from 'fastify-auth';
 import fastifyBlipp from 'fastify-blipp';
-import fastifyBoom from 'fastify-boom';
 import fastifyCookie from 'fastify-cookie';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
@@ -24,9 +22,9 @@ import schemas from './schemas';
 import {
   Endpoints, EndpointProvider, Query, Response,
 } from '../types/Endpoints';
+import HelmetOptions from '../types/HelmetOptions';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
-import errors from '../util/errors';
 
 dotenv.config();
 
@@ -43,15 +41,13 @@ export default class Server implements EndpointProvider {
    * The Fastify instance
    */
   public app = fastify({
-    logger: true,
+    logger: env.NODE_ENV === 'development',
   });
 
   /**
    * ORM for interacting with the database
    */
   public database: Sequelize;
-
-  private models = models;
 
   private token!: Tokenize;
 
@@ -72,9 +68,22 @@ export default class Server implements EndpointProvider {
     // Set up Fastify plugins
     app.register(fastifyAuth);
     app.register(fastifyBlipp);
-    app.register(fastifyBoom);
     app.register(fastifyCookie);
-    app.register(fastifyHelmet);
+    const helmetOptions: HelmetOptions = {};
+    if (env.NODE_ENV === 'development') {
+      // Uses the least secure CSP possible in dev mode
+      helmetOptions.contentSecurityPolicy = {
+        directives: {
+          defaultSrc: ['*', '\'unsafe-inline\'', '\'unsafe-eval\''],
+          scriptSrc: ['*', '\'unsafe-inline\'', '\'unsafe-eval\''],
+          connectSrc: ['*', '\'unsafe-inline\''],
+          imgSrc: ['*', '\'unsafe-inline\''],
+          frameSrc: ['*'],
+          styleSrc: ['*', '\'unsafe-inline\''],
+        },
+      };
+    }
+    app.register(fastifyHelmet, helmetOptions);
     // TODO: set upload size limits
     app.register(fastifyMultipart);
     // TODO: determine reasonable rate limit
@@ -94,7 +103,7 @@ export default class Server implements EndpointProvider {
       app.register(fastifyTokenize, {
         fastifyAuth: true,
         fetchAccount: async (id) => {
-          const results = await this.models.User.findOne({
+          const results = await models.User.findOne({
             where: {
               id,
             },
@@ -132,25 +141,12 @@ export default class Server implements EndpointProvider {
           response: {
             '2xx': {
               title: endpoint,
-              properties: {
-                data: {
-                  type: 'object',
-                  properties: schemas[endpoint].response.properties,
-                },
-              },
-              required: ['data'],
+              properties: schemas[endpoint].response.properties,
+              required: schemas[endpoint].response.required,
             },
           },
         },
-        handler: async (request) => {
-          let response: Response<typeof endpoint> = {};
-          try {
-            response = await this[endpoint](request.body);
-          } catch (err) {
-            throw new Boom(err);
-          }
-          return response;
-        },
+        handler: async (request) => this[endpoint](request.body),
       });
     });
 
@@ -175,7 +171,7 @@ export default class Server implements EndpointProvider {
         id: string;
       };
     }>(path.join(apiPath('media'), ':id'), async (request) => {
-      console.log(`fetching media ${request.query.id}`);
+      app.log.info(`fetching media ${request.query.id}`);
     });
 
     // Start the server & establish database connection
@@ -183,8 +179,9 @@ export default class Server implements EndpointProvider {
       await database.authenticate();
       await database.sync();
       await app.listen(port);
+      app.blipp();
     } catch (err) {
-      console.error(err);
+      app.log.error(err);
     }
 
     return port;
@@ -203,7 +200,7 @@ export default class Server implements EndpointProvider {
    */
   public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check that username isn't already in use
-    const results = await this.models.User.findOne({
+    const results = await models.User.findOne({
       where: {
         username: params.username,
       },
@@ -215,12 +212,10 @@ export default class Server implements EndpointProvider {
         lastTokenReset: currentTokenTime(),
       }).save();
       return {
-        data: {
-          id: user.get('id'),
-        },
+        id: user.get('id'),
       };
     }
-    throw new Boom(errors.USER_EXISTS);
+    throw this.app.httpErrors.conflict();
   }
 
   /**
@@ -228,7 +223,7 @@ export default class Server implements EndpointProvider {
    * @param params Username & password
    */
   public async signIn({ username, password }: Query<'signIn'>): Promise<Response<'signIn'>> {
-    const results = await this.models.User.findOne({
+    const results = await models.User.findOne({
       where: {
         username,
         password,
@@ -240,12 +235,10 @@ export default class Server implements EndpointProvider {
       results.set('lastTokenReset', currentTokenTime());
       await results.save();
       return {
-        data: {
-          id,
-          token: this.token.generate(id),
-        },
+        id,
+        token: this.token.generate(id),
       };
     }
-    throw new Boom(errors.INVALID_CREDS);
+    throw this.app.httpErrors.badRequest();
   }
 }

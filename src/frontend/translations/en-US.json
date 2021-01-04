@@ -1,0 +1,19 @@
+{
+    "errors": {
+        "EMPTY_FIELD": "Field cannot be empty",
+        "GENERIC": "Unexpected error",
+        "INVALID_CREDENTIALS": "Incorrect username and/or password",
+        "PASSWORD_MISMATCH": "Passwords must match"
+    },
+    "headers": {
+        "SIGNIN": "Sign In",
+        "SIGNUP": "Sign Up"
+    },
+    "labels": {
+        "CONFIRM_PASSWORD": "Confirm Password",
+        "EMAIL": "Email",
+        "PASSWORD": "Password",
+        "SUBMIT": "Submit",
+        "USERNAME": "Username"
+    }
+}

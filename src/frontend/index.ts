@@ -17,8 +17,7 @@ if (process.env.NODE_ENV === 'development') {
   /* eslint-disable global-require */
   /* eslint-disable @typescript-eslint/no-var-requires */
   /* eslint-disable import/no-extraneous-dependencies */
-  const VueAxe = require('vue-axe').default;
-  Vue.use(VueAxe);
+  Vue.use(require('vue-axe').default);
 }
 
 new Vue({
