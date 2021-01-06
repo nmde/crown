@@ -53,7 +53,7 @@ describe('createAccount', () => {
     // Normal case - All the required information is present
     // 1 - test output directly
     const res = await server.createAccount(credentials1);
-    expect(res.data).toHaveProperty('id');
+    expect(res).toHaveProperty('id');
     // 2 - check the database
     const query = await User.findAndCountAll({
       where: {
@@ -67,7 +67,7 @@ describe('createAccount', () => {
     // Normal case - All the required information is present
     // 1 - test API response
     const res = await post<'createAccount'>('createAccount', credentials2);
-    expect(res.data).toHaveProperty('id');
+    expect(res).toHaveProperty('id');
     // 2 - check the database
     const query = await User.findAndCountAll({
       where: {
@@ -99,11 +99,11 @@ describe('signIn', () => {
     // Normal case - All the required information is present & password is correct
     // Uses the same credentials as the account created in the previous section
     const res = await server.signIn(credentials1);
-    expect(res.data).toHaveProperty('id');
-    expect(res.data).toHaveProperty('token');
+    expect(res).toHaveProperty('id');
+    expect(res).toHaveProperty('token');
     // Make sure the token is correct
-    if (res.data && res.data.token) {
-      const user = await token.validate(res.data.token, async (id) => {
+    if (res.token !== undefined) {
+      const user = await token.validate(res.token, async (id) => {
         const res2 = await User.findOne({
           where: {
             id,

@@ -4,10 +4,8 @@
   "description": "A social media app",
   "main": "index.js",
   "scripts": {
-    "build": "bash ./build.sh",
-    "build:dev": "npx cross-env NODE_ENV=\"development\" npm run build",
-    "start": "node dist/backend.js",
-    "start:dev": "npx cross-env NODE_ENV=\"development\" npm run start",
+    "build": "npx cross-env NODE_ENV=development gulp",
+    "start": "npx cross-env NODE_ENV=development node dist/backend.js",
     "test": "npx jest --detectOpenHandles"
   },
   "repository": "https://github.com/nmde/crown",
@@ -43,6 +41,7 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "file-loader": "^6.2.0",
+    "gulp": "^4.0.2",
     "html-webpack-plugin": "^4.5.0",
     "jest": "^26.6.3",
     "json-schema-to-typescript": "^9.1.1",
@@ -61,7 +60,8 @@
     "vue-native-scripts": "^0.2.0",
     "webpack": "^5.11.1",
     "webpack-cli": "^4.3.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "webpack-stream": "^6.1.1"
   },
   "dependencies": {
     "@cyyynthia/tokenize": "^1.1.2",
