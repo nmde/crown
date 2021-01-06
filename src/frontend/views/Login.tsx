@@ -12,6 +12,8 @@ function required(value: string) {
   return () => value !== '' || t.errors.EMPTY_FIELD;
 }
 
+// TODO: validate email, password strength
+
 @Observer
 @Component
 export default class Login extends Vue {
@@ -124,34 +126,32 @@ export default class Login extends Vue {
                     <v-btn
                       color="primary"
                       loading={this.loading}
-                      disabled={
-                        this.form.username === ''
-                        || this.form.password === ''
-                        || !this.passwordsMatch
-                        || this.form.email === ''
-                      }
+                      disabled={(() => {
+                        let disabled = !this.passwordsMatch;
+                        Object.values(this.form).forEach((value) => {
+                          disabled = disabled || value === '';
+                        });
+                        return disabled;
+                      })()}
                       onClick={async () => {
                         this.loading = true;
-                        await store.createAccount({
-                          username: this.form.username,
-                          password: this.form.password,
-                          email: this.form.email,
-                        });
-                        /*
-                        if (query.error === undefined) {
-                          this.$router.back();
-                        } else {
+                        try {
+                          await store.createAccount({
+                            username: this.form.username,
+                            password: this.form.password,
+                            email: this.form.email,
+                          });
+                        } catch (err) {
                           this.loading = false;
                           this.dialog = true;
-                          this.error = query.error;
-                          console.log(query.error);
-                          /*
-                          if (query.error?.name === 'SequelizeUniqueConstraintError') {
-                            this.error = new Error('Username is unavaiable!');
+                          switch (err.response.status) {
+                            case 409:
+                              this.error = t.errors.USERNAME_TAKEN;
+                              break;
+                            default:
+                              this.error = t.errors.GENERIC;
                           }
-                          *
                         }
-                        */
                       }}
                     >
                       Submit
@@ -164,18 +164,15 @@ export default class Login extends Vue {
         </v-row>
         <v-dialog max-width={500} vModel={this.dialog}>
           <v-card>
-            <v-card-title>Something went wrong</v-card-title>
-            <v-card-text>
-              Sorry, something went wrong with your request.
-              <div class="overline error--text">{this.error}</div>
-            </v-card-text>
+            <v-card-title>{t.headers.SIGNIN_ERROR}</v-card-title>
+            <v-card-text>{this.error}</v-card-text>
             <v-card-actions>
               <v-btn
                 onClick={() => {
                   this.dialog = false;
                 }}
               >
-                Close
+                {t.btn.CLOSE}
               </v-btn>
             </v-card-actions>
           </v-card>

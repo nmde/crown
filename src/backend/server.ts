@@ -11,10 +11,12 @@ import fastifySensible from 'fastify-sensible';
 import fastifyStatic from 'fastify-static';
 import fastifyTokenize from 'fastify-tokenize';
 import fs from 'fs-extra';
+import helmet from 'helmet';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import { pipeline } from 'stream';
 import { keys } from 'ts-transformer-keys';
+import { Mutable } from 'type-fest';
 import util from 'util';
 import { v4 as uuid } from 'uuid';
 import models from './models';
@@ -22,7 +24,6 @@ import schemas from './schemas';
 import {
   Endpoints, EndpointProvider, Query, Response,
 } from '../types/Endpoints';
-import HelmetOptions from '../types/HelmetOptions';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
 
@@ -69,7 +70,7 @@ export default class Server implements EndpointProvider {
     app.register(fastifyAuth);
     app.register(fastifyBlipp);
     app.register(fastifyCookie);
-    const helmetOptions: HelmetOptions = {};
+    const helmetOptions: Mutable<Parameters<typeof helmet>[0]> = {};
     if (env.NODE_ENV === 'development') {
       // Uses the least secure CSP possible in dev mode
       helmetOptions.contentSecurityPolicy = {
@@ -198,17 +199,17 @@ export default class Server implements EndpointProvider {
    * Creates a new user account
    * @param params Contains POSTed account details
    */
-  public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
+  public async createAccount({ username }: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check that username isn't already in use
     const results = await models.User.findOne({
       where: {
-        username: params.username,
+        username,
       },
     });
     if (results === null) {
       // TODO: sanitize params, 2 step encryption & https
       const user = await new models.User({
-        ...params,
+        username,
         lastTokenReset: currentTokenTime(),
       }).save();
       return {

@@ -1,12 +1,17 @@
 {
+    "btn": {
+        "CLOSE": "Close"
+    },
     "errors": {
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
         "INVALID_CREDENTIALS": "Incorrect username and/or password",
-        "PASSWORD_MISMATCH": "Passwords must match"
+        "PASSWORD_MISMATCH": "Passwords must match",
+        "USERNAME_TAKEN": "Username is already taken"
     },
     "headers": {
         "SIGNIN": "Sign In",
+        "SIGNIN_ERROR": "Could not sign in",
         "SIGNUP": "Sign Up"
     },
     "labels": {

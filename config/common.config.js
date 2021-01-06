@@ -3,7 +3,7 @@ const path = require('path');
 const { default: keysTransformer } = require('ts-transformer-keys/transformer');
 
 module.exports = {
-  mode: process.env.NODE_ENV || 'production',
+  mode: process.env.NODE_ENV || 'development',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, '..', 'dist'),

@@ -4,7 +4,7 @@
   "description": "A social media app",
   "main": "index.js",
   "scripts": {
-    "build": "npx cross-env NODE_ENV=development gulp",
+    "build": "npx gulp",
     "start": "npx cross-env NODE_ENV=development node dist/backend.js",
     "test": "npx jest --detectOpenHandles"
   },
@@ -91,6 +91,7 @@
     "sequelize": "^5.1.0",
     "sequelize-typescript": "^1.1.0",
     "ts-transformer-keys": "^0.4.3",
+    "type-fest": "^0.20.2",
     "uuid": "^8.3.2",
     "vue": "^2.6.12",
     "vue-class-component": "^7.2.6",

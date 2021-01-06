@@ -36,3 +36,5 @@ react-native run-android
   - [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
 - [Typescript](https://www.typescriptlang.org/)
   - [ts-transformer-keys](https://github.com/kimamula/ts-transformer-keys)
+  - [type-fest](https://github.com/sindresorhus/type-fest)
+- [uuid](https://github.com/uuidjs/uuid)
