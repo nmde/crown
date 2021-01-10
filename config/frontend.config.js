@@ -3,6 +3,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const sass = require('sass');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const { merge } = require('webpack-merge');
 const common = require('./common.config');
 
@@ -11,6 +12,7 @@ module.exports = merge(common, {
     frontend: path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: './src/frontend/index.html',
     }),
@@ -55,6 +57,10 @@ module.exports = merge(common, {
         options: {
           name: 'assets/[name].[ext]',
         },
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
       },
     ],
   },
