@@ -21,9 +21,7 @@ import util from 'util';
 import { v4 as uuid } from 'uuid';
 import models from './models';
 import schemas from './schemas';
-import {
-  Endpoints, EndpointProvider, Query, Response,
-} from '../types/Endpoints';
+import { Endpoints, EndpointProvider, Query, Response } from '../types/Endpoints';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
 
@@ -75,12 +73,12 @@ export default class Server implements EndpointProvider {
       // Uses the least secure CSP possible in dev mode
       helmetOptions.contentSecurityPolicy = {
         directives: {
-          defaultSrc: ['*', '\'unsafe-inline\'', '\'unsafe-eval\''],
-          scriptSrc: ['*', '\'unsafe-inline\'', '\'unsafe-eval\''],
-          connectSrc: ['*', '\'unsafe-inline\''],
-          imgSrc: ['*', '\'unsafe-inline\''],
+          defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
+          scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
+          connectSrc: ['*', "'unsafe-inline'"],
+          imgSrc: ['*', "'unsafe-inline'"],
           frameSrc: ['*'],
-          styleSrc: ['*', '\'unsafe-inline\''],
+          styleSrc: ['*', "'unsafe-inline'"],
         },
       };
     }
@@ -199,17 +197,17 @@ export default class Server implements EndpointProvider {
    * Creates a new user account
    * @param params Contains POSTed account details
    */
-  public async createAccount({ username }: Query<'createAccount'>): Promise<Response<'createAccount'>> {
+  public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check that username isn't already in use
     const results = await models.User.findOne({
       where: {
-        username,
+        username: params.username,
       },
     });
     if (results === null) {
       // TODO: sanitize params, 2 step encryption & https
       const user = await new models.User({
-        username,
+        ...params,
         lastTokenReset: currentTokenTime(),
       }).save();
       return {
