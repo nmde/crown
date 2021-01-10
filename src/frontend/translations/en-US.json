@@ -2,6 +2,7 @@
     "btn": {
         "CLOSE": "Close",
         "SIGNIN": "Sign In",
+        "SIGNOUT": "Sign Out",
         "SIGNUP": "Sign Up"
     },
     "errors": {
@@ -25,6 +26,10 @@
         }
     },
     "headers": {
+        "ACCOUNT": "My Account",
+        "CATEGORIES": "Categories",
+        "EXPLORE": "Explore",
+        "HOME": "Home",
         "JOIN": "Join Crown",
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",
@@ -36,5 +41,8 @@
         "PASSWORD": "Password",
         "SUBMIT": "Submit",
         "USERNAME": "Username"
+    },
+    "msg": {
+        "SIGNED_OUT": "You are not signed in!"
     }
 }

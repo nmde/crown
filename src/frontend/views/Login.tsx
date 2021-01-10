@@ -1,4 +1,3 @@
-import JSCookie from 'js-cookie';
 import PasswordValidator from 'password-validator';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
@@ -147,15 +146,13 @@ export default class Login extends Styled<Classes> {
                       onClick={async () => {
                         this.loading = true;
                         try {
-                          JSCookie.set(
-                            'token',
-                            (
-                              await store.signIn({
-                                username: this.form.username,
-                                password: this.form.password,
-                              })
-                            ).token,
-                          );
+                          await store.signIn({
+                            username: this.form.username,
+                            password: this.form.password,
+                          });
+                          this.$router.push({
+                            path: '/',
+                          });
                         } catch (err) {
                           this.loading = false;
                           this.dialog = true;

@@ -23,7 +23,16 @@ class Store implements EndpointProvider {
 
   @action
   public async signIn(params: Query<'signIn'>): Promise<Response<'signIn'>> {
-    return (await axios.post<Response<'signIn'>>(apiPath('signIn'), params)).data;
+    const res = (await axios.post<Response<'signIn'>>(apiPath('signIn'), params)).data;
+    JSCookie.set('token', res.token);
+    this.token = res.token;
+    return res;
+  }
+
+  @action
+  public async signOut() {
+    JSCookie.remove('token');
+    this.token = undefined;
   }
 }
 
