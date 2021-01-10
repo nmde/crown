@@ -1,15 +1,31 @@
 {
     "btn": {
-        "CLOSE": "Close"
+        "CLOSE": "Close",
+        "SIGNIN": "Sign In",
+        "SIGNUP": "Sign Up"
     },
     "errors": {
+        "EMAIL": "Email is invalid",
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
         "INVALID_CREDENTIALS": "Incorrect username and/or password",
-        "PASSWORD_MISMATCH": "Passwords must match",
-        "USERNAME_TAKEN": "Username is already taken"
+        "PASSWORD": {
+            "DIGITS": "Passwords must contain at least 2 digits",
+            "LOWERCASE": "Passwords must contain at least 3 lowercase letters",
+            "MISMATCH": "Passwords must match",
+            "SYMBOLS": "Passwords must contain at least 1 symbol",
+            "UPPERCASE": "Passwords must contain at least 3 uppercase letters",
+            "USERNAME": "Passwords cannot contain your username"
+        },
+        "USERNAME": {
+            "CHARACTERS": "Usernames can only contain letters, numbers, ~, _, and -",
+            "LENGTH": "Usernames must be at least 4 characters",
+            "LETTERS": "Usernames must contain at least one letter",
+            "TAKEN": "Username is already taken"
+        }
     },
     "headers": {
+        "JOIN": "Join Crown",
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",
         "SIGNUP": "Sign Up"
