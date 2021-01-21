@@ -3,13 +3,13 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
+			"script": "frontend",
 			"problemMatcher": [
 				"$tsc"
 			],
 			"group": "build",
 			"label": "build",
-			"detail": "bash build.sh"
+			"detail": "npx gulp frontend"
 		}
 	]
 }

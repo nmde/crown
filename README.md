@@ -30,7 +30,7 @@ react-native run-android
   - [fastify-rate-limit](https://github.com/fastify/fastify-rate-limit)
   - [fastify-static](https://github.com/fastify/fastify-static)
   - [fastify-tokenize](https://github.com/cyyynthia/fastify-tokenize)
-    - [Tokenize](https://github.com/cyyynthia/tokenize)
+    - [Tokenize](https://github.com/cyyynthia/tokenize/blob/mistress/USAGE.md)
 - [fs-extra](https://github.com/jprichardson/node-fs-extra)
 - [Material Design Icons](https://material.io/resources/icons/)
 - [Mobx](https://mobx.js.org/)

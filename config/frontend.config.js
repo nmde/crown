@@ -17,6 +17,11 @@ module.exports = merge(common, {
       template: './src/frontend/index.html',
     }),
   ],
+  resolve: {
+    alias: {
+      vue$: 'vue/dist/vue.esm.js',
+    },
+  },
   module: {
     rules: [
       {

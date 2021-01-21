@@ -1,9 +1,10 @@
 import {
   Table, Model, Column, DataType,
 } from 'sequelize-typescript';
+import IUser from '../../types/User';
 
 @Table
-export default class User extends Model<User> {
+export default class User extends Model<User> implements IUser {
   @Column(DataType.STRING)
   public username!: string;
 

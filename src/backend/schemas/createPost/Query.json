@@ -2,7 +2,7 @@
   "title": "createPost-Query",
   "type": "object",
   "properties": {
-    "author": {
+    "token": {
       "type": "string"
     },
     "expires": {
@@ -10,8 +10,11 @@
     },
     "media": {
       "type": "string"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["author", "expires", "media"]
+  "required": ["token", "expires", "media", "description"]
 }

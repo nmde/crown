@@ -4231,7 +4231,7 @@ colorette@^1.0.7, colorette@^1.2.1:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.1.tgz#4d0b921325c14faf92633086a536db6e89564b1b"
   integrity sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
 
-combined-stream@^1.0.6, combined-stream@~1.0.6:
+combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
@@ -6139,6 +6139,14 @@ fela-plugin-fallback-value@*, fela-plugin-fallback-value@^11.5.1:
     css-in-js-utils "^3.0.0"
     isobject "^3.0.1"
 
+fela-plugin-important@^11.5.1:
+  version "11.5.1"
+  resolved "https://registry.yarnpkg.com/fela-plugin-important/-/fela-plugin-important-11.5.1.tgz#f4a7b685549b915ec8ae103a4806131e7fddd42c"
+  integrity sha512-ot44LTFqFFyvMSjBrWRQriikY2nZvlhIfuF/S6YOM2YMo0uJaFNkbITIRDPSyj2OHIQ4/afzuVCG3hiHSbJbzg==
+  dependencies:
+    fela-utils "^11.5.1"
+    isobject "^3.0.1"
+
 fela-plugin-prefixer@*:
   version "11.5.1"
   resolved "https://registry.yarnpkg.com/fela-plugin-prefixer/-/fela-plugin-prefixer-11.5.1.tgz#2ec266f0cd1581eb67683b36887f778796693032"
@@ -6437,6 +6445,15 @@ forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
+
+form-data@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.0.tgz#31b7e39c85f1355b7139ee0c647cf0de7f83c682"
+  integrity sha512-CKMFDglpbMi6PyN+brwB9Q/GOw0eAnsrEZDgcsH5Krhz5Od/haKHAX0NmQfha2zPPz0JpWzA7GJHGSnvCRLWsg==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
 
 form-data@~2.3.2:
   version "2.3.3"
@@ -9540,6 +9557,11 @@ mime-db@~1.23.0:
   version "1.23.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.23.0.tgz#a31b4070adaea27d732ea333740a64d0ec9a6659"
   integrity sha1-oxtAcK2uon1zLqMzdApk0OyaZlk=
+
+mime-matcher@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mime-matcher/-/mime-matcher-1.0.5.tgz#c65ad6c1555aff743bea751404718b8639b3ba02"
+  integrity sha512-a7pOrNMfuCXHhw2gZ7el3sGsxbquOxM4n7zy2n3N3hbcZICE5keAdXvC4gGSfz5Wpxn+Meh2Y3bhvs9tmw1cmQ==
 
 mime-types@2.1.11:
   version "2.1.11"
@@ -13369,6 +13391,13 @@ upath@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
   integrity sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==
+
+upload@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/upload/-/upload-1.1.1.tgz#3f7f08e2d31f66e22e1ad311c6856ce9cacd5771"
+  integrity sha512-/pk5798iVP88q0HDHBJHxurVOJTnjXGyJXCMd/JrmzgoXEiYo3W2w9BiqtjqGJJJwyk8vo3wBWWUywjOMPLb6Q==
+  dependencies:
+    form-data "^3.0.0"
 
 upper-case-first@^1.1.0, upper-case-first@^1.1.2:
   version "1.1.2"

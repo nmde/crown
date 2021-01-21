@@ -1,6 +1,7 @@
 {
     "btn": {
         "CLOSE": "Close",
+        "POST": "Create Post",
         "SIGNIN": "Sign In",
         "SIGNOUT": "Sign Out",
         "SIGNUP": "Sign Up"
@@ -31,13 +32,17 @@
         "EXPLORE": "Explore",
         "HOME": "Home",
         "JOIN": "Join Crown",
+        "POST_ERROR": "Failed to post",
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",
-        "SIGNUP": "Sign Up"
+        "SIGNUP": "Sign Up",
+        "UPLOAD": "Create a Post"
     },
     "labels": {
         "CONFIRM_PASSWORD": "Confirm Password",
+        "DESCRIPTION": "Post description",
         "EMAIL": "Email",
+        "FILE": "Choose a file",
         "PASSWORD": "Password",
         "SUBMIT": "Submit",
         "USERNAME": "Username"

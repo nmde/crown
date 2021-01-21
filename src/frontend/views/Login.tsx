@@ -150,9 +150,7 @@ export default class Login extends Styled<Classes> {
                             username: this.form.username,
                             password: this.form.password,
                           });
-                          this.$router.push({
-                            path: '/',
-                          });
+                          this.$router.back();
                         } catch (err) {
                           this.loading = false;
                           this.dialog = true;
@@ -204,6 +202,8 @@ export default class Login extends Styled<Classes> {
                             password: this.form.password,
                             email: this.form.email,
                           });
+                          // TODO: welcome message, verify email
+                          this.$router.back();
                         } catch (err) {
                           this.loading = false;
                           this.dialog = true;

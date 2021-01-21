@@ -18,7 +18,18 @@ class Store implements EndpointProvider {
 
   @action
   public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
-    return (await axios.post<Response<'createAccount'>>(apiPath('createAccount'), params)).data;
+    const res = (await axios.post<Response<'createAccount'>>(apiPath('createAccount'), params))
+      .data;
+    await this.signIn({
+      username: params.username,
+      password: params.password,
+    });
+    return res;
+  }
+
+  @action
+  public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
+    return (await axios.post<Response<'createPost'>>(apiPath('createPost'), params)).data;
   }
 
   @action

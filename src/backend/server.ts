@@ -12,6 +12,7 @@ import fastifyStatic from 'fastify-static';
 import fastifyTokenize from 'fastify-tokenize';
 import fs from 'fs-extra';
 import helmet from 'helmet';
+import MimeMatcher from 'mime-matcher';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import { pipeline } from 'stream';
@@ -21,7 +22,10 @@ import util from 'util';
 import { v4 as uuid } from 'uuid';
 import models from './models';
 import schemas from './schemas';
-import { Endpoints, EndpointProvider, Query, Response } from '../types/Endpoints';
+import {
+  Endpoints, EndpointProvider, Query, Response,
+} from '../types/Endpoints';
+import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
 
@@ -48,7 +52,7 @@ export default class Server implements EndpointProvider {
    */
   public database: Sequelize;
 
-  private token!: Tokenize;
+  private token!: Tokenize<IUser>;
 
   public constructor() {
     const { app } = this;
@@ -152,15 +156,24 @@ export default class Server implements EndpointProvider {
     // Uploading has special instructions & can't be automatically generated
     app.post(apiPath('upload'), async (request) => {
       const id = uuid();
-      // TODO: multiple MIME types, validation
-      await util.promisify(pipeline)(
-        (await request.file()).file,
-        fs.createWriteStream(path.join(media, `${id}.mp4`)),
-      );
+      const file = await request.file();
+      let valid = false;
+      ['image/*', 'video/*', 'audio/*']
+        .map((mime) => new MimeMatcher(mime))
+        .forEach((mime) => {
+          valid = valid || mime.match(file.mimetype);
+        });
+      if (valid) {
+        await util.promisify(pipeline)(
+          file.file,
+          fs.createWriteStream(path.join(media, file.filename.replace(/.*\.([a-z]+)/, `${id}.$1`))),
+        );
+      } else {
+        throw this.app.httpErrors.forbidden();
+      }
+      // TODO: validation
       return {
-        data: {
-          id,
-        },
+        id,
       };
     });
 
@@ -176,7 +189,9 @@ export default class Server implements EndpointProvider {
     // Start the server & establish database connection
     try {
       await database.authenticate();
-      await database.sync();
+      await database.sync({
+        alter: true,
+      });
       await app.listen(port);
       app.blipp();
     } catch (err) {
@@ -215,6 +230,38 @@ export default class Server implements EndpointProvider {
       };
     }
     throw this.app.httpErrors.conflict();
+  }
+
+  /**
+   * Creates a post
+   * @param params Post metadata
+   */
+  public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
+    const user = await this.token.validate(params.token, async (id) => {
+      const res = await models.User.findOne({
+        where: {
+          id,
+        },
+      });
+      if (res) {
+        return res.toJSON() as IUser;
+      }
+      return null;
+    });
+    if (user === false || user === null) {
+      throw this.app.httpErrors.unauthorized();
+    }
+    return {
+      id: (
+        await new models.Post({
+          media: params.media,
+          author: user.id,
+          created: new Date().toISOString(),
+          expires: params.expires,
+          description: params.description,
+        }).save()
+      ).get('id'),
+    };
   }
 
   /**

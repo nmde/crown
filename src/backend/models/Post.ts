@@ -3,7 +3,7 @@ import {
 } from 'sequelize-typescript';
 
 @Table
-export default class User extends Model<User> {
+export default class Post extends Model<Post> {
   @Column(DataType.STRING)
   public media!: string;
 
@@ -15,6 +15,9 @@ export default class User extends Model<User> {
 
   @Column(DataType.STRING)
   public expires!: string;
+
+  @Column(DataType.STRING)
+  public description!: string;
 
   @Column({
     primaryKey: true,
