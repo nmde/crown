@@ -138,14 +138,22 @@ export default class App extends Styled<Classes> {
                   const res = await upload.upload();
                   if (res.data) {
                     try {
-                      console.log(
-                        await store.createPost({
-                          expires: '',
-                          token: store.token as string,
-                          description: this.description,
-                          media: JSON.parse(res.data.toString()).id,
-                        }),
+                      this.$router.push(
+                        `/post/${
+                          (
+                            await store.createPost({
+                              expires: '',
+                              token: store.token as string,
+                              description: this.description,
+                              media: JSON.parse(res.data.toString()).id,
+                            })
+                          ).id
+                        }`,
                       );
+                      this.file = '';
+                      this.progress = 0;
+                      this.loading = false;
+                      this.uploadDialog = false;
                     } catch (err) {
                       this.error = t.errors.GENERIC;
                       this.errorDialog = true;

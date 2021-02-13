@@ -1,0 +1,17 @@
+{
+    "title": "getUser-Response",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "username": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+  

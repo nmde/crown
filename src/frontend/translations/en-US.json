@@ -11,6 +11,7 @@
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
         "INVALID_CREDENTIALS": "Incorrect username and/or password",
+        "POST_NOT_FOUND": "Could not find the requested post",
         "PASSWORD": {
             "DIGITS": "Passwords must contain at least 2 digits",
             "LOWERCASE": "Passwords must contain at least 3 lowercase letters",
@@ -30,6 +31,7 @@
         "ACCOUNT": "My Account",
         "CATEGORIES": "Categories",
         "EXPLORE": "Explore",
+        "GET_POST_ERROR": "Could not display post",
         "HOME": "Home",
         "JOIN": "Join Crown",
         "POST_ERROR": "Failed to post",

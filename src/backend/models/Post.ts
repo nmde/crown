@@ -1,9 +1,10 @@
 import {
   Table, Model, Column, DataType,
 } from 'sequelize-typescript';
+import IPost from '../../types/Post';
 
 @Table
-export default class Post extends Model<Post> {
+export default class Post extends Model<Post> implements IPost {
   @Column(DataType.STRING)
   public media!: string;
 
