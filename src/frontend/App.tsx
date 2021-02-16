@@ -1,10 +1,9 @@
-import { Upload } from 'upload';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import t from './translations/en-US.json';
 import store from './store';
 import Styled from './Styled';
-import apiPath from '../util/apiPath';
+import CreatePostDialog from './components/CreatePostDialog';
 
 type Classes = 'fab';
 
@@ -13,22 +12,20 @@ type Classes = 'fab';
  */
 @Component
 export default class App extends Styled<Classes> {
-  private description = '';
-
-  private error = '';
-
-  private errorDialog = false;
-
-  private file = '';
-
-  private loading = false;
-
+  /**
+   * The view currently displayed to the user
+   */
   private nav = this.$route.path.substring(1);
 
-  private progress = 0;
-
+  /**
+   * Controls visibility of the create post dialog
+   */
   private uploadDialog = false;
 
+  /**
+   * Defines custom component styles
+   * @constructs
+   */
   public constructor() {
     super({
       fab: {
@@ -41,6 +38,10 @@ export default class App extends Styled<Classes> {
     });
   }
 
+  /**
+   * Renders the component
+   * @returns the component
+   */
   public render(): VNode {
     return (
       <v-app>
@@ -95,94 +96,11 @@ export default class App extends Styled<Classes> {
           </v-btn>
         </v-bottom-navigation>
         <v-dialog vModel={this.uploadDialog}>
-          <v-card>
-            <v-card-title>{t.headers.UPLOAD}</v-card-title>
-            <v-card-text>
-              <v-file-input
-                accept="audio/*, video/*, image/*"
-                label={t.labels.FILE}
-                prepend-icon="camera_alt"
-                vModel={this.file}
-              />
-              <v-textarea
-                auto-grow
-                rows={1}
-                label={t.labels.DESCRIPTION}
-                vModel={this.description}
-              />
-              {(() => {
-                if (this.loading) {
-                  return <v-progress-linear value={this.progress} />;
-                }
-                return null;
-              })()}
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn
-                color="primary"
-                loading={this.loading}
-                onClick={async () => {
-                  this.progress = 0;
-                  this.loading = true;
-                  // TODO: Validate input
-                  const upload = new Upload({
-                    url: apiPath('upload'),
-                    form: {
-                      file: this.file,
-                    },
-                  });
-                  upload.on('progress', (progress: number) => {
-                    this.progress = progress * 100;
-                  });
-                  const res = await upload.upload();
-                  if (res.data) {
-                    try {
-                      this.$router.push(
-                        `/post/${
-                          (
-                            await store.createPost({
-                              expires: '',
-                              token: store.token as string,
-                              description: this.description,
-                              media: JSON.parse(res.data.toString()).id,
-                            })
-                          ).id
-                        }`,
-                      );
-                      this.file = '';
-                      this.progress = 0;
-                      this.loading = false;
-                      this.uploadDialog = false;
-                    } catch (err) {
-                      this.error = t.errors.GENERIC;
-                      this.errorDialog = true;
-                    }
-                  } else {
-                    this.error = t.errors.GENERIC;
-                    this.errorDialog = true;
-                  }
-                }}
-              >
-                {t.btn.POST}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog vModel={this.errorDialog}>
-          <v-card>
-            <v-card-title>{t.headers.POST_ERROR}</v-card-title>
-            <v-card-text>{this.error}</v-card-text>
-            <v-card-actions>
-              <v-btn
-                onClick={() => {
-                  this.errorDialog = false;
-                }}
-              >
-                {t.btn.CLOSE}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+          <CreatePostDialog
+            onFinished={() => {
+              this.uploadDialog = false;
+            }}
+          />
         </v-dialog>
       </v-app>
     );
