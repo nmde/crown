@@ -7,7 +7,7 @@ import Vue from 'vue';
 export default class Styled<T extends string> extends Vue {
   private css: Record<T, CSS.Properties>;
 
-  public get style(): Record<T, CSS.Properties> {
+  protected get style(): Record<T, CSS.Properties> {
     return this.css;
   }
 
@@ -16,7 +16,7 @@ export default class Styled<T extends string> extends Vue {
     this.css = css;
   }
 
-  public c(className: T): string {
+  protected c(className: T): string {
     return this.f(className);
   }
 }
