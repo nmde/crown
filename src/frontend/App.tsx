@@ -64,7 +64,7 @@ export default class App extends Styled<Classes> {
                 <v-btn
                   fab
                   color="primary"
-                  class={this.c('fab')}
+                  class={this.className('fab')}
                   onClick={() => {
                     this.uploadDialog = true;
                   }}

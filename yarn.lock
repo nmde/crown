@@ -6050,14 +6050,6 @@ csrf@~3.0.0:
     tsscmp "1.0.5"
     uid-safe "2.1.4"
 
-css-in-js-utils@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
-  integrity sha512-PJF0SpJT+WdbVVt0AOYp9C8GnuruRlL/UFW7932nLWmFLQTaWEzTBQEx7/hn4BuV+WON75iAViSUJLiU3PKbpA==
-  dependencies:
-    hyphenate-style-name "^1.0.2"
-    isobject "^3.0.1"
-
 css-in-js-utils@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-3.1.0.tgz#640ae6a33646d401fc720c54fc61c42cd76ae2bb"
@@ -7771,7 +7763,7 @@ fbjs@^1.0.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
-fela-dom@*:
+fela-dom@^11.6.0:
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/fela-dom/-/fela-dom-11.6.0.tgz#b6656f59359de4d442a7e13d9eadc040827009e3"
   integrity sha512-UP2+jyRbNQCmalkiZUepCPWkRJB4TDiyXxtUAFrsVAy3K0Yes4nROtNBuCyqysdOor5lLlTMWznd7hGCYilm2Q==
@@ -7781,58 +7773,12 @@ fela-dom@*:
     fela-utils "^11.6.0"
     sort-css-media-queries "^1.4.3"
 
-fela-plugin-embedded@*:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/fela-plugin-embedded/-/fela-plugin-embedded-11.6.0.tgz#a529a543b533be1a52323458d712a7d01287bc66"
-  integrity sha512-n1UZceTuTPe6cv3icyC828cjCJE6fvE+wTEEqaF8jB79zy16hcznVEZN0a1eSGpgZXyZjza4Y5a7VMb6nyeF5g==
-  dependencies:
-    fast-loops "^1.0.0"
-    isobject "^3.0.1"
-
-fela-plugin-extend@*:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/fela-plugin-extend/-/fela-plugin-extend-11.6.0.tgz#54cbfbe1f9b5c8c28a163da5f28d57acb39f51a0"
-  integrity sha512-eEeUelLKxEXbA0fXoEpvoEHHByyGSY4eJBg43jR9Hl95mn6bfekdNyX7SlG20jotIhVHW6y5WKO6LAnASmdqlQ==
-  dependencies:
-    css-in-js-utils "^3.0.0"
-    fast-loops "^1.0.0"
-    fela-utils "^11.6.0"
-    isobject "^3.0.1"
-
-fela-plugin-fallback-value@*, fela-plugin-fallback-value@^11.6.0:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/fela-plugin-fallback-value/-/fela-plugin-fallback-value-11.6.0.tgz#ed07afe801ae9dacb57617c754d0a659c81b3bb0"
-  integrity sha512-UHUHWK5b500LzTBdYmdIvSKcw2XdxYs0E7jGVoYbKWJI6YkgFXNfqi0Lan7szEWGaiUYOj80CUvYnGSm+xnY3A==
-  dependencies:
-    css-in-js-utils "^3.0.0"
-    isobject "^3.0.1"
-
 fela-plugin-important@^11.5.1:
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/fela-plugin-important/-/fela-plugin-important-11.6.0.tgz#66ecb56a097ef9bc67fa642bc3dfa29b9c0db36e"
   integrity sha512-n3upeTnJmal9pzJdyll93jGhT5yU/oJ3y/JZ2+dckbhs+L+PSfPU8j1cF0h8Ys/NDa4G0NB1KDwpUhEPGebDuw==
   dependencies:
     fela-utils "^11.6.0"
-    isobject "^3.0.1"
-
-fela-plugin-prefixer@*:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/fela-plugin-prefixer/-/fela-plugin-prefixer-11.6.0.tgz#33c9755a69f07493a39c52b47301943a12f574ba"
-  integrity sha512-JWOX+e6zoQ3LAw6tC0Oio51CVEYX4UyB3Ljpf+RVA9PqQH4vRk9YYZUtciESdagJfTDu7bLUgaamr5JdNNpM3A==
-  dependencies:
-    css-in-js-utils "^3.0.0"
-    fast-loops "^1.0.0"
-    fela-plugin-fallback-value "^11.6.0"
-    inline-style-prefixer "^5.1.0"
-    isobject "^3.0.1"
-    stylis "^4.0.6"
-
-fela-plugin-unit@*:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/fela-plugin-unit/-/fela-plugin-unit-11.6.0.tgz#cd92e9a8b3127253e0457a57f89a5efb2c701369"
-  integrity sha512-t6/3j1aQJDm77FTCVEC+qC6hPDu9g6fCrVldX4tccqD4SLpAN1D/EC6Jjw4B7bBeovBjRWhm8XA605pv3T/hmw==
-  dependencies:
-    css-in-js-utils "^3.0.0"
     isobject "^3.0.1"
 
 fela-utils@^11.6.0:
@@ -7843,22 +7789,7 @@ fela-utils@^11.6.0:
     css-in-js-utils "^3.0.0"
     fast-loops "^1.0.0"
 
-fela-vue@^2.6.0-beta.44:
-  version "2.6.0-beta.44"
-  resolved "https://registry.yarnpkg.com/fela-vue/-/fela-vue-2.6.0-beta.44.tgz#a7352a3254f77df6325314025f315f2ee45cb90d"
-  integrity sha512-+r9x+qcmEC+B6+Y+fi6scIEC+IlXyJ0ZrY+tGD8HsjpeQBFLptsGMEz/GVSa695uTBT8X2byhARgl5H1ZsSkiQ==
-  dependencies:
-    fela "*"
-    fela-dom "*"
-    fela-plugin-embedded "*"
-    fela-plugin-extend "*"
-    fela-plugin-fallback-value "*"
-    fela-plugin-prefixer "*"
-    fela-plugin-unit "*"
-    lafetch "0.4.5"
-    pepka "0.9.5"
-
-fela@*:
+fela@^11.6.0:
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/fela/-/fela-11.6.0.tgz#3b2e78c1e9960a74ac8f9dfe1c30c49287320aec"
   integrity sha512-TcdEdEzdQEze3lMgs7mBCf4M4CD3Y6bs+1xxXfLSNjIp8PTV4dZNUmlTEBWl1NghoV1vf3EXAcOebXVSN+9c5A==
@@ -9099,7 +9030,7 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-hyphenate-style-name@^1.0.2, hyphenate-style-name@^1.0.3:
+hyphenate-style-name@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
   integrity sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
@@ -9270,13 +9201,6 @@ inline-style-parser@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.1.1.tgz#ec8a3b429274e9c0a1f1c4ffa9453a7fef72cea1"
   integrity sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==
-
-inline-style-prefixer@^5.1.0:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/inline-style-prefixer/-/inline-style-prefixer-5.1.2.tgz#e5a5a3515e25600e016b71e39138971228486c33"
-  integrity sha512-PYUF+94gDfhy+LsQxM0g3d6Hge4l1pAqOSOiZuHWzMvQEGsbRQ/ck2WioLqrY2ZkHyPgVUXxn+hrkF7D6QUGbA==
-  dependencies:
-    css-in-js-utils "^2.0.0"
 
 inquirer@^3.0.6:
   version "3.3.0"
@@ -10700,13 +10624,6 @@ klona@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
-
-lafetch@0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/lafetch/-/lafetch-0.4.5.tgz#0d87c3f7bb6c36ddf91192a481701cb63b391cb2"
-  integrity sha512-Jms3UEO45wd/N7f9xITJWpqxNoc3ApHupQ82zGnabWqsQcC4aCvxDaU5AUodZCWFqq40ftCJDchxlb5/+emYUQ==
-  dependencies:
-    pepka "^0.7.10"
 
 language-subtag-registry@~0.3.2:
   version "0.3.21"
@@ -13131,16 +13048,6 @@ pbkdf2@^3.0.3:
     ripemd160 "^2.0.1"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
-
-pepka@0.9.5:
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/pepka/-/pepka-0.9.5.tgz#f175fc5bc403faa78f65d8b0ddcc27d07e4b21f2"
-  integrity sha512-B3ppsBlv6SfHVBd71sBbaN4BpmPle0ZzzwBQPj18parZlsoGckP+n0CeBANFtK6dy8XzgB9L6WqsQnCdCBVz2w==
-
-pepka@^0.7.10:
-  version "0.7.13"
-  resolved "https://registry.yarnpkg.com/pepka/-/pepka-0.7.13.tgz#6d9acc4a8ea5815db809cc5b8da41368f57daf3a"
-  integrity sha512-emcJuv6mrAu7uXkVqSawq7ydGa8gslCkunC3/VyTIR5/nBqVu3wQcA2MkXDohr/H9spsYZZuZu5F/4rFOINI2g==
 
 performance-now@^2.1.0:
   version "2.1.0"
@@ -15930,11 +15837,6 @@ style-to-object@0.3.0, style-to-object@^0.3.0:
   integrity sha512-CzFnRRXhzWIdItT3OmF8SQfWyahHhjq3HwcMNCNLn+N7klOOqPjMeG/4JSu77D7ypZdGvSzvkrbyeTMizz2VrA==
   dependencies:
     inline-style-parser "0.1.1"
-
-stylis@^4.0.6:
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.0.7.tgz#412a90c28079417f3d27c028035095e4232d2904"
-  integrity sha512-OFFeUXFgwnGOKvEXaSv0D0KQ5ADP0n6g3SVONx6I/85JzNZ3u50FRwB3lVIk1QO2HNdI75tbVzc4Z66Gdp9voA==
 
 supports-color@^2.0.0:
   version "2.0.0"

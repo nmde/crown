@@ -99,7 +99,7 @@ export default class Post extends Styled<Classes> {
         </v-card-actions>
         <v-card-text>
           <div class="text-body-2">{this.post.description}</div>
-          <div class={this.c('description')}>{formatDate(this.post.created || '')}</div>
+          <div class={this.className('description')}>{formatDate(this.post.created || '')}</div>
         </v-card-text>
       </v-card>
     );

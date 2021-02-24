@@ -115,8 +115,8 @@ export default class Login extends Styled<Classes> {
 
   public render(): VNode {
     return (
-      <v-container class={this.c('container')} fluid>
-        <v-row align="center" class={this.c('row')} justify="center">
+      <v-container class={this.className('container')} fluid>
+        <v-row align="center" class={this.className('row')} justify="center">
           <v-col cols={12} sm={10} md={8} lg={6}>
             <v-card>
               <v-card-title class="h3 font-italic text-center">{t.headers.JOIN}</v-card-title>
