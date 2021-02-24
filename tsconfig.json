@@ -16,7 +16,7 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "noUnusedParameters": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types",

@@ -9,6 +9,6 @@ export const decorators = [
   (story) => ({
     vuetify,
     components: { VApp, story },
-    template: '<v-app><story /></v-app>',
+    template: '<v-app><v-main><story /></v-main></v-app>',
   }),
 ];
