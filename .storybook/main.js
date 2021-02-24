@@ -1,3 +1,4 @@
+const path = require('path');
 const { mergeWithCustomize } = require('webpack-merge');
 const frontend = require('../config/frontend.config');
 
@@ -24,8 +25,8 @@ module.exports = {
       },
       customizeObject(a, b, key) {
         if (key === 'module') {
-          // Force Storybook to use our configuration for .tsx & .css files
-          // And remove our rules for images & fonts so that Storybook places them in the correct location
+          // Force Storybook to use our configuration for .tsx files
+          // And remove our rules for assets so that Storybook places them in the correct location
           const newRules = [];
           [...a.rules, ...b.rules].forEach((rule) => {
             if (rule.test.source === '\\.tsx?$') {
@@ -33,7 +34,7 @@ module.exports = {
                 newRules.push(rule);
               }
             } else if (rule.test.source === '\\.css$') {
-              if (rule.sideEffects !== true) {
+              if (rule.sideEffects === true) {
                 newRules.push(rule);
               }
             } else if (rule.loader !== 'file-loader') {
@@ -46,6 +47,8 @@ module.exports = {
         }
       },
     })(config, frontendConfig);
+    // Add bootstrap.ts as an entry
+    newConfig.entry.push(path.resolve(__dirname, '..', 'src', 'frontend', 'bootstrap.ts'));
     return newConfig;
   },
 };
