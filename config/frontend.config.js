@@ -11,9 +11,11 @@ module.exports = merge(common, {
     frontend: path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
   },
   plugins: [
+    /* TODO: 
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '..', 'src', 'frontend', 'index.html'),
     }),
+    */
   ],
   resolve: {
     alias: {
@@ -44,15 +46,11 @@ module.exports = merge(common, {
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: 'fonts/',
-            },
-          },
-        ],
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: 'fonts/',
+        },
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,

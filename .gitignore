@@ -554,3 +554,6 @@ fabric.properties
 
 # Auto-generated schemas
 src/types/schemas/*/*.d.ts
+
+# Built Storybook
+storybook-static

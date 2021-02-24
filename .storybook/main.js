@@ -2,16 +2,20 @@ const { mergeWithCustomize } = require('webpack-merge');
 const frontend = require('../config/frontend.config');
 
 module.exports = {
-  stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../stories/**/*.stories.ts'],
   addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
   webpackFinal: async (config) => {
+    const frontendConfig = frontend;
+    // Prevent the default frontend entry & output from being merged
+    delete frontendConfig.entry;
+    delete frontendConfig.output;
     const newConfig = mergeWithCustomize({
       customizeArray(a, b, key) {
         if (key === 'plugins') {
           // Remove plugins that appear to break Storybook
           const newPlugins = [];
           [...a, ...b].forEach((plugin) => {
-            if (['VueLoaderPlugin', 'HtmlWebpackPlugin'].indexOf(plugin.constructor.name) < 0) {
+            if (['VueLoaderPlugin'].indexOf(plugin.constructor.name) < 0) {
               newPlugins.push(plugin);
             }
           });
@@ -21,6 +25,7 @@ module.exports = {
       customizeObject(a, b, key) {
         if (key === 'module') {
           // Force Storybook to use our configuration for .tsx & .css files
+          // And remove our rules for images & fonts so that Storybook places them in the correct location
           const newRules = [];
           [...a.rules, ...b.rules].forEach((rule) => {
             if (rule.test.source === '\\.tsx?$') {
@@ -31,7 +36,7 @@ module.exports = {
               if (rule.sideEffects !== true) {
                 newRules.push(rule);
               }
-            } else {
+            } else if (rule.loader !== 'file-loader') {
               newRules.push(rule);
             }
           });
@@ -40,8 +45,7 @@ module.exports = {
           };
         }
       },
-    })(config, frontend);
-    console.log(newConfig.module.rules);
+    })(config, frontendConfig);
     return newConfig;
   },
 };
