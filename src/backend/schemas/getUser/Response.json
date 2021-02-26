@@ -10,6 +10,21 @@
       },
       "username": {
         "type": "string"
+      },
+      "displayName": {
+        "type": "string"
+      },
+      "followerCount": {
+        "type": "number"
+      },
+      "followingCount": {
+        "type": "number"
+      },
+      "profileBackground": {
+        "type": "string"
+      },
+      "profilePicture": {
+        "type": "string"
       }
     },
     "additionalProperties": false

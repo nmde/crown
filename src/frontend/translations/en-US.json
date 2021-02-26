@@ -45,6 +45,8 @@
         "DESCRIPTION": "Post description",
         "EMAIL": "Email",
         "FILE": "Choose a file",
+        "FOLLOWERS": "Followers",
+        "FOLLOWING": "Following",
         "PASSWORD": "Password",
         "SUBMIT": "Submit",
         "USERNAME": "Username"

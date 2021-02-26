@@ -1,11 +1,7 @@
 import { VNode } from 'vue';
-import { Component } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
-import profileBackground from '../assets/profile-background.jpg';
-import samplePost1 from '../assets/sample-post-1.jpg';
-import samplePost2 from '../assets/sample-post-2.jpg';
-import samplePost3 from '../assets/sample-post-3.jpg';
-import samplePost4 from '../assets/sample-post-4.jpg';
+import IUser from '../../types/User';
 import VAvatar from '../components/vuetify-tsx/VAvatar';
 import VCard from '../components/vuetify-tsx/VCard';
 import VCardText from '../components/vuetify-tsx/VCardText';
@@ -17,24 +13,57 @@ import VIcon from '../components/vuetify-tsx/VIcon';
 import VImg from '../components/vuetify-tsx/VImg';
 import VParallax from '../components/vuetify-tsx/VParallax';
 import VRow from '../components/vuetify-tsx/VRow';
+import t from '../translations/en-US.json';
 import Styled from '../Styled';
+import MediaRecord from 'types/MediaRecord';
+import Feed from '../classes/Feed';
 
 // CSS classes
-type Classes = 'Fill' | 'AvatarContainer' | 'Icon' | 'Main' | 'DisplayName' | 'Center' | 'GalleryImage';
+type Classes =
+  | 'Fill'
+  | 'AvatarContainer'
+  | 'Icon'
+  | 'Main'
+  | 'DisplayName'
+  | 'Center'
+  | 'GalleryImage';
 
 const avatarSize = 100;
+
+// Prop types
+export type Props = {
+  user: Required<IUser>;
+  media: MediaRecord;
+  feed: Feed;
+};
 
 /**
  * User profile page view
  */
 @Component
-export default class Profile extends Styled<Classes> {
+export default class Profile extends Styled<Classes> implements Props {
   /**
-   * Explicitly defines TSX prop types
+   * Pass prop type information to TSX
    */
-  _tsx!: tsx.DeclareProps<tsx.AutoProps<Profile>>;
+  _tsx!: tsx.DeclareProps<Props>;
 
-  public foo!: string;
+  /**
+   * The user data, if supplied via props
+   */
+  @Prop()
+  public user!: Required<IUser>;
+
+  /**
+   * Required media
+   */
+  @Prop()
+  public media!: MediaRecord;
+
+  /**
+   * A feed of posts
+   */
+  @Prop()
+  public feed!: Feed;
 
   /**
    * Defines custom styles for the Profile view
@@ -76,46 +105,47 @@ export default class Profile extends Styled<Classes> {
   public render(): VNode {
     // TODO: allow users to customize their background
     return (
-      <VParallax class={this.className('Fill')} src={profileBackground}>
+      <VParallax class={this.className('Fill')} src={this.media[this.user.profileBackground]}>
         <VContainer class={this.className('Fill')} fluid>
           <VRow noGutters>
             <VCol class={this.className('AvatarContainer')}>
               <VAvatar color="primary" rounded size={avatarSize}>
-                <VIcon class={this.className('Icon')}>account_circle</VIcon>
+                <VImg src={this.media[this.user.profilePicture]} />
+                {/* TODO: display icon as a placeholder, then load user's profile picture */}
+                {/* <VIcon class={this.className('Icon')}>account_circle</VIcon> */}
               </VAvatar>
             </VCol>
           </VRow>
           <VRow class={this.className('Main')} noGutters>
             <VCol>
               <VCard class={this.className('Center')}>
-                <VCardTitle class={this.className('DisplayName')}>Display Name</VCardTitle>
-                <VCardSubtitle>username</VCardSubtitle>
+                <VCardTitle class={this.className('DisplayName')}>
+                  {this.user.displayName}
+                </VCardTitle>
+                <VCardSubtitle>{this.user.username}</VCardSubtitle>
                 <VCardText>
                   <VContainer>
                     <VRow>
                       <VCol cols={6}>
-                        <div class="text-h5">100</div>
-                        followers
+                        <div class="text-h5">{this.user.followerCount}</div>
+                        {t.labels.FOLLOWERS}
                       </VCol>
                       <VCol cols={6}>
-                        <div class="text-h5">1500</div>
-                        following
+                        <div class="text-h5">{this.user.followingCount}</div>
+                        {t.labels.FOLLOWING}
                       </VCol>
                     </VRow>
                     <VRow>
-                      <VCol cols={4} class={this.className('GalleryImage')}>
-                        {/* TODO: add lazy-src to all images */}
-                        <VImg aspectRatio={1} src={samplePost1} />
-                      </VCol>
-                      <VCol cols={4} class={this.className('GalleryImage')}>
-                        <VImg aspectRatio={1} src={samplePost2} />
-                      </VCol>
-                      <VCol cols={4} class={this.className('GalleryImage')}>
-                        <VImg aspectRatio={1} src={samplePost3} />
-                      </VCol>
-                      <VCol cols={4} class={this.className('GalleryImage')}>
-                        <VImg aspectRatio={1} src={samplePost4} />
-                      </VCol>
+                      {
+                        (() => {
+                          return this.feed.posts.map((post) => {
+                            return <VCol cols={6} sm={4} class={this.className('GalleryImage')}>
+                              {/* TODO: add lazy-src to all images */}
+                              <VImg aspectRatio={1} src={this.media[post.media]} />
+                            </VCol>
+                          });
+                        })()
+                      }
                     </VRow>
                   </VContainer>
                 </VCardText>
