@@ -4,6 +4,8 @@ import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
 import GetPostQs from './getPost/Query.json';
 import GetPostRes from './getPost/Response.json';
+import GetUserQs from './getUser/Query.json';
+import GetUserRes from './getUser/Response.json';
 import SignInQs from './signIn/Query.json';
 import SignInRes from './signIn/Response.json';
 
@@ -19,6 +21,10 @@ export default {
   getPost: {
     query: GetPostQs,
     response: GetPostRes,
+  },
+  getUser: {
+    query: GetUserQs,
+    response: GetUserRes,
   },
   signIn: {
     query: SignInQs,

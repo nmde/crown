@@ -3,12 +3,20 @@ import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
 import { EndpointProvider, Query, Response } from '../types/Endpoints';
+import IPost from '../types/Post';
+import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 
 /**
  * The "store", which manages data shared across all pages
  */
 class Store implements EndpointProvider {
+  @observable
+  public posts: Record<string, IPost> = {};
+
+  @observable
+  public users: Record<string, IUser> = {};
+
   @observable
   public token = JSCookie.get('token');
 
@@ -30,6 +38,24 @@ class Store implements EndpointProvider {
   @action
   public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
     return (await axios.post<Response<'createPost'>>(apiPath('createPost'), params)).data;
+  }
+
+  @action
+  public async getPost(params: Query<'getPost'>): Promise<Response<'getPost'>> {
+    if (this.posts[params.id]) {
+      return this.posts[params.id];
+    }
+    const post = (await axios.post<Response<'getPost'>>(apiPath('getPost'), params)).data;
+    this.posts[post.id as string] = post;
+    return post;
+  }
+
+  @action
+  public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
+    if (this.users[params.id]) {
+      return this.users[params.id];
+    }
+    return (await axios.post<Response<'getUser'>>(apiPath('getUser'), params)).data;
   }
 
   @action

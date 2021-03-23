@@ -16,29 +16,3 @@ Additionally, to view the app on a simulated phone (requires Android studio, JDK
 ```bash
 react-native run-android
 ```
-
-## Tools & Libraries
-
-- [dotenv](https://github.com/motdotla/dotenv)
-- [Fastify](https://www.fastify.io/)
-  - [fastify-auth](https://github.com/fastify/fastify-auth)
-  - [fastify-blipp](https://github.com/PavelPolyakov/fastify-blipp)
-  - [fastify-cookie](https://github.com/fastify/fastify-cookie)
-  - [fastify-helmet](https://github.com/fastify/fastify-helmet)
-    - [Helmet](https://helmetjs.github.io/)
-  - [fastify-multipart](https://github.com/fastify/fastify-multipart)
-  - [fastify-rate-limit](https://github.com/fastify/fastify-rate-limit)
-  - [fastify-static](https://github.com/fastify/fastify-static)
-  - [fastify-tokenize](https://github.com/cyyynthia/fastify-tokenize)
-    - [Tokenize](https://github.com/cyyynthia/tokenize/blob/mistress/USAGE.md)
-- [fs-extra](https://github.com/jprichardson/node-fs-extra)
-- [Material Design Icons](https://material.io/resources/icons/)
-- [Mobx](https://mobx.js.org/)
-  - [movue](https://github.com/nighca/movue)
-- [Sequelize](https://sequelize.org/v5/)
-  - [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
-- [Typescript](https://www.typescriptlang.org/)
-  - [ts-transformer-keys](https://github.com/kimamula/ts-transformer-keys)
-  - [type-fest](https://github.com/sindresorhus/type-fest)
-- [uuid](https://github.com/uuidjs/uuid)
-- [Vuetify](https://vuetifyjs.com/)

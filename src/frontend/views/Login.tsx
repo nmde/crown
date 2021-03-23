@@ -3,6 +3,7 @@ import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import Styled from '../Styled';
 import background from '../assets/background.jpg';
+import ErrorDialog from '../components/ErrorDialog';
 import translations from '../translations';
 import store from '../store';
 
@@ -30,8 +31,6 @@ export default class Login extends Styled<Classes> {
   private get baseNotValid() {
     return !this.usernameIsValid || !this.passwordIsValid;
   }
-
-  private dialog = false;
 
   private get emailIsValid() {
     let valid = true;
@@ -116,8 +115,8 @@ export default class Login extends Styled<Classes> {
 
   public render(): VNode {
     return (
-      <v-container class={this.c('container')} fluid>
-        <v-row align="center" class={this.c('row')} justify="center">
+      <v-container class={this.className('container')} fluid>
+        <v-row align="center" class={this.className('row')} justify="center">
           <v-col cols={12} sm={10} md={8} lg={6}>
             <v-card>
               <v-card-title class="h3 font-italic text-center">{t.headers.JOIN}</v-card-title>
@@ -153,7 +152,6 @@ export default class Login extends Styled<Classes> {
                           this.$router.back();
                         } catch (err) {
                           this.loading = false;
-                          this.dialog = true;
                           switch (err.response.status) {
                             case 400:
                               this.error = t.errors.INVALID_CREDENTIALS;
@@ -206,7 +204,6 @@ export default class Login extends Styled<Classes> {
                           this.$router.back();
                         } catch (err) {
                           this.loading = false;
-                          this.dialog = true;
                           switch (err.response.status) {
                             case 409:
                               this.error = t.errors.USERNAME.TAKEN;
@@ -225,21 +222,7 @@ export default class Login extends Styled<Classes> {
             </v-card>
           </v-col>
         </v-row>
-        <v-dialog max-width={500} vModel={this.dialog}>
-          <v-card>
-            <v-card-title>{t.headers.SIGNIN_ERROR}</v-card-title>
-            <v-card-text>{this.error}</v-card-text>
-            <v-card-actions>
-              <v-btn
-                onClick={() => {
-                  this.dialog = false;
-                }}
-              >
-                {t.btn.CLOSE}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <ErrorDialog header={t.headers.SIGNIN_ERROR} message={this.error} />
       </v-container>
     );
   }

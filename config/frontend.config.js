@@ -3,7 +3,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const sass = require('sass');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const { merge } = require('webpack-merge');
 const common = require('./common.config');
 
@@ -12,10 +11,11 @@ module.exports = merge(common, {
     frontend: path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
   },
   plugins: [
-    new VueLoaderPlugin(),
+    /* TODO: 
     new HtmlWebpackPlugin({
-      template: './src/frontend/index.html',
+      template: path.resolve(__dirname, '..', 'src', 'frontend', 'index.html'),
     }),
+    */
   ],
   resolve: {
     alias: {
@@ -46,15 +46,11 @@ module.exports = merge(common, {
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: 'fonts/',
-            },
-          },
-        ],
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: 'fonts/',
+        },
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -62,10 +58,6 @@ module.exports = merge(common, {
         options: {
           name: 'assets/[name].[ext]',
         },
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
       },
     ],
   },

@@ -145,7 +145,6 @@ export default class Server implements EndpointProvider {
             '2xx': {
               title: endpoint,
               properties: schemas[endpoint].response.properties,
-              required: schemas[endpoint].response.required,
             },
           },
         },
@@ -155,6 +154,7 @@ export default class Server implements EndpointProvider {
 
     // Uploading has special instructions & can't be automatically generated
     app.post(apiPath('upload'), async (request) => {
+      // TODO: convert all images to jpg
       const id = uuid();
       const file = await request.file();
       let valid = false;
@@ -179,12 +179,10 @@ export default class Server implements EndpointProvider {
 
     // Retrieves media from the media directoryd
     app.get<{
-      Querystring: {
+      Params: {
         id: string;
       };
-    }>(path.join(apiPath('media'), ':id'), async (request) => {
-      app.log.info(`fetching media ${request.query.id}`);
-    });
+    }>(path.join(apiPath('media'), ':id'), async (request) => fs.readFile(path.join(media, `${request.params.id}.jpg`)));
 
     // Start the server & establish database connection
     try {
@@ -262,6 +260,43 @@ export default class Server implements EndpointProvider {
         }).save()
       ).get('id'),
     };
+  }
+
+  /**
+   * Retrieves a post
+   * @param params The post ID
+   */
+  public async getPost({ id }: Query<'getPost'>): Promise<Response<'getPost'>> {
+    // TODO: check that user has permissions to view the post
+    try {
+      const results = await models.Post.findOne({
+        where: {
+          id,
+        },
+      });
+      if (results !== null) {
+        return results.toJSON();
+      }
+      throw this.app.httpErrors.badRequest();
+    } catch (err) {
+      throw this.app.httpErrors.badRequest();
+    }
+  }
+
+  /**
+   * Retrieves a user
+   * @param params The user ID
+   */
+  public async getUser({ id }: Query<'getUser'>): Promise<Response<'getUser'>> {
+    const results = await models.User.findOne({
+      where: {
+        id,
+      },
+    });
+    if (results !== null) {
+      return results.toJSON();
+    }
+    throw this.app.httpErrors.badRequest();
   }
 
   /**

@@ -4,6 +4,7 @@ import Categories from './views/CategoriesPage.vue';
 import Explore from './views/Explore';
 import Home from './views/Home';
 import Login from './views/Login';
+import SinglePost from './views/SinglePost';
 
 const routes: RouteConfig[] = [
   {
@@ -25,6 +26,10 @@ const routes: RouteConfig[] = [
   {
     path: '/login',
     component: Login,
+  },
+  {
+    path: '/post/:id',
+    component: SinglePost,
   },
 ];
 

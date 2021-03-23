@@ -5,7 +5,19 @@
     "id": {
       "type": "string"
     },
-    "text": {
+    "media": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string"
+    },
+    "expires": {
+      "type": "string"
+    },
+    "description": {
       "type": "string"
     }
   },
