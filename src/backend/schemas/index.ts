@@ -2,6 +2,7 @@ import CreateAccQs from './createAccount/Query.json';
 import CreateAccRes from './createAccount/Response.json';
 import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
+import GetFeedQs from './getFeed/Query.json';
 import GetPostQs from './getPost/Query.json';
 import GetPostRes from './getPost/Response.json';
 import GetUserQs from './getUser/Query.json';
@@ -17,6 +18,15 @@ export default {
   createPost: {
     query: CreatePostQs,
     response: CreatePostRes,
+  },
+  getFeed: {
+    query: GetFeedQs,
+    response: {
+      properties: {
+        type: "array",
+        items: GetPostRes.properties,
+      },
+    },
   },
   getPost: {
     query: GetPostQs,

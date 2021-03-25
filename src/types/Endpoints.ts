@@ -2,6 +2,7 @@ import { CreateAccountQuery } from './schemas/createAccount/Query';
 import { CreateAccountResponse } from './schemas/createAccount/Response';
 import { CreatePostQuery } from './schemas/createPost/Query';
 import { CreatePostResponse } from './schemas/createPost/Response';
+import { GetFeedQuery } from './schemas/getFeed/Query';
 import { GetPostQuery } from './schemas/getPost/Query';
 import { GetPostResponse } from './schemas/getPost/Response';
 import { GetUserQuery } from './schemas/getUser/Query';
@@ -17,6 +18,10 @@ export type Endpoints = {
   createPost: {
     query: CreatePostQuery;
     response: CreatePostResponse;
+  };
+  getFeed: {
+    query: GetFeedQuery;
+    response: GetPostResponse[];
   };
   getPost: {
     query: GetPostQuery;

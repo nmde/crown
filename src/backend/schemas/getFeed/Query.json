@@ -1,0 +1,12 @@
+{
+    "title": "getFeed-Query",
+    "type": "object",
+    "properties": {
+      "author": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "required": []
+  }
+  

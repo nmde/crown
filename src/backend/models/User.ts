@@ -23,4 +23,19 @@ export default class User extends Model<User> implements IUser {
 
   @Column(DataType.INTEGER)
   public lastTokenReset!: number;
+
+  @Column(DataType.STRING)
+  public displayName!: string;
+
+  @Column(DataType.INTEGER)
+  public followerCount!: number;
+
+  @Column(DataType.INTEGER)
+  public followingCount!: number;
+
+  @Column(DataType.STRING)
+  public profileBackground!: string;
+
+  @Column(DataType.STRING)
+  public profilePicture!: string;
 }

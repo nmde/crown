@@ -7,14 +7,14 @@ export default class Feed {
     /**
      * The posts in the feed
      */
-    public posts: Required<IPost>[];
+    public posts: IPost[];
 
     /**
      * Creates the feed, with optional initial postss
      * @constructs
      * @param initialPosts Initial posts, if any
      */
-    constructor(initialPosts: Required<IPost>[] = []) {
+    constructor(initialPosts: IPost[] = []) {
         this.posts = initialPosts;
     }
 }

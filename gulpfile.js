@@ -21,10 +21,13 @@ async function compileSchemas() {
       const defDir = path.join(__dirname, 'src', 'types', 'schemas', category);
       await fs.ensureDir(defDir);
       ['Query', 'Response'].forEach(async (file) => {
-        await fs.writeFile(
-          path.join(defDir, `${file}.d.ts`),
-          await compileFromFile(path.join(schemas, category, `${file}.json`)),
-        );
+        const fpath = path.join(schemas, category, `${file}.json`);
+        try {
+          await fs.access(fpath);
+          await fs.writeFile(path.join(defDir, `${file}.d.ts`), await compileFromFile(fpath));
+        } catch (err) {
+          // Skip file that doesn't exist
+        }
       });
     });
 }

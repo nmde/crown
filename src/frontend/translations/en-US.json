@@ -20,6 +20,7 @@
             "UPPERCASE": "Passwords must contain at least 3 uppercase letters",
             "USERNAME": "Passwords cannot contain your username"
         },
+        "USER_NOT_FOUND": "The requested user could not be found",
         "USERNAME": {
             "CHARACTERS": "Usernames can only contain letters, numbers, ~, _, and -",
             "LENGTH": "Usernames must be at least 4 characters",
@@ -38,7 +39,8 @@
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",
         "SIGNUP": "Sign Up",
-        "UPLOAD": "Create a Post"
+        "UPLOAD": "Create a Post",
+        "USER_ERROR": "Error finding user"
     },
     "labels": {
         "CONFIRM_PASSWORD": "Confirm Password",

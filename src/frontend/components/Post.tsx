@@ -23,10 +23,8 @@ export default class Post extends Styled<Classes> {
    * The post author
    */
   private data: {
-    author: IUser;
-  } = {
-    author: {},
-  };
+    author?: IUser;
+  } = {};
 
   /**
    * The post data
@@ -82,26 +80,30 @@ export default class Post extends Styled<Classes> {
    * @returns the post
    */
   public render(): VNode {
-    return (
-      <v-card>
-        <v-toolbar>
-          <v-toolbar-title>
-            <router-link to={`/@${this.data.author.username}`}>
-              {this.data.author.username}
-            </router-link>
-          </v-toolbar-title>
-        </v-toolbar>
-        <v-img src={`${path.join(apiPath('media'), this.post.media as string)}`} />
-        <v-card-actions>
-          <v-btn color="primary" plain block>
-            <v-icon>favorite</v-icon>
-          </v-btn>
-        </v-card-actions>
-        <v-card-text>
-          <div class="text-body-2">{this.post.description}</div>
-          <div class={this.className('description')}>{formatDate(this.post.created || '')}</div>
-        </v-card-text>
-      </v-card>
-    );
+    // TODO workaround
+    if (this.data.author !== undefined) {
+      return (
+        <v-card>
+          <v-toolbar>
+            <v-toolbar-title>
+              <router-link to={`/@${this.data.author.username}`}>
+                {this.data.author.username}
+              </router-link>
+            </v-toolbar-title>
+          </v-toolbar>
+          <v-img src={`${path.join(apiPath('media'), this.post.media as string)}`} />
+          <v-card-actions>
+            <v-btn color="primary" plain block>
+              <v-icon>favorite</v-icon>
+            </v-btn>
+          </v-card-actions>
+          <v-card-text>
+            <div class="text-body-2">{this.post.description}</div>
+            <div class={this.className('description')}>{formatDate(this.post.created || '')}</div>
+          </v-card-text>
+        </v-card>
+      );
+    }
+    return <div></div>;
   }
 }

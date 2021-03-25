@@ -28,6 +28,8 @@ import {
 import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
+import Post from './models/Post';
+import { WhereOptions } from 'sequelize/types';
 
 dotenv.config();
 
@@ -260,6 +262,22 @@ export default class Server implements EndpointProvider {
         }).save()
       ).get('id'),
     };
+  }
+
+  /**
+   * Gets a feed of posts using the specified search parameters
+   * @param param parameters for finding posts
+   * @returns the list of posts
+   */
+  public async getFeed({ author }: Query<'getFeed'>): Promise<Response<'getFeed'>> {
+    const where: WhereOptions = {};
+    if (author != undefined) {
+      where.author = author;
+    }
+    const results = await Post.findAll({
+      where,
+    });
+    return results.map((value) => value.toJSON());
   }
 
   /**
