@@ -31,7 +31,8 @@ type Classes =
   | 'DisplayName'
   | 'Center'
   | 'GalleryImage'
-  | 'Spacer';
+  | 'Spacer'
+  | 'TextSpacer';
 
 const avatarSize = 100;
 
@@ -121,13 +122,15 @@ export default class Profile extends Styled<Classes> implements Props {
           })) as IUser;
 
           // TODO
-          this.background = this.media[this.user.profileBackground]
+          this.background = this.media[this.user.profileBackground];
 
           // Get the user's posts
           try {
-            this.feed = new Feed((await store.getFeed({
-              author: this.user.id,
-            })));
+            this.feed = new Feed(
+              await store.getFeed({
+                author: this.user.id,
+              }),
+            );
           } catch (err) {
             this.loading = false;
           }
@@ -190,6 +193,9 @@ export default class Profile extends Styled<Classes> implements Props {
       Spacer: {
         height: '86.5px',
       },
+      TextSpacer: {
+        height: '32px',
+      },
     });
   }
 
@@ -234,11 +240,25 @@ export default class Profile extends Styled<Classes> implements Props {
                   <VContainer>
                     <VRow>
                       <VCol cols={6}>
-                        <div class="text-h5">{this.user.followerCount}</div>
+                        <div class="text-h5">
+                          {(() => {
+                            if (this.loading) {
+                              return <div class={this.className('TextSpacer')} />;
+                            }
+                            return this.user.followerCount;
+                          })()}
+                        </div>
                         {t.labels.FOLLOWERS}
                       </VCol>
                       <VCol cols={6}>
-                        <div class="text-h5">{this.user.followingCount}</div>
+                        <div class="text-h5">
+                          {(() => {
+                            if (this.loading) {
+                              return <div class={this.className('TextSpacer')} />;
+                            }
+                            return this.user.followingCount;
+                          })()}
+                        </div>
                         {t.labels.FOLLOWING}
                       </VCol>
                     </VRow>
@@ -246,7 +266,7 @@ export default class Profile extends Styled<Classes> implements Props {
                       {(() => {
                         // TODO: limit the number of posts loaded at once & load more when the user scrolls
                         if (this.loading) {
-                          return <VProgressLinear indeterminate />
+                          return <VProgressLinear indeterminate />;
                         }
                         return this.feed.posts.map((post) => {
                           return (
