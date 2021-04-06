@@ -15,21 +15,20 @@ import helmet from 'helmet';
 import MimeMatcher from 'mime-matcher';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
+import { WhereOptions } from 'sequelize/types';
 import { pipeline } from 'stream';
 import { keys } from 'ts-transformer-keys';
 import { Mutable } from 'type-fest';
 import util from 'util';
 import { v4 as uuid } from 'uuid';
-import models from './models';
-import schemas from './schemas';
 import {
   Endpoints, EndpointProvider, Query, Response,
 } from '../types/Endpoints';
 import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 import currentTokenTime from '../util/currentTokenTime';
-import Post from './models/Post';
-import { WhereOptions } from 'sequelize/types';
+import models from './models';
+import schemas from './schemas';
 
 dotenv.config();
 
@@ -56,16 +55,16 @@ export default class Server implements EndpointProvider {
 
   private token!: Tokenize<IUser>;
 
-  public constructor() {
+  public constructor(database = env.PGDATABASE) {
     const { app } = this;
     if (env.PGUSER === undefined) {
       throw new Error('Missing Postgres user!');
     } else {
       this.database = new Sequelize(
-        `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`,
+        `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${database}`,
         {
-          models: Object.values(models),
           logging: false,
+          models: Object.values(models),
         },
       );
     }
@@ -79,11 +78,11 @@ export default class Server implements EndpointProvider {
       // Uses the least secure CSP possible in dev mode
       helmetOptions.contentSecurityPolicy = {
         directives: {
-          defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
-          scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
           connectSrc: ['*', "'unsafe-inline'"],
-          imgSrc: ['*', "'unsafe-inline'"],
+          defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
           frameSrc: ['*'],
+          imgSrc: ['*', "'unsafe-inline'"],
+          scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
           styleSrc: ['*', "'unsafe-inline'"],
         },
       };
@@ -141,16 +140,16 @@ export default class Server implements EndpointProvider {
       this.app.post<{
         Body: Record<QueryKeys[typeof endpoint], string>;
       }>(apiPath(endpoint), {
+        handler: async (request) => this[endpoint](request.body),
         schema: {
           body: schemas[endpoint].query,
           response: {
             '2xx': {
-              title: endpoint,
               properties: schemas[endpoint].response.properties,
+              title: endpoint,
             },
           },
         },
-        handler: async (request) => this[endpoint](request.body),
       });
     });
 
@@ -254,11 +253,11 @@ export default class Server implements EndpointProvider {
     return {
       id: (
         await new models.Post({
-          media: params.media,
           author: user.id,
           created: new Date().toISOString(),
-          expires: params.expires,
           description: params.description,
+          expires: params.expires,
+          media: params.media,
         }).save()
       ).get('id'),
     };
@@ -271,10 +270,10 @@ export default class Server implements EndpointProvider {
    */
   public async getFeed({ author }: Query<'getFeed'>): Promise<Response<'getFeed'>> {
     const where: WhereOptions = {};
-    if (author != undefined) {
+    if (author !== undefined) {
       where.author = author;
     }
-    const results = await Post.findAll({
+    const results = await models.Post.findAll({
       where,
     });
     return results.map((value) => value.toJSON());
@@ -324,8 +323,8 @@ export default class Server implements EndpointProvider {
   public async signIn({ username, password }: Query<'signIn'>): Promise<Response<'signIn'>> {
     const results = await models.User.findOne({
       where: {
-        username,
         password,
+        username,
       },
     });
     if (results !== null) {
