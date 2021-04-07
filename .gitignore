@@ -557,3 +557,6 @@ src/types/schemas/*/*.d.ts
 
 # Built Storybook
 storybook-static
+
+# Test media dir
+tests/media

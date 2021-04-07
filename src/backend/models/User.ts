@@ -4,6 +4,9 @@ import {
 import IUser from '../../types/User';
 
 @Table
+/**
+ * User table
+ */
 export default class User extends Model<User> implements IUser {
   @Column(DataType.STRING)
   public username!: string;
@@ -15,9 +18,9 @@ export default class User extends Model<User> implements IUser {
   public email!: string;
 
   @Column({
+    defaultValue: DataType.UUIDV4,
     primaryKey: true,
     type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
   })
   public id!: string;
 
@@ -26,12 +29,6 @@ export default class User extends Model<User> implements IUser {
 
   @Column(DataType.STRING)
   public displayName!: string;
-
-  @Column(DataType.INTEGER)
-  public followerCount!: number;
-
-  @Column(DataType.INTEGER)
-  public followingCount!: number;
 
   @Column(DataType.STRING)
   public profileBackground!: string;

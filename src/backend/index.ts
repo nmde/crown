@@ -1,4 +1,4 @@
-import Server from './server';
+import Server from './Server';
 
 // Starts the central server
 // TODO: change port for deployment

@@ -2,10 +2,11 @@
   "extends": [
     "airbnb-typescript/base",
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsdoc/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "sort-class-members"],
+  "plugins": ["@typescript-eslint", "sort-class-members", "jsdoc"],
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
@@ -48,6 +49,18 @@
           "[conventional-private-methods]"
         ],
         "accessorPairPositioning": "getThenSet"
+      }
+    ],
+    "require-jsdoc": [
+      "error",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": true,
+          "ClassDeclaration": true,
+          "ArrowFunctionExpression": true,
+          "FunctionExpression": true
+        }
       }
     ]
   },

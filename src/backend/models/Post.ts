@@ -4,6 +4,9 @@ import {
 import IPost from '../../types/Post';
 
 @Table
+/**
+ * Post table
+ */
 export default class Post extends Model<Post> implements IPost {
   @Column(DataType.STRING)
   public media!: string;
@@ -21,9 +24,9 @@ export default class Post extends Model<Post> implements IPost {
   public description!: string;
 
   @Column({
+    defaultValue: DataType.UUIDV4,
     primaryKey: true,
     type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
   })
   public id!: string;
 }

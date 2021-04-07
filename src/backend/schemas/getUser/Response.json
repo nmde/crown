@@ -14,12 +14,6 @@
       "displayName": {
         "type": "string"
       },
-      "followerCount": {
-        "type": "number"
-      },
-      "followingCount": {
-        "type": "number"
-      },
       "profileBackground": {
         "type": "string"
       },

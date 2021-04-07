@@ -1,126 +1,195 @@
-import Tokenize from '@cyyynthia/tokenize';
-import axios from 'axios';
+import dotenv from 'dotenv';
+import { HttpError } from 'fastify-sensible/lib/httpError';
+import fs from 'fs-extra';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import Server from '../src/backend/Server';
 import models from '../src/backend/models';
-import Server from '../src/backend/server';
-import {
-  Endpoints, EndpointProvider, Query, Response,
-} from '../src/types/Endpoints';
-import apiPath from '../src/util/apiPath';
 
-const port = 3001;
-const token = new Tokenize(process.env.AUTHKEY as string);
+dotenv.config();
 
-const server = new Server();
-const { User } = server.database.models;
+const authKey = process.env.AUTHKEY as string;
+const mediaDir = path.join(__dirname, 'media');
+const server = new Server(authKey, mediaDir);
 
-async function post<T extends keyof Endpoints>(
-  endpoint: keyof EndpointProvider,
-  data: Partial<Query<T>>,
-): Promise<Response<T>> {
-  return (
-    await axios.post<Response<T>>(
-      `http://${path.join(`localhost:${port}`, apiPath(endpoint))}`,
-      data,
-    )
-  ).data;
-}
+// ID and tokens are dynamically generated during tests
+let userId: string;
+let token: string;
+let postId: string;
 
-const credentials1 = {
-  username: 'johnsmith123',
-  password: '12345',
-  email: 'me@example.com',
-};
+// Clean up before running tests
+beforeAll(async () => {
+  if (fs.existsSync(mediaDir)) {
+    fs.rmdirSync(mediaDir);
+  }
+});
 
-const credentials2 = {
-  username: 'exampleuser',
-  password: '12345',
-  email: 'user@foo.com',
-};
-
-describe('stating the server', () => {
-  it('starts succesfully', async () => {
-    expect(await server.start(port)).toBeTruthy();
-    // Clear the testing database so tests are run on a clean slate
-    await models.User.destroy({
-      where: {},
-    });
+describe('constructing Server', () => {
+  it('constructs Server', () => {
+    expect(server).toBeDefined();
+  });
+  it('constructs Server in development mode', () => {
+    process.env.NODE_ENV = 'development';
+    const devServer = new Server(authKey, mediaDir);
+    expect(devServer.devMode).toBeTruthy();
+    delete process.env.NODE_ENV;
   });
 });
 
-describe('createAccount', () => {
-  it('creates an account directly', async () => {
-    // Normal case - All the required information is present
-    // 1 - test output directly
-    const res = await server.createAccount(credentials1);
-    expect(res).toHaveProperty('id');
-    // 2 - check the database
-    const query = await User.findAndCountAll({
-      where: {
-        username: credentials1.username,
-      },
-    });
-    expect(query.count).toBe(1);
-    expect(query.rows[0].get('username')).toBe(credentials1.username);
+describe('starting the sevrer', () => {
+  // Tests must run in this order so subsequent tests can use the database connection
+  it('fails to connect to the database', async () => {
+    try {
+      await server.connect(
+        'postgres',
+        process.env.PGPASSWORD as string,
+        'localhost',
+        '5432',
+        'foobar',
+      );
+    } catch (err) {
+      expect(err.message).toMatch('Could not establish database connection.');
+    }
   });
-  it('creates an account via API', async () => {
-    // Normal case - All the required information is present
-    // 1 - test API response
-    const res = await post<'createAccount'>('createAccount', credentials2);
-    expect(res).toHaveProperty('id');
-    // 2 - check the database
-    const query = await User.findAndCountAll({
-      where: {
-        username: credentials2.username,
-      },
-    });
-    expect(query.count).toBe(1);
-    expect(query.rows[0].get('username')).toBe(credentials2.username);
+  it('connects to the test database', async () => {
+    const database = await server.connect(
+      'postgres',
+      process.env.PGPASSWORD as string,
+      'localhost',
+      '5432',
+      'crown-test',
+    );
+    expect(database).toBeDefined();
   });
-  it('fails because username is already in use', async () => {
-    // Error case - Username is already present in the database
-    expect(async () => {
-      await server.createAccount(credentials1);
-    }).rejects.toThrow();
+  it('starts the server', async () => {
+    await server.start(3000);
+    expect(fs.existsSync(mediaDir)).toBeTruthy();
   });
-  it('fails because required information is missing', async () => {
-    // Error case - API should fail if required information is not present
-    // 1 - API should respond with code 400
-    expect(async () => {
-      await post<'createAccount'>('createAccount', {
-        username: credentials2.username,
-      });
-    }).rejects.toThrow();
-  });
-});
-
-describe('signIn', () => {
-  it('signs in directly', async () => {
-    // Normal case - All the required information is present & password is correct
-    // Uses the same credentials as the account created in the previous section
-    const res = await server.signIn(credentials1);
-    expect(res).toHaveProperty('id');
-    expect(res).toHaveProperty('token');
-    // Make sure the token is correct
-    if (res.token !== undefined) {
-      const user = await token.validate(res.token, async (id) => {
-        const res2 = await User.findOne({
-          where: {
-            id,
-          },
-        });
-        if (res2 !== null) {
-          return res2.toJSON();
-        }
-        return {};
-      });
-      expect(user).not.toBeNull();
-      expect(user).not.toBeFalsy();
+  it('starts the server on an invalid port', async () => {
+    try {
+      await server.start(3000);
+    } catch (err) {
+      expect(err.message).toBeDefined();
     }
   });
 });
 
-describe('createPost', () => {});
+describe('creating accounts', () => {
+  it('creates an account', async () => {
+    const user = await server.createAccount({
+      displayName: 'John Smith',
+      email: 'me@example.com',
+      password: 'password',
+      username: 'user123',
+    });
+    expect(user.id).toBeDefined();
+  });
+  it('creates an account with duplicate username', async () => {
+    try {
+      await server.createAccount({
+        displayName: 'John Smith',
+        email: 'me@example.com',
+        password: 'password',
+        username: 'user123',
+      });
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(409);
+    }
+  });
+});
 
-// TODO: change username/password, forgot password, delete entire account
-// TODO: use mocks
+describe('signing in', () => {
+  it('signs in', async () => {
+    const user = await server.signIn({
+      password: 'password',
+      username: 'user123',
+    });
+    expect(user.token).toBeDefined();
+    // Update the ID and token for other tests
+    userId = user.id;
+    token = user.token;
+  });
+  it('fails to sign in', async () => {
+    try {
+      await server.signIn({
+        password: 'wrong_password',
+        username: 'user123',
+      });
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(400);
+    }
+  });
+});
+
+describe('getting a user', () => {
+  it('gets a user', async () => {
+    const user = await server.getUser({
+      id: userId,
+    });
+    expect(user.username).toBe('user123');
+  });
+  it('gets a user that does not exist', async () => {
+    try {
+      await server.getUser({
+        id: uuidv4(),
+      });
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(400);
+    }
+  });
+});
+
+describe('creating posts', () => {
+  it('creates a post', async () => {
+    const post = await server.createPost({
+      description: 'Test post',
+      expires: new Date().toISOString(),
+      media: '',
+      token,
+    });
+    postId = post.id;
+  });
+  it('creates a post with an invalid token', async () => {
+    try {
+      await server.createPost({
+        description: 'Test post',
+        expires: new Date().toISOString(),
+        media: '',
+        token: uuidv4(),
+      });
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(401);
+    }
+  });
+});
+
+describe('getting posts', () => {
+  it('gets a post', async () => {
+    const post = await server.getPost({
+      id: postId,
+    });
+    expect(post.author).toBe(userId);
+  });
+  it('gets a post that does not exist', async () => {
+    try {
+      await server.getPost({
+        id: uuidv4(),
+      });
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(404);
+    }
+  });
+});
+
+// Shut down the server after tests have completed
+afterAll(async () => {
+  await server.stop();
+
+  // Clear the test database so the next time tests run, they run on an empty slate
+  await models.User.destroy({
+    where: {},
+  });
+  await models.Post.destroy({
+    where: {},
+  });
+});
