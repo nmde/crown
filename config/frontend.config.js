@@ -1,64 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-extraneous-dependencies */
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const frontend = require('nmde-common/config/frontend');
 const path = require('path');
-const sass = require('sass');
-const { merge } = require('webpack-merge');
-const common = require('./common.config');
 
-module.exports = merge(common, {
-  entry: {
-    frontend: path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
-  },
-  plugins: [
-    /* TODO: 
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '..', 'src', 'frontend', 'index.html'),
-    }),
-    */
-  ],
-  resolve: {
-    alias: {
-      vue$: 'vue/dist/vue.esm.js',
-    },
-  },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.s(c|a)ss$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'sass-loader',
-            options: {
-              implementation: sass,
-              sassOptions: {
-                indentedSyntax: true,
-              },
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: 'fonts/',
-        },
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loader: 'file-loader',
-        options: {
-          name: 'assets/[name].[ext]',
-        },
-      },
-    ],
-  },
-});
+module.exports = frontend(
+  path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
+  path.resolve(__dirname, '..', 'dist'),
+);

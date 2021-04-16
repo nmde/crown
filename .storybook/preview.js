@@ -1,14 +1,7 @@
-const { VApp } = require('vuetify/lib');
+const preview = require('nmde-common/config/storybook-preview');
 const vuetify = require('../src/frontend/vuetify');
 
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-};
+const config = preview(vuetify);
 
-export const decorators = [
-  (story) => ({
-    vuetify,
-    components: { VApp, story },
-    template: '<v-app><v-main><story /></v-main></v-app>',
-  }),
-];
+export const parameters = config.parameters;
+export const decorators = config.decorators;
