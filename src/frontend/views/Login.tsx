@@ -199,6 +199,7 @@ export default class Login extends Styled<Classes> {
                             username: this.form.username,
                             password: this.form.password,
                             email: this.form.email,
+                            displayName: '', // TODO
                           });
                           // TODO: welcome message, verify email
                           this.$router.back();

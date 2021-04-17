@@ -36,7 +36,7 @@ describe('constructing Server', () => {
   });
 });
 
-describe('starting the sevrer', () => {
+describe('starting the server', () => {
   // Tests must run in this order so subsequent tests can use the database connection
   it('fails to connect to the database', async () => {
     try {

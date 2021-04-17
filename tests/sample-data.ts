@@ -10,8 +10,6 @@ export const Users: IUser[] = [
     username: 'epicgamer123',
     profileBackground: 'background',
     profilePicture: 'avatar',
-    followerCount: 100,
-    followingCount: 1500,
   },
 ];
 
