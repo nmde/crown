@@ -181,6 +181,23 @@ describe('getting posts', () => {
   });
 });
 
+describe('getting a feed', () => {
+  it('gets author feed', async () => {
+    const feed = await server.getFeed({
+      author: userId,
+    });
+    expect(feed.length).toBe(1);
+    expect(feed[0].author).toBe(userId);
+  });
+  it('gets an empty feed', async () => {
+    try {
+      await server.getFeed({});
+    } catch (err) {
+      expect((err as HttpError).statusCode).toBe(400);
+    }
+  });
+});
+
 // Shut down the server after tests have completed
 afterAll(async () => {
   await server.stop();

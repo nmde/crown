@@ -43,6 +43,32 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
+   * Authenticates the user based on the provided auth token
+   *
+   * @param {string} token the auth token
+   * @returns {IUser} the user associated with the token
+   * @throws {HttpError} if the token is invalid
+   */
+  private async authenticate(token: string): Promise<IUser> {
+    const user = await this.token.validate(token, async (id) => {
+      const results = await models.User.findOne({
+        where: {
+          id,
+        },
+      });
+      if (results !== null) {
+        return results.toJSON() as IUser;
+      }
+      return null;
+    });
+    if (user === false || user === null) {
+      // Auth token is invalid
+      throw this.app.httpErrors.unauthorized();
+    }
+    return user;
+  }
+
+  /**
    * API endpoint for creating an account
    *
    * @param {CreateAccountQuery} query Account creation query
@@ -83,21 +109,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createPost(query: Query<'createPost'>): Promise<Response<'createPost'>> {
     // Confirm the auth token is valid
-    const user = await this.token.validate(query.token, async (id) => {
-      const results = await models.User.findOne({
-        where: {
-          id,
-        },
-      });
-      if (results !== null) {
-        return results.toJSON() as IUser;
-      }
-      return null;
-    });
-    if (user === false || user === null) {
-      // Auth token is invalid
-      throw this.app.httpErrors.unauthorized();
-    }
+    const user = await this.authenticate(query.token);
     const post = await new models.Post({
       author: user.id,
       created: new Date().toISOString(),
