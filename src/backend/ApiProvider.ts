@@ -86,7 +86,6 @@ export default class ApiProvider implements EndpointProvider {
       const user = await new models.User({
         displayName: query.displayName,
         email: query.email,
-        id: '',
         lastTokenReset: currentTokenTime(),
         password: query.password,
         profileBackground: media.BACKGROUND,
