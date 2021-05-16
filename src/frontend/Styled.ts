@@ -14,9 +14,8 @@ export default class Styled<T extends string> extends Vue {
   private classes: Record<string, string> = {};
 
   /**
-   * Renders the custom styles for the component
    * @constructs
-   * @param css The custom component styles
+   * @param {Record<string, CSS.Properties>} css The custom component styles
    */
   public constructor(css: Record<T, CSS.Properties>) {
     super();
@@ -31,8 +30,9 @@ export default class Styled<T extends string> extends Vue {
 
   /**
    * Retrieves the compiled CSS class name corresponding to a class name defined in T
-   * @param name The class name as defined in T
-   * @returns The compiled class name
+   *
+   * @param {string} name The class name as defined in T
+   * @returns {string} The compiled class name
    */
   protected className(name: T): string {
     return this.classes[name];

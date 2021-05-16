@@ -7,7 +7,7 @@ import IUser from '../../types/User';
 /**
  * User table
  */
-export default class User extends Model<User> implements IUser {
+export default class User extends Model<IUser> implements IUser {
   @Column(DataType.STRING)
   public username!: string;
 

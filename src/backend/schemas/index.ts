@@ -23,8 +23,8 @@ export default {
     query: GetFeedQs,
     response: {
       properties: {
-        type: "array",
         items: GetPostRes.properties,
+        type: 'array',
       },
     },
   },

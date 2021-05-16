@@ -8,12 +8,12 @@ import SinglePost from './views/SinglePost';
 
 const routes: RouteConfig[] = [
   {
-    path: '/',
     component: Home,
+    path: '/',
   },
   {
-    path: '/account',
     component: Account,
+    path: '/account',
   },
   /*
   {
@@ -22,16 +22,16 @@ const routes: RouteConfig[] = [
   },
   */
   {
-    path: '/explore',
     component: Explore,
+    path: '/explore',
   },
   {
-    path: '/login',
     component: Login,
+    path: '/login',
   },
   {
-    path: '/post/:id',
     component: SinglePost,
+    path: '/post/:id',
   },
 ];
 

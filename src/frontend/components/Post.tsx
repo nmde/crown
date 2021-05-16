@@ -3,22 +3,20 @@ import path from 'path-browserify';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
-import store from '../store';
-import Styled from '../Styled';
 import IPost from '../../types/Post';
 import IUser from '../../types/User';
 import apiPath from '../../util/apiPath';
 import formatDate from '../../util/formatDate';
+import Styled from '../Styled';
+import store from '../store';
 
 type Classes = 'description';
 
+@Component
 /**
  * Displays a post
  */
-@Component
 export default class Post extends Styled<Classes> {
-  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>>;
-
   /**
    * The post author
    */
@@ -32,8 +30,11 @@ export default class Post extends Styled<Classes> {
   @Prop()
   public post!: IPost;
 
+  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>>;
+
   /**
    * Defines custom styles for the component
+   *
    * @constructs
    */
   public constructor() {
@@ -77,7 +78,8 @@ export default class Post extends Styled<Classes> {
 
   /**
    * Renders the component
-   * @returns the post
+   *
+   * @returns {VNode} the post
    */
   public render(): VNode {
     // TODO workaround

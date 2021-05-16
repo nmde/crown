@@ -4,8 +4,8 @@ import { Component } from 'vue-property-decorator';
 import Styled from '../Styled';
 import background from '../assets/background.jpg';
 import ErrorDialog from '../components/ErrorDialog';
-import translations from '../translations';
 import store from '../store';
+import translations from '../translations';
 
 // TODO: translations
 // TODO: schema for translations
@@ -15,7 +15,9 @@ const { USERNAME, PASSWORD } = errors;
 
 /**
  * Check that a form field is not empty, and displays an error if it is
- * @param value Value supplied by v-text-field
+ *
+ * @param {string} value Value supplied by v-text-field
+ * @returns {Function} the validator function
  */
 function required(value: string) {
   return () => value !== '' || errors.EMPTY_FIELD;
@@ -23,32 +25,11 @@ function required(value: string) {
 
 type Classes = 'container' | 'row';
 
+@Component
 /**
  * The login/signup page
  */
-@Component
 export default class Login extends Styled<Classes> {
-  private get baseNotValid() {
-    return !this.usernameIsValid || !this.passwordIsValid;
-  }
-
-  private get emailIsValid() {
-    let valid = true;
-    this.passwordRules.forEach((rule) => {
-      valid = valid && rule(this.form.password) === true;
-    });
-    return valid;
-  }
-
-  private get emailRules() {
-    return [
-      required(this.form.email),
-      (i: string) => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
-        i,
-      ) || errors.EMAIL,
-    ];
-  }
-
   private error = '';
 
   private form = {
@@ -59,47 +40,9 @@ export default class Login extends Styled<Classes> {
 
   private loading = false;
 
-  private get passwordIsValid() {
-    let valid = true;
-    this.passwordRules.forEach((rule) => {
-      valid = valid && rule(this.form.password) === true;
-    });
-    return valid;
-  }
-
-  private get passwordRules() {
-    const { form } = this;
-    return [
-      required(form.password),
-      (i: string) => new PasswordValidator().has().uppercase(3).validate(i) || PASSWORD.UPPERCASE,
-      (i: string) => new PasswordValidator().has().lowercase(3).validate(i) || PASSWORD.LOWERCASE,
-      (i: string) => new PasswordValidator().has().digits(2).validate(i) || PASSWORD.DIGITS,
-      (i: string) => new PasswordValidator().has().symbols(1).validate(i) || PASSWORD.SYMBOLS,
-      (i: string) => new PasswordValidator().has().not().oneOf([form.username])
-        .validate(i) || PASSWORD.USERNAME,
-    ];
-  }
-
-  private get usernameIsValid() {
-    let valid = true;
-    this.usernameRules.forEach((rule) => {
-      valid = valid && rule(this.form.username) === true;
-    });
-    return valid;
-  }
-
-  private get usernameRules() {
-    return [
-      required(this.form.username),
-      (i: string) => i.length >= 4 || USERNAME.LENGTH,
-      (i: string) => new PasswordValidator().has().letters(1).validate(i) || USERNAME.LETTERS,
-      (i: string) => new PasswordValidator()
-        .has()
-        .not(/[^A-Za-z0-9\-~_]/)
-        .validate(i) || USERNAME.CHARACTERS,
-    ];
-  }
-
+  /**
+   * @constructs
+   */
   public constructor() {
     super({
       container: {
@@ -113,6 +56,108 @@ export default class Login extends Styled<Classes> {
     });
   }
 
+  /**
+   * Checks if the base information is valid
+   *
+   * @returns {boolean} if the base information is valid
+   */
+  private get baseNotValid() {
+    return !this.usernameIsValid || !this.passwordIsValid;
+  }
+
+  /**
+   * Checks if the email is valid
+   *
+   * @returns {boolean} if the email is valid
+   */
+  private get emailIsValid() {
+    let valid = true;
+    this.emailRules.forEach((rule) => {
+      valid = valid && rule(this.form.password) === true;
+    });
+    return valid;
+  }
+
+  /**
+   * Rules for validating emails
+   *
+   * @returns {Function[]} validator functions for emails
+   */
+  private get emailRules() {
+    return [
+      required(this.form.email),
+      (i: string) => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
+        i,
+      ) || errors.EMAIL,
+    ];
+  }
+
+  /**
+   * Checks if the password is valid
+   *
+   * @returns {boolean} if the password is valid
+   */
+  private get passwordIsValid() {
+    let valid = true;
+    this.passwordRules.forEach((rule) => {
+      valid = valid && rule(this.form.password) === true;
+    });
+    return valid;
+  }
+
+  /**
+   * Rules for validating passwords
+   *
+   * @returns {Function[]} validator functions for passwords
+   */
+  private get passwordRules() {
+    const { form } = this;
+    return [
+      required(form.password),
+      (i: string) => new PasswordValidator().has().uppercase(3).validate(i) || PASSWORD.UPPERCASE,
+      (i: string) => new PasswordValidator().has().lowercase(3).validate(i) || PASSWORD.LOWERCASE,
+      (i: string) => new PasswordValidator().has().digits(2).validate(i) || PASSWORD.DIGITS,
+      (i: string) => new PasswordValidator().has().symbols(1).validate(i) || PASSWORD.SYMBOLS,
+      (i: string) => new PasswordValidator().has().not().oneOf([form.username])
+        .validate(i) || PASSWORD.USERNAME,
+    ];
+  }
+
+  /**
+   * Checks if the username is valid
+   *
+   * @returns {boolean} if the username is valid
+   */
+  private get usernameIsValid() {
+    let valid = true;
+    this.usernameRules.forEach((rule) => {
+      valid = valid && rule(this.form.username) === true;
+    });
+    return valid;
+  }
+
+  /**
+   * Rules for checking the validity of usernames
+   *
+   * @returns {Function[]} validator functions for usernames
+   */
+  private get usernameRules() {
+    return [
+      required(this.form.username),
+      (i: string) => i.length >= 4 || USERNAME.LENGTH,
+      (i: string) => new PasswordValidator().has().letters(1).validate(i) || USERNAME.LETTERS,
+      (i: string) => new PasswordValidator()
+        .has()
+        .not(/[^A-Za-z0-9\-~_]/)
+        .validate(i) || USERNAME.CHARACTERS,
+    ];
+  }
+
+  /**
+   * Renders the component
+   *
+   * @returns {VNode} the component
+   */
   public render(): VNode {
     return (
       <v-container class={this.className('container')} fluid>
@@ -146,8 +191,8 @@ export default class Login extends Styled<Classes> {
                         this.loading = true;
                         try {
                           await store.signIn({
-                            username: this.form.username,
                             password: this.form.password,
+                            username: this.form.username,
                           });
                           this.$router.back();
                         } catch (err) {
@@ -196,10 +241,10 @@ export default class Login extends Styled<Classes> {
                         this.loading = true;
                         try {
                           await store.createAccount({
-                            username: this.form.username,
-                            password: this.form.password,
-                            email: this.form.email,
                             displayName: '', // TODO
+                            email: this.form.email,
+                            password: this.form.password,
+                            username: this.form.username,
                           });
                           // TODO: welcome message, verify email
                           this.$router.back();

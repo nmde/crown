@@ -6,4 +6,12 @@ const path = require('path');
 module.exports = frontend(
   path.resolve(__dirname, '..', 'src', 'frontend', 'index.ts'),
   path.resolve(__dirname, '..', 'dist'),
+  {
+    resolve: {
+      fallback: {
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+      },
+    },
+  },
 );

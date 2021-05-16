@@ -7,18 +7,6 @@ import Styled from '../Styled';
 import background from '../assets/background.jpg';
 import Feed from '../classes/Feed';
 import ErrorDialog from '../components/ErrorDialog';
-import VAvatar from '../components/vuetify-tsx/VAvatar';
-import VCard from '../components/vuetify-tsx/VCard';
-import VCardSubtitle from '../components/vuetify-tsx/VCardSubtitle';
-import VCardText from '../components/vuetify-tsx/VCardText';
-import VCardTitle from '../components/vuetify-tsx/VCardTitle';
-import VCol from '../components/vuetify-tsx/VCol';
-import VContainer from '../components/vuetify-tsx/VContainer';
-import VImg from '../components/vuetify-tsx/VImg';
-import VParallax from '../components/vuetify-tsx/VParallax';
-import VProgressCircular from '../components/vuetify-tsx/VProgressCircular';
-import VProgressLinear from '../components/vuetify-tsx/VProgressLinear';
-import VRow from '../components/vuetify-tsx/VRow';
 import store from '../store';
 import t from '../translations/en-US.json';
 
@@ -208,40 +196,40 @@ export default class Profile extends Styled<Classes> implements Props {
   public render(): VNode {
     // TODO: allow users to customize their background
     return (
-      <VParallax class={this.className('Fill')} src={this.background}>
-        <VContainer class={this.className('Fill')} fluid>
-          <VRow noGutters>
-            <VCol class={this.className('AvatarContainer')}>
-              <VAvatar color="primary" rounded size={avatarSize}>
+      <v-parallax class={this.className('Fill')} src={this.background}>
+        <v-container class={this.className('Fill')} fluid>
+          <v-row noGutters>
+            <v-col class={this.className('AvatarContainer')}>
+              <v-avatar color="primary" rounded size={avatarSize}>
                 {(() => {
                   if (this.loading) {
-                    return <VProgressCircular indeterminate />;
+                    return <v-progress-circular indeterminate />;
                   }
-                  return <VImg src={this.media[this.user.profilePicture]} />;
+                  return <v-img src={this.media[this.user.profilePicture]} />;
                 })()}
-              </VAvatar>
-            </VCol>
-          </VRow>
-          <VRow class={this.className('Main')} noGutters>
-            <VCol>
-              <VCard class={this.className('Center')}>
+              </v-avatar>
+            </v-col>
+          </v-row>
+          <v-row class={this.className('Main')} noGutters>
+            <v-col>
+              <v-card class={this.className('Center')}>
                 {(() => {
                   if (!this.loading) {
                     return (
                       <div>
-                        <VCardTitle class={this.className('DisplayName')}>
+                        <v-card-title class={this.className('DisplayName')}>
                           {this.user.displayName}
-                        </VCardTitle>
-                        <VCardSubtitle>{this.user.username}</VCardSubtitle>
+                        </v-card-title>
+                        <v-card-subtitle>{this.user.username}</v-card-subtitle>
                       </div>
                     );
                   }
                   return <div class={this.className('Spacer')}></div>;
                 })()}
-                <VCardText>
-                  <VContainer>
-                    <VRow>
-                      <VCol cols={6}>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols={6}>
                         <div class="text-h5">
                           {(() => {
                             if (this.loading) {
@@ -252,8 +240,8 @@ export default class Profile extends Styled<Classes> implements Props {
                           })()}
                         </div>
                         {t.labels.FOLLOWERS}
-                      </VCol>
-                      <VCol cols={6}>
+                      </v-col>
+                      <v-col cols={6}>
                         <div class="text-h5">
                           {(() => {
                             if (this.loading) {
@@ -264,30 +252,31 @@ export default class Profile extends Styled<Classes> implements Props {
                           })()}
                         </div>
                         {t.labels.FOLLOWING}
-                      </VCol>
-                    </VRow>
-                    <VRow>
+                      </v-col>
+                    </v-row>
+                    <v-row>
                       {(() => {
-                        // TODO: limit the number of posts loaded at once & load more when the user scrolls
+                        // TODO: limit the number of posts loaded at once & load more
+                        // when the user scrolls
                         if (this.loading) {
-                          return <VProgressLinear indeterminate />;
+                          return <v-progress-linear indeterminate />;
                         }
                         return this.feed.posts.map((post) => (
-                            <VCol cols={6} sm={4} class={this.className('GalleryImage')}>
+                            <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                               {/* TODO: add lazy-src to all images */}
-                              <VImg aspectRatio={1} src={this.media[post.media as string]} />
-                            </VCol>
+                              <v-img aspectRatio={1} src={this.media[post.media as string]} />
+                            </v-col>
                         ));
                       })()}
-                    </VRow>
-                  </VContainer>
-                </VCardText>
-              </VCard>
-            </VCol>
-          </VRow>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
           <ErrorDialog header={t.headers.USER_ERROR} message={this.error} />
-        </VContainer>
-      </VParallax>
+        </v-container>
+      </v-parallax>
     );
   }
 }

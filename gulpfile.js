@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs-extra');
@@ -13,7 +14,9 @@ const src = path.join(__dirname, 'src');
 const dist = path.join(__dirname, 'dist');
 const schemas = path.join(src, 'backend', 'schemas');
 
-// Generates type definitions for backend schemas files (src/backend/schemas)
+/**
+ * Generates type definitions for backend schema files
+ */
 async function compileSchemas() {
   (await fs.readdir(schemas))
     .filter((category) => !/\.ts$/.test(category))
@@ -32,7 +35,13 @@ async function compileSchemas() {
     });
 }
 
-// Common task for compiling Typescript
+/**
+ * Common task for compiling Typescript
+ *
+ * @param {string} entry the entry folder
+ * @param {Object} config the webpack config
+ * @returns {Object} the webpack stream building the source
+ */
 function build(entry, config) {
   return gulp
     .src(path.join(src, entry, 'index.ts'))
@@ -40,12 +49,20 @@ function build(entry, config) {
     .pipe(gulp.dest(dist));
 }
 
-// Builds the backend
+/**
+ * Builds the backend
+ *
+ * @returns {Object} the webpack stream for the backend
+ */
 function backend() {
   return build('backend', backendConfig);
 }
 
-// Builds the frontend
+/**
+ * Builds the frontend
+ *
+ * @returns {Object} the webpack stream for the frontend
+ */
 function frontend() {
   return build('frontend', frontendConfig);
 }

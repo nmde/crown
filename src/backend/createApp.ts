@@ -29,7 +29,7 @@ export default function createApp(authKey: string): FastifyInstance {
   app.register(fastifyCookie);
 
   // Configure fastify-helmet
-  const helmetOptions: Mutable<Parameters<typeof helmet>[0]> = {};
+  const helmetOptions: Mutable<NonNullable<Parameters<typeof helmet>[0]>> = {};
   if (process.env.NODE_ENV === 'development') {
     // Uses the least secure CSP possible in dev mode to avoid headaches
     helmetOptions.contentSecurityPolicy = {

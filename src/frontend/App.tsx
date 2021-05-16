@@ -1,16 +1,16 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import t from './translations/en-US.json';
-import store from './store';
 import Styled from './Styled';
 import CreatePostDialog from './components/CreatePostDialog';
+import store from './store';
+import t from './translations/en-US.json';
 
 type Classes = 'fab';
 
+@Component
 /**
  * The main app component - Contains all global logic & UI
  */
-@Component
 export default class App extends Styled<Classes> {
   /**
    * The view currently displayed to the user
@@ -24,23 +24,25 @@ export default class App extends Styled<Classes> {
 
   /**
    * Defines custom component styles
+   *
    * @constructs
    */
   public constructor() {
     super({
       fab: {
         bottom: '16px',
-        right: '16px',
-        position: 'absolute',
-        width: '56px',
         height: '56px',
+        position: 'absolute',
+        right: '16px',
+        width: '56px',
       },
     });
   }
 
   /**
    * Renders the component
-   * @returns the component
+   *
+   * @returns {VNode} the component
    */
   public render(): VNode {
     return (

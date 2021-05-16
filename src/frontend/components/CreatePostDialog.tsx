@@ -2,22 +2,20 @@ import { Upload } from 'upload';
 import Vue, { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
-import t from '../translations/en-US.json';
-import store from '../store';
 import apiPath from '../../util/apiPath';
+import store from '../store';
+import t from '../translations/en-US.json';
 import ErrorDialog from './ErrorDialog';
 
 type Events = {
   onFinished: void;
 };
 
+@Component
 /**
  * The form for users to upload media & create a post
  */
-@Component
 export default class CreatePostDialog extends Vue {
-  public _tsx!: tsx.DeclareOnEvents<Events>;
-
   /**
    * The post description
    */
@@ -43,8 +41,12 @@ export default class CreatePostDialog extends Vue {
    */
   private progress = 0;
 
+  public _tsx!: tsx.DeclareOnEvents<Events>;
+
   /**
    * Renders the component
+   *
+   * @returns {VNode} the component
    */
   public render(): VNode {
     return (
@@ -75,10 +77,10 @@ export default class CreatePostDialog extends Vue {
               this.loading = true;
               // TODO: Validate input
               const upload = new Upload({
-                url: apiPath('upload'),
                 form: {
                   file: this.file,
                 },
+                url: apiPath('upload'),
               });
               upload.on('progress', (progress: number) => {
                 this.progress = progress * 100;
@@ -90,10 +92,10 @@ export default class CreatePostDialog extends Vue {
                     `/post/${
                       (
                         await store.createPost({
-                          expires: '',
-                          token: store.token as string,
                           description: this.description,
+                          expires: '',
                           media: JSON.parse(res.data.toString()).id,
+                          token: store.token as string,
                         })
                       ).id
                     }`,

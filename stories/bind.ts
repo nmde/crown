@@ -7,7 +7,9 @@ type ArgsObj<T> = {
 /**
  * Quick util for adding type-checking to template args
  * Type T is the props types
- * @returns An the bound template, with Type-safe args
+ *
+ * @param {Function} template the template compiler
+ * @returns {ArgsObj} the bound template, with Type-safe args
  */
 export default function bind<T>(
   template: (args: any, { argTypes }: { argTypes: any }) => ComponentOptions<Vue>,

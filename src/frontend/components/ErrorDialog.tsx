@@ -3,13 +3,11 @@ import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import t from '../translations/en-US.json';
 
+@Component
 /**
  * A common dialog for consistently displaying error messages
  */
-@Component
 export default class ErrorDialog extends Vue {
-  public _tsx!: tsx.DeclareProps<tsx.AutoProps<ErrorDialog>>;
-
   /**
    * The dialog header
    */
@@ -27,12 +25,14 @@ export default class ErrorDialog extends Vue {
    */
   private open = false;
 
+  public _tsx!: tsx.DeclareProps<tsx.AutoProps<ErrorDialog>>;
+
   /**
    * Automatically opens the dialog when the message changes
    */
   @Watch('message', {
-    immediate: true,
     deep: true,
+    immediate: true,
   })
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -44,7 +44,8 @@ export default class ErrorDialog extends Vue {
 
   /**
    * Renders the component
-   * @returns the error dialog
+   *
+   * @returns {VNode} the error dialog
    */
   public render(): VNode {
     return (

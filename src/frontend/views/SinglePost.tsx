@@ -1,15 +1,15 @@
 import Vue, { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
 // import { Response } from '../../types/Endpoints';
-import t from '../translations/en-US.json';
-import store from '../store';
 import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
+import store from '../store';
+import t from '../translations/en-US.json';
 
+@Component
 /**
  * Displays a single post
  */
-@Component
 export default class SinglePost extends Vue {
   /**
    * Contains the error message, if any
@@ -59,7 +59,8 @@ export default class SinglePost extends Vue {
 
   /**
    * Renders the component
-   * @returns the component
+   *
+   * @returns {VNode} the component
    */
   public render(): VNode {
     return (

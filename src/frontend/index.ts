@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import './bootstrap';
 import App from './App';
 import routes from './routes';
-import vuetify from './vuetify.js';
+import vuetify from './vuetify';
 
 // Install & configure libraries
 Vue.use(VueAxe);

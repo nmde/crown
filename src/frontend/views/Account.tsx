@@ -1,8 +1,14 @@
 import * as tsx from 'vue-tsx-support';
-import t from '../translations/en-US.json';
+import { VNode } from 'vue/types/umd';
 import store from '../store';
+import t from '../translations/en-US.json';
 
 export default tsx.component({
+  /**
+   * Renders the component
+   *
+   * @returns {VNode} the component
+   */
   render() {
     return (
       <v-container>

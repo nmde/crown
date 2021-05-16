@@ -1,17 +1,25 @@
 import Vue from 'vue';
-import bind from '../bind';
+import { ComponentOptions } from 'vue/types/umd';
 import ProfileTSX, { Props } from '../../src/frontend/views/Profile';
 import { Feeds, Users, Media } from '../../tests/sample-data';
+import bind from '../bind';
 
 // Convert TSX to actual Vue component
 const Profile = Vue.component('Profile', ProfileTSX);
 
 export default {
-  title: 'Views/Profile',
   component: Profile,
+  title: 'Views/Profile',
 };
 
-const Template = (args, { argTypes }) => ({
+/**
+ * Default story template
+ *
+ * @param {Props} _args component props
+ * @param {any} param1 arg types
+ * @returns {ComponentOptions} the bound template
+ */
+const Template = (_args: Props, { argTypes }: { argTypes: string }) => ({
   components: { Profile },
   props: Object.keys(argTypes),
   template: '<Profile v-bind="$props" v-on="$props" />',
@@ -20,21 +28,20 @@ const Template = (args, { argTypes }) => ({
 // Displaying a fake user
 export const WithUser = bind<Props>(Template);
 WithUser.args = {
+  feed: Feeds[0],
+  media: Media[0],
   tDisableBackend: true,
   user: Users[0],
-  media: Media[0],
-  feed: Feeds[0],
 };
-
 
 // Loading
 export const Loading = bind<Props>(Template);
 Loading.args = {
-  tDisableBackend: true,
-  tForceLoading: true,
-  user: Users[0],
-  media: {},
   feed: {
     posts: [],
   },
+  media: {},
+  tDisableBackend: true,
+  tForceLoading: true,
+  user: Users[0],
 };

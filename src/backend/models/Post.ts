@@ -7,7 +7,7 @@ import IPost from '../../types/Post';
 /**
  * Post table
  */
-export default class Post extends Model<Post> implements IPost {
+export default class Post extends Model<IPost> implements IPost {
   @Column(DataType.STRING)
   public media!: string;
 
