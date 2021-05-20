@@ -1,6 +1,7 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyAuth from 'fastify-auth';
 import fastifyCookie from 'fastify-cookie';
+import fastifyCors from 'fastify-cors';
 import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
 import fastifyRateLimit from 'fastify-rate-limit';
@@ -27,6 +28,15 @@ export default function createApp(authKey: string): FastifyInstance {
 
   // Configure fastify-cookie
   app.register(fastifyCookie);
+
+  // Configure fastify-cors
+  app.register(fastifyCors, {
+    origin: (origin, cb) => {
+      if (/localhost/.test(origin)) {
+        cb(null, true);
+      }
+    },
+  });
 
   // Configure fastify-helmet
   const helmetOptions: Mutable<NonNullable<Parameters<typeof helmet>[0]>> = {};

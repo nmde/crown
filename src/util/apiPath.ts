@@ -10,5 +10,6 @@ import { EndpointProvider } from '../types/Endpoints';
  * @returns {string} the API path
  */
 export default function apiPath(endpoint: keyof EndpointProvider | 'upload' | 'media', ...rest: string[]): string {
-  return path.join('/api', endpoint, ...rest);
+  // TODO
+  return `http://localhost:3000/${path.join('api', endpoint, ...rest)}`;
 }
