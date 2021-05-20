@@ -1,5 +1,7 @@
 import { CreateAccountQuery } from './schemas/createAccount/Query';
 import { CreateAccountResponse } from './schemas/createAccount/Response';
+import { CreateEdgeQuery } from './schemas/createEdge/Query';
+import { CreateEdgeResponse } from './schemas/createEdge/Response';
 import { CreatePostQuery } from './schemas/createPost/Query';
 import { CreatePostResponse } from './schemas/createPost/Response';
 import { GetFeedQuery } from './schemas/getFeed/Query';
@@ -14,6 +16,10 @@ export type Endpoints = {
   createAccount: {
     query: CreateAccountQuery;
     response: CreateAccountResponse;
+  };
+  createEdge: {
+    query: CreateEdgeQuery;
+    response: CreateEdgeResponse;
   };
   createPost: {
     query: CreatePostQuery;

@@ -198,6 +198,25 @@ describe('getting a feed', () => {
   });
 });
 
+describe('following a user', () => {
+  it('follows a user', async () => {
+    // create a user to follow
+    const user2 = await server.createAccount({
+      displayName: 'Jane Doe',
+      email: 'me2@example.com',
+      password: 'password',
+      username: 'username_1',
+    });
+    const edge = await server.createEdge({
+      source: userId,
+      target: user2.id,
+      token,
+      type: 'follow',
+    });
+    expect(edge.id).toBeDefined();
+  });
+});
+
 // Shut down the server after tests have completed
 afterAll(async () => {
   await server.stop();

@@ -2,6 +2,8 @@ import Tokenize from '@cyyynthia/tokenize';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize/types';
+import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
+import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { EndpointProvider, Query, Response } from '../types/Endpoints';
 import IUser from '../types/User';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
@@ -18,6 +20,7 @@ import { SignInResponse } from '../types/schemas/signIn/Response';
 import currentTokenTime from '../util/currentTokenTime';
 import media from '../util/media';
 import models from './models';
+import Edge from './models/Edge';
 
 /**
  * Provides API endpoints to the Server class
@@ -98,6 +101,33 @@ export default class ApiProvider implements EndpointProvider {
     }
     // Username is taken
     throw this.app.httpErrors.conflict();
+  }
+
+  /**
+   * Creates an edge
+   *
+   * @param {CreateEdgeQuery} query the edge information
+   * @returns {CreateEdgeResponse} the created edge ID
+   * @throws {HttpError} if the query is malformed
+   */
+  public async createEdge(query: Query<'createEdge'>): Promise<Response<'createEdge'>> {
+    const user = await this.authenticate(query.token);
+    let edge: Edge;
+    // TODO: check for duplicate?
+    switch (query.type) {
+      case 'follow':
+        edge = await new models.Edge({
+          source: user.id as string,
+          target: query.target,
+          type: 'follow',
+        }).save();
+        return {
+          id: edge.get('id'),
+        };
+        break;
+      default:
+        throw this.app.httpErrors.badRequest();
+    }
   }
 
   /**

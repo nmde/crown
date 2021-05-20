@@ -1,0 +1,21 @@
+{
+    "title": "createEdge-Query",
+    "type": "object",
+    "properties": {
+      "source": {
+        "type": "string"
+      },
+      "target": {
+        "type": "string"
+      },
+      "token": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "required": ["source", "target", "token", "type"]
+  }
+  

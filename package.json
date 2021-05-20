@@ -8,7 +8,7 @@
     "frontend": "npx gulp frontend",
     "backend": "npx gulp backend",
     "start": "npx cross-env NODE_ENV=development node dist/backend.js",
-    "test": "npx jest --coverage",
+    "test": "npx jest --detectOpenHandles --coverage",
     "storybook": "start-storybook -p 6006"
   },
   "repository": "https://github.com/nmde/crown",
