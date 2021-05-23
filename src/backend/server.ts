@@ -1,10 +1,14 @@
 import { FastifyInstance } from 'fastify';
 import fs from 'fs-extra';
 import { Sequelize } from 'sequelize-typescript';
+import { keys } from 'ts-transformer-keys';
+import { Endpoints } from '../types/Endpoints';
+import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
 import app from './createApp';
 import ServerError from './errors/ServerError';
 import models from './models';
+import schemas from './schemas';
 
 /**
  * The main backend server
@@ -85,6 +89,27 @@ export default class Server extends ApiProvider {
   public async start(port: number): Promise<FastifyInstance> {
     // Ensure the media directory exists
     await fs.ensureDir(this.mediaDir);
+
+    // Automatically create endpoints based on Endpoints.ts
+    type QueryKeys = {
+      [key in keyof Endpoints]: keyof Endpoints[key]['query'];
+    };
+    keys<Endpoints>().forEach((endpoint) => {
+      this.app.post<{
+        Body: Record<QueryKeys[typeof endpoint], string>;
+      }>(`/${apiPath(endpoint)}`, {
+        handler: async (request) => this[endpoint](request.body),
+        schema: {
+          body: schemas[endpoint].query,
+          response: {
+            '2xx': {
+              properties: schemas[endpoint].response.properties,
+              title: endpoint,
+            },
+          },
+        },
+      });
+    });
 
     // Start the Fastify server
     try {

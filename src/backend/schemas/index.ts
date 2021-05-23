@@ -1,5 +1,7 @@
 import CreateAccQs from './createAccount/Query.json';
 import CreateAccRes from './createAccount/Response.json';
+import CreateEdgeQs from './createEdge/Query.json';
+import CreateEdgeRes from './createEdge/Response.json';
 import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
 import GetFeedQs from './getFeed/Query.json';
@@ -15,6 +17,10 @@ export default {
     query: CreateAccQs,
     response: CreateAccRes,
   },
+  createEdge: {
+    query: CreateEdgeQs,
+    response: CreateEdgeRes,
+  },
   createPost: {
     query: CreatePostQs,
     response: CreatePostRes,
@@ -23,9 +29,12 @@ export default {
     query: GetFeedQs,
     response: {
       properties: {
-        items: GetPostRes.properties,
-        type: 'array',
+        posts: {
+          items: GetPostRes,
+          type: 'array',
+        },
       },
+      type: 'object',
     },
   },
   getPost: {

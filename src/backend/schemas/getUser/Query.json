@@ -2,10 +2,10 @@
   "title": "getUser-Query",
   "type": "object",
   "properties": {
-    "id": {
+    "username": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["id"]
+  "required": ["username"]
 }

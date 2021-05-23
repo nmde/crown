@@ -18,4 +18,14 @@ export default class Feed {
   public constructor(initialPosts: IPost[] = []) {
     this.posts = initialPosts;
   }
+
+  /**
+   * Gets a post from the feed
+   *
+   * @param {number} index the index of the post to get
+   * @returns {IPost} the post
+   */
+  public getPost(index: number): Required<IPost> {
+    return this.posts[index] as Required<IPost>;
+  }
 }

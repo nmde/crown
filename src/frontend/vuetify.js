@@ -4,12 +4,14 @@
  * Ensures consistency between the frontend and stories
  */
 const Vuetify = require('vuetify/dist/vuetify');
+const { default: colors } = require('vuetify/es5/util/colors');
 
 module.exports = new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: '#ff9800',
+        primary: colors.orange.base,
+        secondary: colors.lightBlue.base,
       },
     },
   },

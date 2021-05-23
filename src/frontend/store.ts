@@ -4,6 +4,8 @@ import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
 import { CreateAccountQuery } from 'types/schemas/createAccount/Query';
 import { CreateAccountResponse } from 'types/schemas/createAccount/Response';
+import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
+import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { CreatePostQuery } from 'types/schemas/createPost/Query';
 import { CreatePostResponse } from 'types/schemas/createPost/Response';
 import { GetFeedQuery } from 'types/schemas/getFeed/Query';
@@ -19,18 +21,37 @@ import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 
 /**
+ * Gets the full path to an API endpoint
+ *
+ * @param {string} endpoint the name of the endpoint
+ * @returns {string} the full URL to the endpoint
+ */
+function fullPath(endpoint: Parameters<typeof apiPath>[0]) {
+  return `http://localhost:3000/${apiPath(endpoint)}`;
+}
+
+/**
  * The "store", which manages data shared across all pages
  */
 class Store implements EndpointProvider {
-  @observable
-  public posts: Record<string, IPost> = {};
+  /**
+   * The current user
+   */
+  @observable public currentUser?: IUser;
+
+  /**
+   * Cached posts
+   */
+  @observable public posts: Record<string, IPost> = {};
 
   /**
    * Information about users, accessible by the user's uuid
    */
-  @observable
-  public users: Record<string, IUser> = {};
+  @observable public users: Record<string, IUser> = {};
 
+  /**
+   * The user's auth token
+   */
   @observable
   public token = JSCookie.get('token');
 
@@ -48,7 +69,7 @@ class Store implements EndpointProvider {
    * @returns {CreateAccountResponse} the API response
    */
   @action public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
-    const res = (await axios.post<Response<'createAccount'>>(apiPath('createAccount'), params))
+    const res = (await axios.post<Response<'createAccount'>>(fullPath('createAccount'), params))
       .data;
     await this.signIn({
       password: params.password,
@@ -58,13 +79,23 @@ class Store implements EndpointProvider {
   }
 
   /**
+   * Creates an edge
+   *
+   * @param {CreateEdgeQuery} params the request parameters
+   * @returns {CreateEdgeResponse} the API response
+   */
+  @action public async createEdge(params: Query<'createEdge'>): Promise<Response<'createEdge'>> {
+    return (await axios.post<Response<'createEdge'>>(fullPath('createEdge'), params)).data;
+  }
+
+  /**
    * Creates a post
    *
    * @param {CreatePostQuery} params the request parameters
    * @returns {CreatePostResponse} the API response
    */
   @action public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
-    return (await axios.post<Response<'createPost'>>(apiPath('createPost'), params)).data;
+    return (await axios.post<Response<'createPost'>>(fullPath('createPost'), params)).data;
   }
 
   /**
@@ -74,7 +105,7 @@ class Store implements EndpointProvider {
    * @returns {GetPostResponse[]} the list of posts
    */
   @action public async getFeed(params: Query<'getFeed'>): Promise<Response<'getFeed'>> {
-    const posts = (await axios.post<Response<'getFeed'>>(apiPath('getFeed'), params)).data;
+    const posts = (await axios.post<Response<'getFeed'>>(fullPath('getFeed'), params)).data;
     posts.forEach((post) => {
       if (this.posts[post.id as string]) {
         this.posts[post.id as string] = post;
@@ -93,7 +124,7 @@ class Store implements EndpointProvider {
     if (this.posts[params.id]) {
       return this.posts[params.id];
     }
-    const post = (await axios.post<Response<'getPost'>>(apiPath('getPost'), params)).data;
+    const post = (await axios.post<Response<'getPost'>>(fullPath('getPost'), params)).data;
     this.posts[post.id as string] = post;
     return post;
   }
@@ -106,10 +137,10 @@ class Store implements EndpointProvider {
    */
   @action
   public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
-    if (this.users[params.id]) {
-      return this.users[params.id];
+    if (this.users[params.username]) {
+      return this.users[params.username];
     }
-    return (await axios.post<Response<'getUser'>>(apiPath('getUser'), params)).data;
+    return (await axios.post<Response<'getUser'>>(fullPath('getUser'), params)).data;
   }
 
   /**
@@ -119,9 +150,16 @@ class Store implements EndpointProvider {
    * @returns {SignInResponse} the API response
    */
   @action public async signIn(params: Query<'signIn'>): Promise<Response<'signIn'>> {
-    const res = (await axios.post<Response<'signIn'>>(apiPath('signIn'), params)).data;
+    const res = (await axios.post<Response<'signIn'>>(fullPath('signIn'), params)).data;
     JSCookie.set('token', res.token);
     this.token = res.token;
+    this.currentUser = {
+      displayName: res.displayName,
+      email: res.email,
+      profileBackground: res.profileBackground,
+      profilePicture: res.profilePicture,
+      username: res.username,
+    };
     return res;
   }
 

@@ -13,6 +13,16 @@ export const Users: IUser[] = [
     profilePicture: 'avatar',
     username: 'epicgamer123',
   },
+  {
+    displayName: 'Jane Doe',
+    email: 'me2@example.com',
+    id: '2',
+    lastTokenReset: 0,
+    password: '',
+    profileBackground: 'background',
+    profilePicture: 'avatar',
+    username: 'username_1',
+  },
 ];
 
 export const Media: MediaRecord[] = [
@@ -29,7 +39,7 @@ export const Media: MediaRecord[] = [
 export const Feeds: Feed[] = [
   new Feed([
     {
-      author: '1',
+      author: 'epicgamer123',
       created: new Date(2021, 1, 15, 13, 35).toISOString(),
       description: 'Sample Post 1',
       expires: '',
@@ -37,7 +47,7 @@ export const Feeds: Feed[] = [
       media: 'post1',
     },
     {
-      author: '1',
+      author: 'epicgamer123',
       created: new Date(2021, 1, 15, 14, 0).toISOString(),
       description: 'Sample Post 2',
       expires: '',
@@ -45,7 +55,7 @@ export const Feeds: Feed[] = [
       media: 'post2',
     },
     {
-      author: '1',
+      author: 'epicgamer123',
       created: new Date(2021, 2, 1, 2, 11).toISOString(),
       description: 'Sample Post 3',
       expires: '',
@@ -53,7 +63,7 @@ export const Feeds: Feed[] = [
       media: 'post3',
     },
     {
-      author: '1',
+      author: 'epicgamer123',
       created: new Date().toISOString(),
       description: 'Sample Post 4',
       expires: '',

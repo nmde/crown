@@ -7,8 +7,31 @@
     },
     "token": {
       "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "profileBackground": {
+      "type": "string"
+    },
+    "profilePicture": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["id", "token"]
+  "required": [
+    "id",
+    "token",
+    "email",
+    "username",
+    "displayName",
+    "profileBackground",
+    "profilePicture"
+  ]
 }

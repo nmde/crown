@@ -2,11 +2,11 @@
     "title": "getFeed-Query",
     "type": "object",
     "properties": {
-      "author": {
+      "username": {
         "type": "string"
       }
     },
     "additionalProperties": false,
-    "required": []
+    "required": ["username"]
   }
   

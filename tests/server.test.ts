@@ -5,6 +5,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import Server from '../src/backend/Server';
 import models from '../src/backend/models';
+import { Feeds, Users } from './sample-data';
 
 dotenv.config();
 
@@ -60,6 +61,14 @@ describe('starting the server', () => {
       'crown-test',
     );
     expect(database).toBeDefined();
+    // Once the connection is established, clear the test database so
+    // that subsequent tests run on an empty slate
+    await models.User.destroy({
+      where: {},
+    });
+    await models.Post.destroy({
+      where: {},
+    });
   });
   it('starts the server', async () => {
     await server.start(3000);
@@ -77,20 +86,16 @@ describe('starting the server', () => {
 describe('creating accounts', () => {
   it('creates an account', async () => {
     const user = await server.createAccount({
-      displayName: 'John Smith',
-      email: 'me@example.com',
+      ...Users[0],
       password: 'password',
-      username: 'user123',
     });
     expect(user.id).toBeDefined();
   });
   it('creates an account with duplicate username', async () => {
     try {
       await server.createAccount({
-        displayName: 'John Smith',
-        email: 'me@example.com',
+        ...Users[0],
         password: 'password',
-        username: 'user123',
       });
     } catch (err) {
       expect((err as HttpError).statusCode).toBe(409);
@@ -102,7 +107,7 @@ describe('signing in', () => {
   it('signs in', async () => {
     const user = await server.signIn({
       password: 'password',
-      username: 'user123',
+      username: Users[0].username,
     });
     expect(user.token).toBeDefined();
     // Update the ID and token for other tests
@@ -113,7 +118,7 @@ describe('signing in', () => {
     try {
       await server.signIn({
         password: 'wrong_password',
-        username: 'user123',
+        username: Users[0].username,
       });
     } catch (err) {
       expect((err as HttpError).statusCode).toBe(400);
@@ -124,14 +129,14 @@ describe('signing in', () => {
 describe('getting a user', () => {
   it('gets a user', async () => {
     const user = await server.getUser({
-      id: userId,
+      username: Users[0].username,
     });
-    expect(user.username).toBe('user123');
+    expect(user.displayName).toBe(Users[0].displayName);
   });
   it('gets a user that does not exist', async () => {
     try {
       await server.getUser({
-        id: uuidv4(),
+        username: 'does_not_exist',
       });
     } catch (err) {
       expect((err as HttpError).statusCode).toBe(400);
@@ -142,9 +147,7 @@ describe('getting a user', () => {
 describe('creating posts', () => {
   it('creates a post', async () => {
     const post = await server.createPost({
-      description: 'Test post',
-      expires: new Date().toISOString(),
-      media: '',
+      ...Feeds[0].getPost(0),
       token,
     });
     postId = post.id;
@@ -152,9 +155,7 @@ describe('creating posts', () => {
   it('creates a post with an invalid token', async () => {
     try {
       await server.createPost({
-        description: 'Test post',
-        expires: new Date().toISOString(),
-        media: '',
+        ...Feeds[0].getPost(0),
         token: uuidv4(),
       });
     } catch (err) {
@@ -183,15 +184,21 @@ describe('getting posts', () => {
 
 describe('getting a feed', () => {
   it('gets author feed', async () => {
-    const feed = await server.getFeed({
-      author: userId,
+    await server.createPost({
+      ...Feeds[0].getPost(1),
+      token,
     });
-    expect(feed.length).toBe(1);
+    const feed = await server.getFeed({
+      username: Users[0].username,
+    });
+    expect(feed.length).toBe(2);
     expect(feed[0].author).toBe(userId);
   });
   it('gets an empty feed', async () => {
     try {
-      await server.getFeed({});
+      await server.getFeed({
+        username: Users[1].username,
+      });
     } catch (err) {
       expect((err as HttpError).statusCode).toBe(400);
     }
@@ -202,10 +209,8 @@ describe('following a user', () => {
   it('follows a user', async () => {
     // create a user to follow
     const user2 = await server.createAccount({
-      displayName: 'Jane Doe',
-      email: 'me2@example.com',
+      ...Users[1],
       password: 'password',
-      username: 'username_1',
     });
     const edge = await server.createEdge({
       source: userId,
@@ -220,12 +225,4 @@ describe('following a user', () => {
 // Shut down the server after tests have completed
 afterAll(async () => {
   await server.stop();
-
-  // Clear the test database so the next time tests run, they run on an empty slate
-  await models.User.destroy({
-    where: {},
-  });
-  await models.Post.destroy({
-    where: {},
-  });
 });

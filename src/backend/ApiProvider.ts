@@ -95,11 +95,12 @@ export default class ApiProvider implements EndpointProvider {
         profilePicture: media.PROFILE,
         username: query.username,
       }).save();
+      this.app.log.info(`Created account with ID ${user.get('id')}`);
       return {
         id: user.get('id'),
       };
     }
-    // Username is taken
+    this.app.log.error(`Username ${query.username} is taken`);
     throw this.app.httpErrors.conflict();
   }
 
@@ -121,11 +122,13 @@ export default class ApiProvider implements EndpointProvider {
           target: query.target,
           type: 'follow',
         }).save();
+        this.app.log.info(`Created edge with ID ${edge.get('id')}`);
         return {
           id: edge.get('id'),
         };
         break;
       default:
+        this.app.log.error(`Invalid edge type: ${query.type}`);
         throw this.app.httpErrors.badRequest();
     }
   }
@@ -147,6 +150,7 @@ export default class ApiProvider implements EndpointProvider {
       expires: query.expires,
       media: query.media,
     }).save();
+    this.app.log.info(`Created post with ID ${post.get('id')}`);
     return {
       id: post.get('id'),
     };
@@ -163,10 +167,15 @@ export default class ApiProvider implements EndpointProvider {
     // TODO: check post visibility permissions
     // TODO: pagination
     const where: WhereOptions = {};
-    if (query.author !== undefined) {
-      where.author = query.author;
+    if (query.username !== undefined) {
+      // Resolve query username to and ID
+      const user = await this.getUser({
+        username: query.username,
+      });
+      where.author = user.id;
     } else {
       // No valid search parameters supplied
+      this.app.log.error('Invalid feed search parameters');
       throw this.app.httpErrors.badRequest();
     }
     const feed = await models.Post.findAll({
@@ -192,6 +201,7 @@ export default class ApiProvider implements EndpointProvider {
     if (results !== null) {
       return results.toJSON();
     }
+    this.app.log.error(`No post found with ID ${query.id}`);
     throw this.app.httpErrors.notFound();
   }
 
@@ -205,12 +215,13 @@ export default class ApiProvider implements EndpointProvider {
   public async getUser(query: Query<'getUser'>): Promise<Response<'getUser'>> {
     const results = await models.User.findOne({
       where: {
-        id: query.id,
+        username: query.username,
       },
     });
     if (results != null) {
       return results.toJSON();
     }
+    this.app.log.error(`No user found with username ${query.username}`);
     throw this.app.httpErrors.badRequest();
   }
 
@@ -234,11 +245,17 @@ export default class ApiProvider implements EndpointProvider {
       results.set('lastTokenReset', currentTokenTime());
       await results.save();
       return {
+        displayName: results.get('displayName'),
+        email: results.get('email'),
         id,
+        profileBackground: results.get('profileBackground'),
+        profilePicture: results.get('profilePicture'),
         token: this.token.generate(id),
+        username: results.get('username'),
       };
     }
     // No matching username/password
+    this.app.log.error(`Invalid login attempt for user ${query.username}`);
     throw this.app.httpErrors.badRequest();
   }
 }
