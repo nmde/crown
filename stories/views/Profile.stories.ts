@@ -22,26 +22,39 @@ export default {
 const Template = (_args: Props, { argTypes }: { argTypes: string }) => ({
   components: { Profile },
   props: Object.keys(argTypes),
-  template: '<Profile v-bind="$props" v-on="$props" />',
+  template: '<v-app><Profile v-bind="$props" v-on="$props" /></v-app>',
 });
 
-// Displaying a fake user
-export const WithUser = bind<Props>(Template);
-WithUser.args = {
+// Default view
+export const Primary = bind<Props>(Template);
+Primary.args = {
   feed: Feeds[0],
   media: Media[0],
-  tDisableBackend: true,
-  user: Users[0],
+  tParams: {
+    username: Users[0].username,
+  },
 };
 
 // Loading
 export const Loading = bind<Props>(Template);
 Loading.args = {
-  feed: {
-    posts: [],
-  },
+  feed: Feeds[0],
   media: {},
-  tDisableBackend: true,
-  tForceLoading: true,
-  user: Users[0],
+  tParams: {},
+};
+
+// Viewing your own profile
+export const Self = bind<Props>(Template);
+Self.args = {
+  feed: Feeds[0],
+  media: {},
+  tParams: {},
+};
+
+// Viewing a profile you're already following
+export const Following = bind<Props>(Template);
+Self.args = {
+  feed: Feeds[0],
+  media: {},
+  tParams: {},
 };

@@ -1,10 +1,12 @@
 {
     "btn": {
         "CLOSE": "Close",
+        "FOLLOW": "Follow",
         "POST": "Create Post",
         "SIGNIN": "Sign In",
         "SIGNOUT": "Sign Out",
-        "SIGNUP": "Sign Up"
+        "SIGNUP": "Sign Up",
+        "UNFOLLOW": "Following"
     },
     "errors": {
         "EMAIL": "Email is invalid",

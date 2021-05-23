@@ -1,7 +1,7 @@
-import MediaRecord from 'types/MediaRecord';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
+import MediaRecord from '../../types/MediaRecord';
 import IUser from '../../types/User';
 import Styled from '../Styled';
 import background from '../assets/background.jpg';
@@ -26,11 +26,9 @@ const avatarSize = 100;
 
 // Prop types
 export type Props = {
-  user: IUser;
   media: MediaRecord;
   feed: Feed;
-  tDisableBackend?: boolean;
-  tForceLoading?: boolean;
+  tParams?: Record<string, string>;
 };
 
 @Component
@@ -41,8 +39,7 @@ export default class Profile extends Styled<Classes> implements Props {
   /**
    * The user data
    */
-  @Prop()
-  public user!: Required<IUser>;
+  public user!: IUser;
 
   /**
    * Required media
@@ -57,20 +54,15 @@ export default class Profile extends Styled<Classes> implements Props {
   public feed!: Feed;
 
   /**
-   * Disabled loading data from the backend (for testing)
+   * Testing route param overrides
    */
-  @Prop({
-    default: false,
-  })
-  public tDisableBackend!: boolean;
+  @Prop()
+  public tParams?: Record<string, string>;
 
   /**
-   * Force the loading state to be a certain value (for testing)
+   * If an action is pending
    */
-  @Prop({
-    default: false,
-  })
-  public tForceLoading!: boolean;
+  private awaitingAction = false;
 
   /**
    * The image to display as the background
@@ -140,15 +132,21 @@ export default class Profile extends Styled<Classes> implements Props {
     immediate: true,
   })
   private async fetchUser() {
-    this.loading = this.tForceLoading;
-    if (!this.tDisableBackend) {
-      const { id } = this.$route.params;
-      if (typeof id === 'string') {
-        try {
-          this.user = (await store.getUser({
-            id,
-          })) as IUser;
+    this.loading = true;
+    let params: Record<string, string>;
+    if (this.$route === undefined && this.tParams !== undefined) {
+      params = this.tParams;
+    } else {
+      params = this.$route.params;
+    }
+    const { username } = params;
+    if (typeof username === 'string') {
+      try {
+        this.user = (await store.getUser({
+          username,
+        })) as IUser;
 
+        if (this.user !== undefined) {
           // TODO
           this.background = this.media[this.user.profileBackground];
 
@@ -156,14 +154,18 @@ export default class Profile extends Styled<Classes> implements Props {
           try {
             this.feed = new Feed(
               await store.getFeed({
-                author: this.user.id,
+                username: this.user.username,
               }),
             );
           } catch (err) {
+            // TODO
             this.loading = false;
           }
-        } catch (err) {
-          this.loading = false;
+        }
+      } catch (err) {
+        if (err.response === undefined) {
+          this.error = t.errors.GENERIC;
+        } else {
           switch (err.response.status) {
             case 400:
               // Expected error (the user was not found)
@@ -174,10 +176,10 @@ export default class Profile extends Styled<Classes> implements Props {
               this.error = t.errors.GENERIC;
           }
         }
-      } else {
-        // Invalid ID was supplied, display an error message
-        this.error = t.errors.USER_NOT_FOUND;
       }
+    } else {
+      // Invalid ID was supplied, display an error message
+      this.error = t.errors.USER_NOT_FOUND;
     }
   }
 
@@ -221,6 +223,40 @@ export default class Profile extends Styled<Classes> implements Props {
                           {this.user.displayName}
                         </v-card-title>
                         <v-card-subtitle>{this.user.username}</v-card-subtitle>
+                        {(() => {
+                          // TODO
+                          const isFollowing = false;
+                          if (this.user.id === store.currentUser?.id) {
+                            return <div class={this.className('Spacer')}></div>;
+                          }
+                          if (isFollowing) {
+                            return <v-btn>{t.btn.UNFOLLOW}</v-btn>;
+                          }
+                          return (
+                            <v-btn
+                              color="primary"
+                              loading={this.awaitingAction}
+                              onClick={async () => {
+                                this.awaitingAction = true;
+                                const { currentUser, token } = store;
+                                if (token === undefined || currentUser === undefined) {
+                                  // If the user is not signed in, take them to the sign in page
+                                  this.$router.push('/login');
+                                } else {
+                                  await store.createEdge({
+                                    source: currentUser.id as string,
+                                    target: this.user.id as string,
+                                    token,
+                                    type: 'follow',
+                                  });
+                                }
+                                this.awaitingAction = false;
+                              }}
+                            >
+                              {t.btn.FOLLOW}
+                            </v-btn>
+                          );
+                        })()}
                       </div>
                     );
                   }
@@ -262,10 +298,10 @@ export default class Profile extends Styled<Classes> implements Props {
                           return <v-progress-linear indeterminate />;
                         }
                         return this.feed.posts.map((post) => (
-                            <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
-                              {/* TODO: add lazy-src to all images */}
-                              <v-img aspectRatio={1} src={this.media[post.media as string]} />
-                            </v-col>
+                          <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
+                            {/* TODO: add lazy-src to all images */}
+                            <v-img aspectRatio={1} src={this.media[post.media as string]} />
+                          </v-col>
                         ));
                       })()}
                     </v-row>
