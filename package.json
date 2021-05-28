@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx gulp",
     "backend": "npx gulp backend && npm run start",
-    "start": "npx cross-env NODE_ENV=development node dist/backend.js",
+    "frontend": "npx gulp frontend",
+    "start": "cross-env NODE_ENV=development node dist/backend.js",
     "test": "npx jest --detectOpenHandles --coverage",
     "storybook": "start-storybook -p 6006"
   },
@@ -28,6 +29,7 @@
     "@types/uuid": "^8.3.0",
     "@types/validator": "^13.1.3",
     "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
     "css-loader": "^5.2.4",
     "eslint": "^7.26.0",
     "file-loader": "^6.2.0",
@@ -55,6 +57,7 @@
     "dotenv": "^9.0.2",
     "fastify": "^3.15.1",
     "fastify-auth": "^1.1.0",
+    "fastify-blipp": "^3.1.0",
     "fastify-cookie": "^5.3.1",
     "fastify-cors": "^6.0.1",
     "fastify-helmet": "^5.3.1",
@@ -70,6 +73,7 @@
     "helmet": "^4.6.0",
     "js-cookie": "^2.2.1",
     "material-design-icons-iconfont": "^6.1.0",
+    "mime-matcher": "^1.0.5",
     "mobx": "^6.3.0",
     "moment": "^2.29.1",
     "password-validator": "^5.1.1",

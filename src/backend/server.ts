@@ -1,7 +1,12 @@
 import { FastifyInstance } from 'fastify';
 import fs from 'fs-extra';
+import MimeMatcher from 'mime-matcher';
+import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
+import { pipeline } from 'stream';
 import { keys } from 'ts-transformer-keys';
+import util from 'util';
+import { v4 as uuid } from 'uuid';
 import { Endpoints } from '../types/Endpoints';
 import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
@@ -90,6 +95,33 @@ export default class Server extends ApiProvider {
     // Ensure the media directory exists
     await fs.ensureDir(this.mediaDir);
 
+    // Media uploading
+    this.app.post(`/${apiPath('upload')}`, async (request) => {
+      // TODO: convert all images to jpg
+      const id = uuid();
+      const file = await request.file();
+      let valid = false;
+      ['image/*', 'video/*', 'audio/*']
+        .map((mime) => new MimeMatcher(mime))
+        .forEach((mime) => {
+          valid = valid || mime.match(file.mimetype);
+        });
+      if (valid) {
+        await util.promisify(pipeline)(
+          file.file,
+          fs.createWriteStream(
+            path.join(this.mediaDir, file.filename.replace(/.*\.([a-z]+)/, `${id}.$1`)),
+          ),
+        );
+      } else {
+        throw this.app.httpErrors.forbidden();
+      }
+      // TODO: validation
+      return {
+        id,
+      };
+    });
+
     // Automatically create endpoints based on Endpoints.ts
     type QueryKeys = {
       [key in keyof Endpoints]: keyof Endpoints[key]['query'];
@@ -111,9 +143,15 @@ export default class Server extends ApiProvider {
       });
     });
 
+    // HTML landing page
+    this.app.get('/', async (_res, reply) => {
+      await reply.sendFile(path.resolve(__dirname, '..', 'index.html'));
+    });
+
     // Start the Fastify server
     try {
       await this.app.listen(port);
+      this.app.blipp();
       return this.app;
     } catch (err) {
       throw new ServerError(err);

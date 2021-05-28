@@ -4508,7 +4508,7 @@ chalk@^3.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-chalk@^4.0.0, chalk@^4.1.0:
+chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.1.tgz#c80b3fab28bf6371e6863325eee67e618b77e6ad"
   integrity sha512-diHzdDKxcU+bAsUboHLPEDQiw0qEe0qd7SYUn3HgcFlWgbDcfLGswOHYeGrHKzG9z6UYf01d9VFMfZxPM1xZSg==
@@ -5112,7 +5112,14 @@ create-react-context@0.3.0:
     gud "^1.0.0"
     warning "^4.0.3"
 
-cross-spawn@7.0.3, cross-spawn@^7.0.0, cross-spawn@^7.0.2:
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+  dependencies:
+    cross-spawn "^7.0.1"
+
+cross-spawn@7.0.3, cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -6465,6 +6472,14 @@ fastify-auth@^1.1.0:
   dependencies:
     fastify-plugin "^3.0.0"
     reusify "^1.0.4"
+
+fastify-blipp@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/fastify-blipp/-/fastify-blipp-3.1.0.tgz#52a5bfa8400726df7cdc65cea90664e9e888974f"
+  integrity sha512-9tmQ2ljvUKOHKSRPMx1WhkvkZrinBc9y/EwU5THO27TDB+2haZ1BfGuGB4Dsb2R6CVGpuEjh8+dneV0CfLspQw==
+  dependencies:
+    chalk "^4.1.1"
+    fastify-plugin "^3.0.0"
 
 fastify-cookie@^5.3.1:
   version "5.3.1"
@@ -9684,6 +9699,11 @@ mime-db@1.47.0, "mime-db@>= 1.43.0 < 2":
   version "1.47.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.47.0.tgz#8cb313e59965d3c05cfbf898915a267af46a335c"
   integrity sha512-QBmA/G2y+IfeS4oktet3qRZ+P5kPhCKRXxXnQEudYqUaEioAU1/Lq2us3D/t1Jfo4hE9REQPrbB7K5sOczJVIw==
+
+mime-matcher@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mime-matcher/-/mime-matcher-1.0.5.tgz#c65ad6c1555aff743bea751404718b8639b3ba02"
+  integrity sha512-a7pOrNMfuCXHhw2gZ7el3sGsxbquOxM4n7zy2n3N3hbcZICE5keAdXvC4gGSfz5Wpxn+Meh2Y3bhvs9tmw1cmQ==
 
 mime-types@^2.1.12, mime-types@~2.1.19:
   version "2.1.29"

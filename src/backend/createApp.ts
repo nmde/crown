@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyAuth from 'fastify-auth';
+import fastifyBlipp from 'fastify-blipp';
 import fastifyCookie from 'fastify-cookie';
 import fastifyCors from 'fastify-cors';
 import fastifyHelmet from 'fastify-helmet';
@@ -26,15 +27,20 @@ export default function createApp(authKey: string): FastifyInstance {
   // Configure fastify-auth
   app.register(fastifyAuth);
 
+  // Configure fastify-blipp
+  app.register(fastifyBlipp);
+
   // Configure fastify-cookie
   app.register(fastifyCookie);
 
   // Configure fastify-cors
   app.register(fastifyCors, {
     origin: (origin, cb) => {
-      if (/localhost/.test(origin)) {
+      if (origin === undefined || /localhost/.test(origin)) {
         cb(null, true);
+        return;
       }
+      cb(new Error('Origin not allowed!'), false);
     },
   });
 
@@ -71,6 +77,7 @@ export default function createApp(authKey: string): FastifyInstance {
 
   // Configure fastify-static
   app.register(fastifyStatic, {
+    prefix: '/public/',
     root: __dirname,
   });
 
