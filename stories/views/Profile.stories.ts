@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { ComponentOptions } from 'vue/types/umd';
 import ProfileTSX, { Props } from '../../src/frontend/views/Profile';
-import { Feeds, Users, Media } from '../../tests/sample-data';
+import { Users } from '../../tests/sample-data';
 import bind from '../bind';
 
 // Convert TSX to actual Vue component
@@ -28,8 +28,6 @@ const Template = (_args: Props, { argTypes }: { argTypes: string }) => ({
 // Default view
 export const Primary = bind<Props>(Template);
 Primary.args = {
-  feed: Feeds[0],
-  media: Media[0],
   tParams: {
     username: Users[0].username,
   },
@@ -38,23 +36,17 @@ Primary.args = {
 // Loading
 export const Loading = bind<Props>(Template);
 Loading.args = {
-  feed: Feeds[0],
-  media: {},
   tParams: {},
 };
 
 // Viewing your own profile
 export const Self = bind<Props>(Template);
 Self.args = {
-  feed: Feeds[0],
-  media: {},
   tParams: {},
 };
 
 // Viewing a profile you're already following
 export const Following = bind<Props>(Template);
 Self.args = {
-  feed: Feeds[0],
-  media: {},
   tParams: {},
 };

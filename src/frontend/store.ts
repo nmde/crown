@@ -13,6 +13,7 @@ import { GetPostQuery } from 'types/schemas/getPost/Query';
 import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { GetUserQuery } from 'types/schemas/getUser/Query';
 import { GetUserResponse } from 'types/schemas/getUser/Response';
+import { GetUserByIdQuery } from 'types/schemas/getUserById/Query';
 import { SignInQuery } from 'types/schemas/signIn/Query';
 import { SignInResponse } from 'types/schemas/signIn/Response';
 import { EndpointProvider, Query, Response } from '../types/Endpoints';
@@ -52,8 +53,7 @@ class Store implements EndpointProvider {
   /**
    * The user's auth token
    */
-  @observable
-  public token = JSCookie.get('token');
+  @observable public token = JSCookie.get('token');
 
   /**
    * @constructs
@@ -68,7 +68,9 @@ class Store implements EndpointProvider {
    * @param {CreateAccountQuery} params the query parameters
    * @returns {CreateAccountResponse} the API response
    */
-  @action public async createAccount(params: Query<'createAccount'>): Promise<Response<'createAccount'>> {
+  @action public async createAccount(
+    params: Query<'createAccount'>,
+  ): Promise<Response<'createAccount'>> {
     const res = (await axios.post<Response<'createAccount'>>(fullPath('createAccount'), params))
       .data;
     await this.signIn({
@@ -135,12 +137,30 @@ class Store implements EndpointProvider {
    * @param {GetUserQuery} params getUser query parameters
    * @returns {GetUserResponse} information about the requested user
    */
-  @action
-  public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
+  @action public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
     if (this.users[params.username]) {
       return this.users[params.username];
     }
-    return (await axios.post<Response<'getUser'>>(fullPath('getUser'), params)).data;
+    const response = (await axios.post<Response<'getUser'>>(fullPath('getUser'), params)).data;
+    if (!this.users[params.username]) {
+      this.users[params.username] = response as IUser;
+    }
+    return response;
+  }
+
+  /**
+   * Gets user information by user ID
+   *
+   * @param {GetUserByIdQuery} params the query parameters
+   * @returns {GetUserResponse} the API response
+   */
+  @action public async getUserById(params: Query<'getUserById'>): Promise<Response<'getUserById'>> {
+    const response = (await axios.post<Response<'getUserById'>>(fullPath('getUserById'), params))
+      .data as IUser;
+    if (!this.users[response.username]) {
+      this.users[response.username] = response;
+    }
+    return response;
   }
 
   /**

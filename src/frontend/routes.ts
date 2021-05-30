@@ -4,6 +4,7 @@ import Account from './views/Account';
 import Explore from './views/Explore';
 import Home from './views/Home';
 import Login from './views/Login';
+import Profile from './views/Profile';
 import SinglePost from './views/SinglePost';
 
 const routes: RouteConfig[] = [
@@ -32,6 +33,9 @@ const routes: RouteConfig[] = [
   {
     component: SinglePost,
     path: '/post/:id',
+  }, {
+    component: Profile,
+    path: '/@:username',
   },
 ];
 

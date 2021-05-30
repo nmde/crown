@@ -1,57 +1,58 @@
+/* eslint-disable class-methods-use-this */
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
-import MediaRecord from '../../types/MediaRecord';
-import IUser from '../../types/User';
+import { Users } from '../../../tests/sample-data';
 import Styled from '../Styled';
-import background from '../assets/background.jpg';
 import Feed from '../classes/Feed';
 import ErrorDialog from '../components/ErrorDialog';
 import store from '../store';
+import ProfileStyles from '../styles/Profile';
 import t from '../translations/en-US.json';
-
-// CSS classes
-type Classes =
-  | 'Fill'
-  | 'AvatarContainer'
-  | 'Icon'
-  | 'Main'
-  | 'DisplayName'
-  | 'Center'
-  | 'GalleryImage'
-  | 'Spacer'
-  | 'TextSpacer';
-
-const avatarSize = 100;
 
 // Prop types
 export type Props = {
-  media: MediaRecord;
-  feed: Feed;
-  tParams?: Record<string, string>;
+  tParams: Record<string, string>;
 };
 
 @Component
 /**
  * User profile page view
  */
-export default class Profile extends Styled<Classes> implements Props {
+export default class Profile extends Styled<keyof typeof ProfileStyles> {
+  /**
+   * If an action is pending
+   */
+  private awaitingAction = false;
+
+  /**
+   * The user's background image
+   */
+  private background = Users[0].profileBackground;
+
   /**
    * The user data
    */
-  public user!: IUser;
+  private data: {
+    displayName?: string;
+    id?: string;
+    username?: string;
+  } = {};
 
   /**
-   * Required media
+   * The error message, if any
    */
-  @Prop()
-  public media!: MediaRecord;
+  private error = '';
 
   /**
-   * A feed of posts
+   * The user's post feed
    */
-  @Prop()
-  public feed!: Feed;
+  private feed = new Feed();
+
+  /**
+   * The user's profile picture
+   */
+  private profilePicture = Users[0].profilePicture;
 
   /**
    * Testing route param overrides
@@ -60,68 +61,15 @@ export default class Profile extends Styled<Classes> implements Props {
   public tParams?: Record<string, string>;
 
   /**
-   * If an action is pending
-   */
-  private awaitingAction = false;
-
-  /**
-   * The image to display as the background
-   */
-  private background = background;
-
-  /**
-   * The error message, if any
-   */
-  private error = '';
-
-  /**
-   * If the page is awaiting user data from the backend
-   */
-  private loading = false;
-
-  /**
    * Pass prop type information to TSX
    */
   public _tsx!: tsx.DeclareProps<Props>;
 
   /**
-   * Defines custom styles for the Profile view
-   *
    * @constructs
    */
   public constructor() {
-    super({
-      AvatarContainer: {
-        textAlign: 'center',
-        zIndex: 100,
-      },
-      Center: {
-        textAlign: 'center',
-      },
-      DisplayName: {
-        justifyContent: 'center',
-      },
-      Fill: {
-        height: '100%',
-        width: '100%',
-      },
-      GalleryImage: {
-        padding: 0,
-      },
-      Icon: {
-        color: 'white',
-        fontSize: `${avatarSize}px`,
-      },
-      Main: {
-        marginTop: '-15px',
-      },
-      Spacer: {
-        height: '86.5px',
-      },
-      TextSpacer: {
-        height: '32px',
-      },
-    });
+    super(ProfileStyles);
   }
 
   /**
@@ -132,54 +80,25 @@ export default class Profile extends Styled<Classes> implements Props {
     immediate: true,
   })
   private async fetchUser() {
-    this.loading = true;
-    let params: Record<string, string>;
-    if (this.$route === undefined && this.tParams !== undefined) {
-      params = this.tParams;
-    } else {
-      params = this.$route.params;
-    }
-    const { username } = params;
-    if (typeof username === 'string') {
-      try {
-        this.user = (await store.getUser({
-          username,
-        })) as IUser;
-
-        if (this.user !== undefined) {
-          // TODO
-          this.background = this.media[this.user.profileBackground];
-
-          // Get the user's posts
-          try {
-            this.feed = new Feed(
-              await store.getFeed({
-                username: this.user.username,
-              }),
-            );
-          } catch (err) {
-            // TODO
-            this.loading = false;
-          }
-        }
-      } catch (err) {
-        if (err.response === undefined) {
+    let user;
+    try {
+      user = await store.getUser({
+        username: this.$route.params.username,
+      });
+      this.data.displayName = user.displayName;
+      this.data.username = user.username;
+      // Force the UI to re-render
+      this.$set(this.data, 'id', user.id);
+    } catch (err) {
+      switch (err.response.status) {
+        case 400:
+          // Expected error (the user was not found)
+          this.error = t.errors.USER_NOT_FOUND;
+          break;
+        default:
+          // Unexpected error
           this.error = t.errors.GENERIC;
-        } else {
-          switch (err.response.status) {
-            case 400:
-              // Expected error (the user was not found)
-              this.error = t.errors.USER_NOT_FOUND;
-              break;
-            default:
-              // Unexpected error
-              this.error = t.errors.GENERIC;
-          }
-        }
       }
-    } else {
-      // Invalid ID was supplied, display an error message
-      this.error = t.errors.USER_NOT_FOUND;
     }
   }
 
@@ -202,12 +121,12 @@ export default class Profile extends Styled<Classes> implements Props {
         <v-container class={this.className('Fill')} fluid>
           <v-row noGutters>
             <v-col class={this.className('AvatarContainer')}>
-              <v-avatar color="primary" rounded size={avatarSize}>
+              <v-avatar color="primary" rounded size={100}>
                 {(() => {
-                  if (this.loading) {
+                  if (this.profilePicture === undefined) {
                     return <v-progress-circular indeterminate />;
                   }
-                  return <v-img src={this.media[this.user.profilePicture]} />;
+                  return <v-img src={this.profilePicture} />;
                 })()}
               </v-avatar>
             </v-col>
@@ -216,51 +135,52 @@ export default class Profile extends Styled<Classes> implements Props {
             <v-col>
               <v-card class={this.className('Center')}>
                 {(() => {
-                  if (!this.loading) {
-                    return (
-                      <div>
-                        <v-card-title class={this.className('DisplayName')}>
-                          {this.user.displayName}
-                        </v-card-title>
-                        <v-card-subtitle>{this.user.username}</v-card-subtitle>
-                        {(() => {
-                          // TODO
-                          const isFollowing = false;
-                          if (this.user.id === store.currentUser?.id) {
-                            return <div class={this.className('Spacer')}></div>;
-                          }
-                          if (isFollowing) {
-                            return <v-btn>{t.btn.UNFOLLOW}</v-btn>;
-                          }
-                          return (
-                            <v-btn
-                              color="primary"
-                              loading={this.awaitingAction}
-                              onClick={async () => {
-                                this.awaitingAction = true;
-                                const { currentUser, token } = store;
-                                if (token === undefined || currentUser === undefined) {
-                                  // If the user is not signed in, take them to the sign in page
-                                  this.$router.push('/login');
-                                } else {
-                                  await store.createEdge({
-                                    source: currentUser.id as string,
-                                    target: this.user.id as string,
-                                    token,
-                                    type: 'follow',
-                                  });
-                                }
-                                this.awaitingAction = false;
-                              }}
-                            >
-                              {t.btn.FOLLOW}
-                            </v-btn>
-                          );
-                        })()}
-                      </div>
-                    );
+                  console.log(this.data.id);
+                  if (this.data.id === undefined) {
+                    return <div class={this.className('Spacer')}></div>;
                   }
-                  return <div class={this.className('Spacer')}></div>;
+                  return (
+                    <div>
+                      <v-card-title class={this.className('DisplayName')}>
+                        {this.data.displayName}
+                      </v-card-title>
+                      <v-card-subtitle>{this.data.username}</v-card-subtitle>
+                      {(() => {
+                        // TODO
+                        const isFollowing = false;
+                        if (this.data.id === store.currentUser?.id) {
+                          return <div class={this.className('Spacer')}></div>;
+                        }
+                        if (isFollowing) {
+                          return <v-btn>{t.btn.UNFOLLOW}</v-btn>;
+                        }
+                        return (
+                          <v-btn
+                            color="primary"
+                            loading={this.awaitingAction}
+                            onClick={async () => {
+                              this.awaitingAction = true;
+                              const { currentUser, token } = store;
+                              if (token === undefined || currentUser === undefined) {
+                                // If the user is not signed in, take them to the sign in page
+                                this.$router.push('/login');
+                              } else {
+                                await store.createEdge({
+                                  source: currentUser.id as string,
+                                  target: this.data.id as string,
+                                  token,
+                                  type: 'follow',
+                                });
+                              }
+                              this.awaitingAction = false;
+                            }}
+                          >
+                            {t.btn.FOLLOW}
+                          </v-btn>
+                        );
+                      })()}
+                    </div>
+                  );
                 })()}
                 <v-card-text>
                   <v-container>
@@ -268,7 +188,7 @@ export default class Profile extends Styled<Classes> implements Props {
                       <v-col cols={6}>
                         <div class="text-h5">
                           {(() => {
-                            if (this.loading) {
+                            if (this.data.id === undefined) {
                               return <div class={this.className('TextSpacer')} />;
                             }
                             // return this.user.followerCount;
@@ -280,7 +200,7 @@ export default class Profile extends Styled<Classes> implements Props {
                       <v-col cols={6}>
                         <div class="text-h5">
                           {(() => {
-                            if (this.loading) {
+                            if (this.data.id === undefined) {
                               return <div class={this.className('TextSpacer')} />;
                             }
                             // return this.user.followingCount;
@@ -291,19 +211,13 @@ export default class Profile extends Styled<Classes> implements Props {
                       </v-col>
                     </v-row>
                     <v-row>
-                      {(() => {
-                        // TODO: limit the number of posts loaded at once & load more
-                        // when the user scrolls
-                        if (this.loading) {
-                          return <v-progress-linear indeterminate />;
-                        }
-                        return this.feed.posts.map((post) => (
+                      {/* TODO: limit the number of posts loaded at once */}
+                      {(() => this.feed.posts.map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
-                            <v-img aspectRatio={1} src={this.media[post.media as string]} />
+                            <v-img aspectRatio={1} src={post.media} />
                           </v-col>
-                        ));
-                      })()}
+                      )))()}
                     </v-row>
                   </v-container>
                 </v-card-text>
