@@ -122,6 +122,22 @@ export default class Server extends ApiProvider {
       };
     });
 
+    // Media endpoint
+    this.app.get<{
+      Params: {
+        id: string;
+      };
+    }>(`/${apiPath('media', ':id')}`, async (request) => {
+      const media = (await fs.readdir(this.mediaDir)).find(
+        (value) => path.parse(value).name === request.params.id,
+      );
+      if (media !== undefined) {
+        return fs.readFile(path.join(this.mediaDir, media));
+      }
+      // TODO: return default image if media isn't found
+      return '';
+    });
+
     // Automatically create endpoints based on Endpoints.ts
     type QueryKeys = {
       [key in keyof Endpoints]: keyof Endpoints[key]['query'];
@@ -145,7 +161,7 @@ export default class Server extends ApiProvider {
 
     // HTML landing page
     this.app.get('/', async (_res, reply) => {
-      await reply.sendFile(path.resolve(__dirname, '..', 'index.html'));
+      await reply.sendFile('index.html');
     });
 
     // Start the Fastify server

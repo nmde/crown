@@ -16,6 +16,7 @@
         "POST_NOT_FOUND": "Could not find the requested post",
         "PASSWORD": {
             "DIGITS": "Passwords must contain at least 2 digits",
+            "LETTERS": "Password must contain at least 3 letters",
             "LOWERCASE": "Passwords must contain at least 3 lowercase letters",
             "MISMATCH": "Passwords must match",
             "SYMBOLS": "Passwords must contain at least 1 symbol",

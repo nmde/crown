@@ -9,6 +9,7 @@ import { GetPostQuery } from './schemas/getPost/Query';
 import { GetPostResponse } from './schemas/getPost/Response';
 import { GetUserQuery } from './schemas/getUser/Query';
 import { GetUserResponse } from './schemas/getUser/Response';
+import { GetUserByIdQuery } from './schemas/getUserById/Query';
 import { SignInQuery } from './schemas/signIn/Query';
 import { SignInResponse } from './schemas/signIn/Response';
 
@@ -35,6 +36,10 @@ export type Endpoints = {
   };
   getUser: {
     query: GetUserQuery;
+    response: GetUserResponse;
+  };
+  getUserById: {
+    query: GetUserByIdQuery;
     response: GetUserResponse;
   };
   signIn: {

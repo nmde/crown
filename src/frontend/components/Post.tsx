@@ -58,8 +58,8 @@ export default class Post extends Styled<Classes> {
         this.$set(
           this.data,
           'author',
-          await store.getUser({
-            username: this.post.author,
+          await store.getUserById({
+            id: this.post.author,
           }),
         );
       } catch (err) {

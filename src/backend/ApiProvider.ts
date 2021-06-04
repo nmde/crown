@@ -15,6 +15,7 @@ import { GetPostQuery } from '../types/schemas/getPost/Query';
 import { GetPostResponse } from '../types/schemas/getPost/Response';
 import { GetUserQuery } from '../types/schemas/getUser/Query';
 import { GetUserResponse } from '../types/schemas/getUser/Response';
+import { GetUserByIdQuery } from '../types/schemas/getUserById/Query';
 import { SignInQuery } from '../types/schemas/signIn/Query';
 import { SignInResponse } from '../types/schemas/signIn/Response';
 import currentTokenTime from '../util/currentTokenTime';
@@ -222,6 +223,25 @@ export default class ApiProvider implements EndpointProvider {
       return results.toJSON();
     }
     this.app.log.error(`No user found with username ${query.username}`);
+    throw this.app.httpErrors.badRequest();
+  }
+
+  /**
+   * Gets user information by user ID
+   *
+   * @param {GetUserByIdQuery} query the query parameters
+   * @returns {GetUserResponse} the user information
+   */
+  public async getUserById(query: Query<'getUserById'>): Promise<Response<'getUserById'>> {
+    const results = await models.User.findOne({
+      where: {
+        id: query.id,
+      },
+    });
+    if (results !== null) {
+      return results.toJSON();
+    }
+    this.app.log.error(`No user found with ID ${query.id}`);
     throw this.app.httpErrors.badRequest();
   }
 

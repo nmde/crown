@@ -73,7 +73,7 @@ export default class Login extends Styled<Classes> {
   private get emailIsValid() {
     let valid = true;
     this.emailRules.forEach((rule) => {
-      valid = valid && rule(this.form.password) === true;
+      valid = valid && rule(this.form.email) === true;
     });
     return valid;
   }
@@ -114,8 +114,7 @@ export default class Login extends Styled<Classes> {
     const { form } = this;
     return [
       required(form.password),
-      (i: string) => new PasswordValidator().has().uppercase(3).validate(i) || PASSWORD.UPPERCASE,
-      (i: string) => new PasswordValidator().has().lowercase(3).validate(i) || PASSWORD.LOWERCASE,
+      (i: string) => new PasswordValidator().has().letters(3).validate(i) || PASSWORD.LETTERS,
       (i: string) => new PasswordValidator().has().digits(2).validate(i) || PASSWORD.DIGITS,
       (i: string) => new PasswordValidator().has().symbols(1).validate(i) || PASSWORD.SYMBOLS,
       (i: string) => new PasswordValidator().has().not().oneOf([form.username])
@@ -236,7 +235,7 @@ export default class Login extends Styled<Classes> {
                       block
                       color="primary"
                       loading={this.loading}
-                      disabled={(() => this.baseNotValid || !this.emailIsValid)()}
+                      disabled={this.baseNotValid || !this.emailIsValid}
                       onClick={async () => {
                         this.loading = true;
                         try {
