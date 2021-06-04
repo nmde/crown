@@ -2,9 +2,6 @@
     "title": "createEdge-Query",
     "type": "object",
     "properties": {
-      "source": {
-        "type": "string"
-      },
       "target": {
         "type": "string"
       },
@@ -16,6 +13,6 @@
       }
     },
     "additionalProperties": false,
-    "required": ["source", "target", "token", "type"]
+    "required": ["target", "token", "type"]
   }
   

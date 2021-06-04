@@ -213,7 +213,6 @@ describe('following a user', () => {
       password: 'password',
     });
     const edge = await server.createEdge({
-      source: userId,
       target: user2.id,
       token,
       type: 'follow',

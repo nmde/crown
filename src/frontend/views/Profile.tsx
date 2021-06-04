@@ -135,7 +135,6 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
             <v-col>
               <v-card class={this.className('Center')}>
                 {(() => {
-                  console.log(this.data.id);
                   if (this.data.id === undefined) {
                     return <div class={this.className('Spacer')}></div>;
                   }
@@ -165,12 +164,15 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
                                 // If the user is not signed in, take them to the sign in page
                                 this.$router.push('/login');
                               } else {
-                                await store.createEdge({
-                                  source: currentUser.id as string,
-                                  target: this.data.id as string,
-                                  token,
-                                  type: 'follow',
-                                });
+                                try {
+                                  await store.createEdge({
+                                    target: this.data.id as string,
+                                    token,
+                                    type: 'follow',
+                                  });
+                                } catch (err) {
+                                  this.error = t.errors.GENERIC;
+                                }
                               }
                               this.awaitingAction = false;
                             }}
