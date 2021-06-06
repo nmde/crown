@@ -78,7 +78,7 @@ export default class Server extends ApiProvider {
       });
       return this.database;
     } catch (err) {
-      const message = `Could not establish database connection to ${dbUrl}`;
+      const message = 'Could not establish database connection';
       console.error(err);
       this.app.log.error(message);
       throw new ServerError(message);

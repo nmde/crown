@@ -1,1 +1,1 @@
-web: node dist/backend.js
+web: node dist/backend.js -p $PORT
