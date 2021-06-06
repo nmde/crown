@@ -162,7 +162,7 @@ export default class Server extends ApiProvider {
 
     // Start the Fastify server
     try {
-      await this.app.listen(port);
+      await this.app.listen(port, '0.0.0.0');
       this.app.blipp();
       return this.app;
     } catch (err) {
