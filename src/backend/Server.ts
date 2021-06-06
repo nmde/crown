@@ -68,6 +68,8 @@ export default class Server extends ApiProvider {
     this.database = new Sequelize(dbUrl, {
       logging: process.env.NODE_ENV === 'development',
       models: Object.values(models),
+      native: true,
+      ssl: true,
     });
     try {
       await this.database.authenticate();
