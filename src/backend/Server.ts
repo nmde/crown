@@ -64,13 +64,11 @@ export default class Server extends ApiProvider {
     port: string,
     databaseName: string,
   ): Promise<Sequelize> {
-    this.database = new Sequelize(
-      `postgres://${user}:${password}@${host}:${port}/${databaseName}`,
-      {
-        logging: process.env.NODE_ENV === 'development',
-        models: Object.values(models),
-      },
-    );
+    const dbUrl = `postgres://${user}:${password}@${host}:${port}/${databaseName}`;
+    this.database = new Sequelize(dbUrl, {
+      logging: process.env.NODE_ENV === 'development',
+      models: Object.values(models),
+    });
     try {
       await this.database.authenticate();
       await this.database.sync({
@@ -78,7 +76,7 @@ export default class Server extends ApiProvider {
       });
       return this.database;
     } catch (err) {
-      const message = 'Could not establish database connection.';
+      const message = `Could not establish database connection to ${dbUrl}`;
       this.app.log.error(message);
       throw new ServerError(message);
     }
