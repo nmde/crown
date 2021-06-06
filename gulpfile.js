@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable require-jsdoc */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -45,7 +46,15 @@ async function compileSchemas() {
 function build(entry, config) {
   return gulp
     .src(path.join(src, entry, 'index.ts'))
-    .pipe(webpackStream(config, webpack))
+    .pipe(
+      webpackStream(config, webpack, (err, stats) => {
+        if (err) {
+          console.error(err);
+        } else if (stats.compilation.errors.length > 0) {
+          console.log(stats);
+        }
+      }),
+    )
     .pipe(gulp.dest(dist));
 }
 
