@@ -71,12 +71,12 @@ describe('starting the server', () => {
     });
   });
   it('starts the server', async () => {
-    await server.start(3000);
+    await server.start('3000');
     expect(fs.existsSync(mediaDir)).toBeTruthy();
   });
   it('starts the server on an invalid port', async () => {
     try {
-      await server.start(3000);
+      await server.start('3000');
     } catch (err) {
       expect(err.message).toBeDefined();
     }
