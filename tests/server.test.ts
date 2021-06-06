@@ -189,7 +189,7 @@ describe('getting a feed', () => {
       token,
     });
     const feed = await server.getFeed({
-      username: Users[0].username,
+      author: [Users[0].username],
     });
     expect(feed.length).toBe(2);
     expect(feed[0].author).toBe(userId);
@@ -197,7 +197,7 @@ describe('getting a feed', () => {
   it('gets an empty feed', async () => {
     try {
       await server.getFeed({
-        username: Users[1].username,
+        author: [Users[1].username],
       });
     } catch (err) {
       expect((err as HttpError).statusCode).toBe(400);
