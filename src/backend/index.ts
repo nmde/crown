@@ -23,6 +23,7 @@ async function main() {
       env.PGDATABASE as string,
     );
     await server.start(env.PORT as string);
+    console.log(`Server started on port ${env.PORT}`);
   }
 }
 
