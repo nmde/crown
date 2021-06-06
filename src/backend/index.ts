@@ -22,7 +22,7 @@ async function main() {
       env.PGPORT as string,
       env.PGDATABASE as string,
     );
-    await server.start(3000);
+    await server.start(env.PORT as string);
   }
 }
 

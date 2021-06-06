@@ -88,11 +88,11 @@ export default class Server extends ApiProvider {
   /**
    * Starts the HTTP server
    *
-   * @param {number} port The port to run the HTTP server on
+   * @param {string} port The port to run the HTTP server on
    * @returns {FastifyInstance} The Fastify instance
    * @throws {ServerError} If the server failed to start
    */
-  public async start(port: number): Promise<FastifyInstance> {
+  public async start(port: string): Promise<FastifyInstance> {
     // Ensure the media directory exists
     await fs.ensureDir(this.mediaDir);
 
