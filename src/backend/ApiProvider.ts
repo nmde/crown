@@ -2,8 +2,10 @@ import Tokenize from '@cyyynthia/tokenize';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize/types';
+import IEdge from 'types/Edge';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
+import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import { EndpointProvider, Query, Response } from '../types/Endpoints';
 import IUser from '../types/User';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
@@ -124,10 +126,7 @@ export default class ApiProvider implements EndpointProvider {
           type: 'follow',
         }).save();
         this.app.log.info(`Created edge with ID ${edge.get('id')}`);
-        return {
-          id: edge.get('id'),
-        };
-        break;
+        return edge.toJSON() as Required<IEdge>;
       default:
         this.app.log.error(`Invalid edge type: ${query.type}`);
         throw this.app.httpErrors.badRequest();
@@ -158,6 +157,31 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
+   * Searches for edges
+   *
+   * @param {GetEdgesQuery} query the search parameters
+   * @returns {CreateEdgeResponse[]} the list of edges
+   * @throws {HttpError} if thesearch parameters are invalid
+   */
+  public async getEdges(query: Query<'getEdges'>): Promise<Response<'getEdges'>> {
+    const source = await this.authenticate(query.token);
+    let results;
+    switch (query.type) {
+      case 'follow':
+        results = await models.Edge.findAll({
+          where: {
+            source: source.id as string,
+            type: 'follow',
+          },
+        });
+        return results.map((result) => result.toJSON() as Required<IEdge>);
+      default:
+        this.app.log.error(`Invalid edge type: ${query.type}`);
+        throw this.app.httpErrors.badRequest();
+    }
+  }
+
+  /**
    * Gets a feed of posts matching the supplied parameters
    *
    * @param {GetFeedQuery} query Post search parameters
@@ -168,12 +192,8 @@ export default class ApiProvider implements EndpointProvider {
     // TODO: check post visibility permissions
     // TODO: pagination
     const where: WhereOptions = {};
-    if (query.username !== undefined) {
-      // Resolve query username to and ID
-      const user = await this.getUser({
-        username: query.username,
-      });
-      where.author = user.id;
+    if (query.author !== undefined) {
+      where.author = query.author;
     } else {
       // No valid search parameters supplied
       this.app.log.error('Invalid feed search parameters');

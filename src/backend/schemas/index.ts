@@ -4,6 +4,7 @@ import CreateEdgeQs from './createEdge/Query.json';
 import CreateEdgeRes from './createEdge/Response.json';
 import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
+import GetEdgesQs from './getEdges/Query.json';
 import GetFeedQs from './getFeed/Query.json';
 import GetPostQs from './getPost/Query.json';
 import GetPostRes from './getPost/Response.json';
@@ -25,6 +26,18 @@ export default {
   createPost: {
     query: CreatePostQs,
     response: CreatePostRes,
+  },
+  getEdges: {
+    query: GetEdgesQs,
+    response: {
+      properties: {
+        posts: {
+          items: CreateEdgeRes,
+          type: 'array',
+        },
+      },
+      type: 'object',
+    },
   },
   getFeed: {
     query: GetFeedQs,

@@ -1,0 +1,14 @@
+{
+  "title": "getEdges-Query",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["type", "token"]
+}

@@ -4,9 +4,18 @@
     "properties": {
       "id": {
         "type": "string"
+      },
+      "source": {
+        "type": "string"
+      },
+      "target": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
       }
     },
     "additionalProperties": false,
-    "required": ["id"]
+    "required": ["id", "source", "target", "type"]
   }
   

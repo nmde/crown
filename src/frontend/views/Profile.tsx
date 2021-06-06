@@ -6,6 +6,7 @@ import { Users } from '../../../tests/sample-data';
 import Styled from '../Styled';
 import Feed from '../classes/Feed';
 import ErrorDialog from '../components/ErrorDialog';
+import Post from '../components/Post';
 import store from '../store';
 import ProfileStyles from '../styles/Profile';
 import t from '../translations/en-US.json';
@@ -35,19 +36,17 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
    */
   private data: {
     displayName?: string;
+    feed: Feed;
     id?: string;
     username?: string;
-  } = {};
+  } = {
+    feed: new Feed(),
+  };
 
   /**
    * The error message, if any
    */
   private error = '';
-
-  /**
-   * The user's post feed
-   */
-  private feed = new Feed();
 
   /**
    * The user's profile picture
@@ -85,8 +84,12 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
       user = await store.getUser({
         username: this.$route.params.username,
       });
+      const feed = await store.getFeed({
+        author: [user.id as string],
+      });
       this.data.displayName = user.displayName;
       this.data.username = user.username;
+      this.data.feed = new Feed(feed);
       // Force the UI to re-render
       this.$set(this.data, 'id', user.id);
     } catch (err) {
@@ -214,10 +217,10 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
                     </v-row>
                     <v-row>
                       {/* TODO: limit the number of posts loaded at once */}
-                      {(() => this.feed.posts.map((post) => (
+                      {(() => this.data.feed.posts.map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
-                            <v-img aspectRatio={1} src={post.media} />
+                            <Post post={post} />
                           </v-col>
                       )))()}
                     </v-row>

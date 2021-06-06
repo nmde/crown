@@ -8,6 +8,7 @@ import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { CreatePostQuery } from 'types/schemas/createPost/Query';
 import { CreatePostResponse } from 'types/schemas/createPost/Response';
+import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import { GetFeedQuery } from 'types/schemas/getFeed/Query';
 import { GetPostQuery } from 'types/schemas/getPost/Query';
 import { GetPostResponse } from 'types/schemas/getPost/Response';
@@ -98,6 +99,16 @@ class Store implements EndpointProvider {
    */
   @action public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
     return (await axios.post<Response<'createPost'>>(fullPath('createPost'), params)).data;
+  }
+
+  /**
+   * Searches for edges on the backend
+   *
+   * @param {GetEdgesQuery} params getEdges query parameters
+   * @returns {CreateEdgeResponse[]} the list of edges
+   */
+  @action public async getEdges(params: Query<'getEdges'>): Promise<Response<'getEdges'>> {
+    return (await axios.post<Response<'getEdges'>>(fullPath('getEdges'), params)).data;
   }
 
   /**

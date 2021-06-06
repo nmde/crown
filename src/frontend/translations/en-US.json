@@ -12,6 +12,7 @@
         "EMAIL": "Email is invalid",
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
+        "HOME": "Could not get home feed",
         "INVALID_CREDENTIALS": "Incorrect username and/or password",
         "POST_NOT_FOUND": "Could not find the requested post",
         "PASSWORD": {

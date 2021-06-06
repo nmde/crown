@@ -10,8 +10,8 @@ import { v4 as uuid } from 'uuid';
 import { Endpoints } from '../types/Endpoints';
 import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
+import ServerError from './ServerError';
 import app from './createApp';
-import ServerError from './errors/ServerError';
 import models from './models';
 import schemas from './schemas';
 
@@ -144,17 +144,12 @@ export default class Server extends ApiProvider {
     };
     keys<Endpoints>().forEach((endpoint) => {
       this.app.post<{
-        Body: Record<QueryKeys[typeof endpoint], string>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Body: Record<QueryKeys[typeof endpoint], any>;
       }>(`/${apiPath(endpoint)}`, {
         handler: async (request) => this[endpoint](request.body),
         schema: {
           body: schemas[endpoint].query,
-          response: {
-            '2xx': {
-              properties: schemas[endpoint].response.properties,
-              title: endpoint,
-            },
-          },
         },
       });
     });
