@@ -9,18 +9,18 @@ dotenv.config();
  */
 async function main() {
   // TODO: change port for deployment
-  const authKey = process.env.AUTHKEY;
-  if (authKey === undefined) {
+  const { env } = process;
+  if (env.authKey === undefined) {
     throw new Error('No authKey found');
   } else {
-    const server = new Server(authKey, path.join(__dirname, 'media'));
+    const server = new Server(env.authKey, path.join(__dirname, 'media'));
     // TODO: change to production database
     await server.connect(
-      'postgres',
-      process.env.PGPASSWORD as string,
-      'localhost',
-      '5432',
-      'crown-test',
+      env.PGUSER as string,
+      env.PGPASSWORD as string,
+      env.PGHOST as string,
+      env.PGPORT as string,
+      env.PGDATABASE as string,
     );
     await server.start(3000);
   }
