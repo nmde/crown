@@ -37,6 +37,17 @@ async function compileSchemas() {
 }
 
 /**
+ * Copies the index HTML file to the dist folder
+ *
+ * @returns {Object} the gulp stream copying the file
+ */
+async function copyIndex() {
+  return gulp
+    .src(path.join(__dirname, 'src', 'frontend', 'index.html'))
+    .pipe(gulp.dest('dist'));
+}
+
+/**
  * Common task for compiling Typescript
  *
  * @param {string} entry the entry folder
@@ -77,6 +88,7 @@ function frontend() {
 }
 
 exports.schemas = compileSchemas;
+exports.copyIndex = copyIndex;
 exports.backend = backend;
 exports.frontend = frontend;
-exports.default = gulp.parallel(compileSchemas, backend, frontend);
+exports.default = gulp.parallel(compileSchemas, copyIndex, backend, frontend);
