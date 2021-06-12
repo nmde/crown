@@ -1,13 +1,13 @@
 import CSS from 'csstype';
 import { render } from 'fela-dom';
 import Vue from 'vue';
-import renderer from './renderer';
+import renderer from '../renderer';
 
 /**
  * Utility class for applying custom CSS to components with strict typing
  * Type parameter T is a type containing the names of all classes the component uses
  */
-export default class Styled<T extends string> extends Vue {
+export default class Styled<T> extends Vue {
   /**
    * Stores the associations between T and compiled class names
    */
