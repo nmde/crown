@@ -1,17 +1,26 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import Styled from './Styled';
+import ViewComponent from './classes/ViewComponent';
 import CreatePostDialog from './components/CreatePostDialog';
 import store from './store';
+import makeStyles from './styles/makeStyles';
 import t from './translations/en-US.json';
 
-type Classes = 'fab';
+const styles = makeStyles({
+  fab: {
+    bottom: '16px',
+    height: '56px',
+    position: 'absolute',
+    right: '16px',
+    width: '56px',
+  },
+});
 
 @Component
 /**
- * The main app component - Contains all global logic & UI
+ *
  */
-export default class App extends Styled<Classes> {
+export default class App extends ViewComponent<typeof styles> {
   /**
    * The view currently displayed to the user
    */
@@ -28,15 +37,7 @@ export default class App extends Styled<Classes> {
    * @constructs
    */
   public constructor() {
-    super({
-      fab: {
-        bottom: '16px',
-        height: '56px',
-        position: 'absolute',
-        right: '16px',
-        width: '56px',
-      },
-    });
+    super(styles);
   }
 
   /**
@@ -50,7 +51,7 @@ export default class App extends Styled<Classes> {
         {(() => {
           if (store.token === undefined) {
             return (
-              <v-app-bar app color="primary">
+              <v-app-bar app color="primary" dense>
                 <v-app-bar-title>{t.msg.SIGNED_OUT}</v-app-bar-title>
                 <v-spacer />
                 <v-btn to="/login">{t.btn.SIGNIN}</v-btn>

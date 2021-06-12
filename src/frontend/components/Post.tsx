@@ -7,16 +7,21 @@ import IPost from '../../types/Post';
 import IUser from '../../types/User';
 import apiPath from '../../util/apiPath';
 import formatDate from '../../util/formatDate';
-import Styled from '../Styled';
+import Styled from '../classes/Styled';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 
-type Classes = 'description';
+const styles = makeStyles({
+  description: {
+    textAlign: 'right',
+  },
+});
 
 @Component
 /**
  * Displays a post
  */
-export default class Post extends Styled<Classes> {
+export default class Post extends Styled<typeof styles> {
   /**
    * The post author
    */
@@ -38,11 +43,7 @@ export default class Post extends Styled<Classes> {
    * @constructs
    */
   public constructor() {
-    super({
-      description: {
-        textAlign: 'right',
-      },
-    });
+    super(styles);
   }
 
   /**

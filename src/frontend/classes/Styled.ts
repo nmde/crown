@@ -1,13 +1,14 @@
 import CSS from 'csstype';
 import { render } from 'fela-dom';
 import Vue from 'vue';
-import renderer from '../renderer';
+import { Styles } from '../styles/makeStyles';
+import renderer from '../styles/renderer';
 
 /**
  * Utility class for applying custom CSS to components with strict typing
  * Type parameter T is a type containing the names of all classes the component uses
  */
-export default class Styled<T> extends Vue {
+export default class Styled<T extends Styles<string>> extends Vue {
   /**
    * Stores the associations between T and compiled class names
    */
@@ -15,14 +16,13 @@ export default class Styled<T> extends Vue {
 
   /**
    * @constructs
-   * @param {Record<string, CSS.Properties>} css The custom component styles
+   * @param {Styles} css The custom component styles
    */
-  public constructor(css: Record<T, CSS.Properties>) {
+  public constructor(css: Record<keyof T, CSS.Properties>) {
     super();
     // Create style rules
     Object.keys(css).forEach((key) => {
-      const cname = key as T;
-      this.classes[cname] = renderer.renderRule((props) => props, css[cname]);
+      this.classes[key] = renderer.renderRule((props) => props, css[key]);
     });
     // Render to DOM
     render(renderer);
@@ -34,7 +34,7 @@ export default class Styled<T> extends Vue {
    * @param {string} name The class name as defined in T
    * @returns {string} The compiled class name
    */
-  protected className(name: T): string {
-    return this.classes[name];
+  protected className(name: keyof T): string {
+    return this.classes[name as string];
   }
 }

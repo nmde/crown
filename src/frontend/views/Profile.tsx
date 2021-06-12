@@ -3,12 +3,12 @@ import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
-import Styled from '../Styled';
 import Feed from '../classes/Feed';
+import ViewComponent from '../classes/ViewComponent';
 import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
 import store from '../store';
-import ProfileStyles from '../styles/Profile';
+import makeStyles from '../styles/makeStyles';
 import t from '../translations/en-US.json';
 
 // Prop types
@@ -16,11 +16,44 @@ export type Props = {
   tParams: Record<string, string>;
 };
 
+const styles = makeStyles({
+  AvatarContainer: {
+    textAlign: 'center',
+    zIndex: 100,
+  },
+  Center: {
+    textAlign: 'center',
+  },
+  DisplayName: {
+    justifyContent: 'center',
+  },
+  Fill: {
+    height: '100%',
+    width: '100%',
+  },
+  GalleryImage: {
+    padding: 0,
+  },
+  Icon: {
+    color: 'white',
+    fontSize: '100px',
+  },
+  Main: {
+    marginTop: '-15px',
+  },
+  Spacer: {
+    height: '86.5px',
+  },
+  TextSpacer: {
+    height: '32px',
+  },
+});
+
 @Component
 /**
  * User profile page view
  */
-export default class Profile extends Styled<keyof typeof ProfileStyles> {
+export default class Profile extends ViewComponent<typeof styles> {
   /**
    * If an action is pending
    */
@@ -68,7 +101,7 @@ export default class Profile extends Styled<keyof typeof ProfileStyles> {
    * @constructs
    */
   public constructor() {
-    super(ProfileStyles);
+    super(styles);
   }
 
   /**

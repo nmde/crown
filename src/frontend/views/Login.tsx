@@ -1,10 +1,11 @@
 import PasswordValidator from 'password-validator';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import Styled from '../Styled';
 import background from '../assets/background.jpg';
+import ViewComponent from '../classes/ViewComponent';
 import ErrorDialog from '../components/ErrorDialog';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 import translations from '../translations';
 
 // TODO: translations
@@ -23,13 +24,22 @@ function required(value: string) {
   return () => value !== '' || errors.EMPTY_FIELD;
 }
 
-type Classes = 'container' | 'row';
+const styles = makeStyles({
+  container: {
+    background: `url(${background}) no-repeat center center fixed`,
+    backgroundSize: 'cover',
+    height: '100%',
+  },
+  row: {
+    height: '100%',
+  },
+});
 
 @Component
 /**
  * The login/signup page
  */
-export default class Login extends Styled<Classes> {
+export default class Login extends ViewComponent<typeof styles> {
   private error = '';
 
   private form = {
@@ -44,16 +54,7 @@ export default class Login extends Styled<Classes> {
    * @constructs
    */
   public constructor() {
-    super({
-      container: {
-        background: `url(${background}) no-repeat center center fixed`,
-        backgroundSize: 'cover',
-        height: '100%',
-      },
-      row: {
-        height: '100%',
-      },
-    });
+    super(styles);
   }
 
   /**

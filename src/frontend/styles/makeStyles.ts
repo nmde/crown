@@ -1,6 +1,6 @@
 import CSS from 'csstype';
 
-type Styles = Record<string, CSS.Properties>;
+export type Styles<T extends string> = Record<T, CSS.Properties>;
 
 /**
  * Adds typing to CSS styles
@@ -8,6 +8,8 @@ type Styles = Record<string, CSS.Properties>;
  * @param {Styles} styles the styles
  * @returns {Styles} the styles with correct typing
  */
-export default function makeStyles(styles: Styles): Styles {
+export default function makeStyles<T extends string>(
+  styles: Record<T, CSS.Properties>,
+): Record<T, CSS.Properties> {
   return styles;
 }
