@@ -34,8 +34,6 @@ export default class ErrorDialog extends Vue {
     deep: true,
     immediate: true,
   })
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   private toggleOpen(): void {
     if (this.message !== undefined && this.message.length > 0) {
       this.open = true;
@@ -55,6 +53,7 @@ export default class ErrorDialog extends Vue {
           <v-card-text>{this.message}</v-card-text>
           <v-card-actions>
             <v-btn
+              block
               onClick={() => {
                 this.open = false;
               }}

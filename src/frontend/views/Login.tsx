@@ -1,60 +1,54 @@
 import PasswordValidator from 'password-validator';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import background from '../assets/background.jpg';
 import ViewComponent from '../classes/ViewComponent';
 import ErrorDialog from '../components/ErrorDialog';
+import TextBtn from '../components/TextBtn';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
-import translations from '../translations';
 
-// TODO: translations
-// TODO: schema for translations
-const t = translations['en-US'];
-const { errors } = t;
-const { USERNAME, PASSWORD } = errors;
+const styles = makeStyles({});
 
-/**
- * Check that a form field is not empty, and displays an error if it is
- *
- * @param {string} value Value supplied by v-text-field
- * @returns {Function} the validator function
- */
-function required(value: string) {
-  return () => value !== '' || errors.EMPTY_FIELD;
-}
-
-const styles = makeStyles({
-  container: {
-    background: `url(${background}) no-repeat center center fixed`,
-    backgroundSize: 'cover',
-    height: '100%',
-  },
-  row: {
-    height: '100%',
-  },
-});
+export type Props = {};
 
 @Component
 /**
  * The login/signup page
  */
-export default class Login extends ViewComponent<typeof styles> {
-  private error = '';
+export default class Login extends ViewComponent<typeof styles> implements Props {
+  /** enables additional fields for creating a new account */
+  private createMode = false;
 
-  private form = {
+  /** form data */
+  private form: {
+    displayName: string;
+    email: string;
+    password: string;
+    username: string;
+  } = {
+    displayName: '',
     email: '',
     password: '',
     username: '',
   };
-
-  private loading = false;
 
   /**
    * @constructs
    */
   public constructor() {
     super(styles);
+  }
+
+  /**
+   * The error dialog header
+   *
+   * @returns {string} the header text
+   */
+  private get header() {
+    if (this.createMode) {
+      return this.messages.headers.SIGNUP;
+    }
+    return this.messages.headers.SIGNIN_ERROR;
   }
 
   /**
@@ -86,10 +80,10 @@ export default class Login extends ViewComponent<typeof styles> {
    */
   private get emailRules() {
     return [
-      required(this.form.email),
+      this.required(this.form.email),
       (i: string) => /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
         i,
-      ) || errors.EMAIL,
+      ) || this.messages.errors.EMAIL,
     ];
   }
 
@@ -114,12 +108,16 @@ export default class Login extends ViewComponent<typeof styles> {
   private get passwordRules() {
     const { form } = this;
     return [
-      required(form.password),
-      (i: string) => new PasswordValidator().has().letters(3).validate(i) || PASSWORD.LETTERS,
-      (i: string) => new PasswordValidator().has().digits(2).validate(i) || PASSWORD.DIGITS,
-      (i: string) => new PasswordValidator().has().symbols(1).validate(i) || PASSWORD.SYMBOLS,
+      this.required(form.password),
+      (i: string) => new PasswordValidator().has().letters(3).validate(i)
+        || this.messages.errors.PASSWORD.LETTERS,
+      (i: string) => new PasswordValidator().has().digits(2).validate(i)
+        || this.messages.errors.PASSWORD.DIGITS,
+      (i: string) => new PasswordValidator().has().symbols(1).validate(i)
+        || this.messages.errors.PASSWORD.SYMBOLS,
       (i: string) => new PasswordValidator().has().not().oneOf([form.username])
-        .validate(i) || PASSWORD.USERNAME,
+        .validate(i)
+        || this.messages.errors.PASSWORD.USERNAME,
     ];
   }
 
@@ -143,14 +141,25 @@ export default class Login extends ViewComponent<typeof styles> {
    */
   private get usernameRules() {
     return [
-      required(this.form.username),
-      (i: string) => i.length >= 4 || USERNAME.LENGTH,
-      (i: string) => new PasswordValidator().has().letters(1).validate(i) || USERNAME.LETTERS,
+      this.required(this.form.username),
+      (i: string) => i.length >= 4 || this.messages.errors.USERNAME.LENGTH,
+      (i: string) => new PasswordValidator().has().letters(1).validate(i)
+        || this.messages.errors.USERNAME.LETTERS,
       (i: string) => new PasswordValidator()
         .has()
         .not(/[^A-Za-z0-9\-~_]/)
-        .validate(i) || USERNAME.CHARACTERS,
+        .validate(i) || this.messages.errors.USERNAME.CHARACTERS,
     ];
+  }
+
+  /**
+   * Check that a form field is not empty, and displays an error if it is
+   *
+   * @param {string} value Value supplied by v-text-field
+   * @returns {Function} the validator function
+   */
+  private required(value: string) {
+    return () => value !== '' || this.messages.errors.EMPTY_FIELD;
   }
 
   /**
@@ -160,116 +169,112 @@ export default class Login extends ViewComponent<typeof styles> {
    */
   public render(): VNode {
     return (
-      <v-container class={this.className('container')} fluid>
-        <v-row align="center" class={this.className('row')} justify="center">
-          <v-col cols={12} sm={10} md={8} lg={6}>
-            <v-card>
-              <v-card-title class="h3 font-italic text-center">{t.headers.JOIN}</v-card-title>
-              <v-tabs grow>
-                <v-tab href="#signin">{t.headers.SIGNIN}</v-tab>
-                <v-tab-item value="signin">
-                  <v-card-text>
-                    <v-text-field
-                      label={t.labels.USERNAME}
-                      vModel={this.form.username}
-                      rules={this.usernameRules}
-                    />
-                    <v-text-field
-                      label={t.labels.PASSWORD}
-                      type="password"
-                      vModel={this.form.password}
-                      rules={this.passwordRules}
-                    />
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-btn
-                      block
-                      color="primary"
-                      disabled={this.baseNotValid}
-                      loading={this.loading}
-                      onClick={async () => {
-                        this.loading = true;
-                        try {
-                          await store.signIn({
-                            password: this.form.password,
-                            username: this.form.username,
-                          });
-                          this.$router.back();
-                        } catch (err) {
-                          this.loading = false;
-                          switch (err.response.status) {
-                            case 400:
-                              this.error = t.errors.INVALID_CREDENTIALS;
-                              break;
-                            default:
-                              this.error = t.errors.GENERIC;
-                          }
-                        }
-                      }}
-                    >
-                      {t.btn.SIGNIN}
-                    </v-btn>
-                  </v-card-actions>
-                </v-tab-item>
-                <v-tab href="#signup">{t.headers.SIGNUP}</v-tab>
-                <v-tab-item value="signup">
-                  <v-card-text>
-                    <v-text-field
-                      label={t.labels.USERNAME}
-                      vModel={this.form.username}
-                      rules={this.usernameRules}
-                    />
-                    <v-text-field
-                      label={t.labels.PASSWORD}
-                      type="password"
-                      vModel={this.form.password}
-                      rules={this.passwordRules}
-                    />
-                    <v-text-field
-                      label={t.labels.EMAIL}
-                      vModel={this.form.email}
-                      rules={this.emailRules}
-                    />
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-btn
-                      block
-                      color="primary"
-                      loading={this.loading}
-                      disabled={this.baseNotValid || !this.emailIsValid}
-                      onClick={async () => {
-                        this.loading = true;
-                        try {
+      <v-card>
+        <v-card-title>{this.messages.headers.SIGNIN}</v-card-title>
+        <v-card-text>
+          <v-text-field
+            label={this.messages.labels.USERNAME}
+            prepend-icon="account_circle"
+            rules={this.usernameRules}
+            vModel={this.form.username}
+          />
+          <v-text-field
+            label={this.messages.labels.PASSWORD}
+            prepend-icon="lock"
+            rules={this.passwordRules}
+            type="password"
+            vModel={this.form.password}
+          />
+          {(() => {
+            if (this.createMode) {
+              return (
+                <div>
+                  <v-text-field
+                    label={this.messages.labels.EMAIL}
+                    prepend-icon="email"
+                    rules={this.emailRules}
+                    vModel={this.form.email}
+                  />
+                  <v-text-field
+                    label={this.messages.labels.DISPLAY_NAME}
+                    prepend-icon="face"
+                    rules={this.required}
+                    vModel={this.form.displayName}
+                  />
+                  <v-btn
+                    block
+                    color="primary"
+                    disabled={this.baseNotValid || !this.emailIsValid}
+                    loading={this.loading}
+                    onClick={async () => {
+                      await this.apiCall(
+                        async () => {
                           await store.createAccount({
-                            displayName: '', // TODO
+                            displayName: this.form.displayName,
                             email: this.form.email,
                             password: this.form.password,
                             username: this.form.username,
                           });
-                          // TODO: welcome message, verify email
+                        },
+                        () => {
+                          // TODO: welcome page
                           this.$router.back();
-                        } catch (err) {
-                          this.loading = false;
-                          switch (err.response.status) {
-                            case 409:
-                              this.error = t.errors.USERNAME.TAKEN;
-                              break;
-                            default:
-                              this.error = t.errors.GENERIC;
-                          }
-                        }
-                      }}
-                    >
-                      {t.btn.SIGNUP}
-                    </v-btn>
-                  </v-card-actions>
-                </v-tab-item>
-              </v-tabs>
-            </v-card>
-          </v-col>
-        </v-row>
-        <ErrorDialog header={t.headers.SIGNIN_ERROR} message={this.error} />
-      </v-container>
+                        },
+                        {
+                          409: this.messages.errors.CONFLICT,
+                        },
+                      );
+                    }}
+                  >
+                    {this.messages.btn.SIGNUP}
+                  </v-btn>
+                  <TextBtn
+                    text={this.messages.text.EXISTING_ACCOUNT}
+                    onClick={() => {
+                      this.createMode = false;
+                    }}
+                  />
+                </div>
+              );
+            }
+            return (
+              <div>
+                <v-btn
+                  block
+                  color="primary"
+                  disabled={this.baseNotValid}
+                  loading={this.loading}
+                  onClick={async () => {
+                    await this.apiCall(
+                      async () => {
+                        await store.signIn({
+                          password: this.form.password,
+                          username: this.form.username,
+                        });
+                      },
+                      () => {
+                        this.$router.back();
+                      },
+                      {
+                        400: this.messages.errors.INVALID_CREDENTIALS,
+                      },
+                    );
+                  }}
+                >
+                  {this.messages.btn.SIGNIN}
+                </v-btn>
+                <TextBtn
+                  text={this.messages.text.CREATE_ACCOUNT}
+                  onClick={() => {
+                    this.createMode = true;
+                  }}
+                />
+              </div>
+            );
+          })()}
+        </v-card-text>
+        <ErrorDialog header={this.header} message={this.error} />
+      </v-card>
     );
   }
 }

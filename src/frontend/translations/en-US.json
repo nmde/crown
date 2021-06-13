@@ -9,11 +9,13 @@
         "UNFOLLOW": "Following"
     },
     "errors": {
+        "CONFLICT": "Username is taken.",
         "EMAIL": "Email is invalid",
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
         "HOME": "Could not get home feed",
-        "INVALID_CREDENTIALS": "Incorrect username and/or password",
+        "INVALID_CREDENTIALS": "Incorrect username and/or password.",
+        "NETWORK": "Could not communicate with our servers. Please try again in a few minutes.",
         "POST_NOT_FOUND": "Could not find the requested post",
         "PASSWORD": {
             "DIGITS": "Passwords must contain at least 2 digits",
@@ -49,6 +51,7 @@
     "labels": {
         "CONFIRM_PASSWORD": "Confirm Password",
         "DESCRIPTION": "Post description",
+        "DISPLAY_NAME": "Display Name",
         "EMAIL": "Email",
         "FILE": "Choose a file",
         "FOLLOWERS": "Followers",
@@ -59,5 +62,9 @@
     },
     "msg": {
         "SIGNED_OUT": "You are not signed in!"
+    },
+    "text": {
+        "CREATE_ACCOUNT": "Create an account",
+        "EXISTING_ACCOUNT": "Sign in to existing account"
     }
 }
