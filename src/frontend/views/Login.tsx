@@ -61,6 +61,15 @@ export default class Login extends ViewComponent<typeof styles> implements Props
   }
 
   /**
+   * Checks if the additional create account fields are valid
+   *
+   * @returns {boolean} if the create account fields are valid
+   */
+  private get extraNotValid() {
+    return !this.emailIsValid || this.form.displayName.length === 0;
+  }
+
+  /**
    * Checks if the email is valid
    *
    * @returns {boolean} if the email is valid
@@ -198,13 +207,13 @@ export default class Login extends ViewComponent<typeof styles> implements Props
                   <v-text-field
                     label={this.messages.labels.DISPLAY_NAME}
                     prepend-icon="face"
-                    rules={this.required}
+                    rules={[this.required(this.form.displayName)]}
                     vModel={this.form.displayName}
                   />
                   <v-btn
                     block
                     color="primary"
-                    disabled={this.baseNotValid || !this.emailIsValid}
+                    disabled={this.baseNotValid || this.extraNotValid }
                     loading={this.loading}
                     onClick={async () => {
                       await this.apiCall(
