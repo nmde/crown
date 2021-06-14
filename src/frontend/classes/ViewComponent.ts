@@ -39,8 +39,14 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
     this.loading = true;
     try {
       await method();
-      onSuccess();
+      // Don't forward onSuccess errors to the error handler
+      try {
+        onSuccess();
+      } catch (err) {
+        console.error(err);
+      }
     } catch (err) {
+      console.error(err);
       if (err.message === 'Network Error') {
         this.error = this.messages.errors.NETWORK;
       } else if (err.response !== undefined && errorMessages[err.response.status] !== undefined) {
@@ -50,5 +56,15 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
       }
     }
     this.loading = false;
+  }
+
+  /**
+   * Check that a form field is not empty, and displays an error if it is
+   *
+   * @param {string} value Value supplied by v-text-field
+   * @returns {Function} the validator function
+   */
+  protected required(value: string) {
+    return (): string | boolean => value !== '' || this.messages.errors.EMPTY_FIELD;
   }
 }

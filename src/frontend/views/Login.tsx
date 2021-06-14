@@ -162,16 +162,6 @@ export default class Login extends ViewComponent<typeof styles> implements Props
   }
 
   /**
-   * Check that a form field is not empty, and displays an error if it is
-   *
-   * @param {string} value Value supplied by v-text-field
-   * @returns {Function} the validator function
-   */
-  private required(value: string) {
-    return () => value !== '' || this.messages.errors.EMPTY_FIELD;
-  }
-
-  /**
    * Renders the component
    *
    * @returns {VNode} the component

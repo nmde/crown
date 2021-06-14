@@ -13,6 +13,7 @@ import { GetUserResponse } from './schemas/getUser/Response';
 import { GetUserByIdQuery } from './schemas/getUserById/Query';
 import { SignInQuery } from './schemas/signIn/Query';
 import { SignInResponse } from './schemas/signIn/Response';
+import { UpdateUserQuery } from './schemas/updateUser/Query';
 
 export type Endpoints = {
   createAccount: {
@@ -50,6 +51,10 @@ export type Endpoints = {
   signIn: {
     query: SignInQuery;
     response: SignInResponse;
+  };
+  updateUser: {
+    query: UpdateUserQuery;
+    response: GetUserResponse;
   };
 };
 

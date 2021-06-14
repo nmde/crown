@@ -77,11 +77,6 @@ export default class Profile extends ViewComponent<typeof styles> {
   };
 
   /**
-   * The error message, if any
-   */
-  private error = '';
-
-  /**
    * The user's profile picture
    */
   private profilePicture = Users[0].profilePicture;

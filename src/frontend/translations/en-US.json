@@ -61,6 +61,7 @@
         "USERNAME": "Username"
     },
     "msg": {
+        "SAVED": "Account settings saved!",
         "SIGNED_OUT": "You are not signed in!"
     },
     "text": {

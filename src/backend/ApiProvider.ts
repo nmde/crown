@@ -20,10 +20,12 @@ import { GetUserResponse } from '../types/schemas/getUser/Response';
 import { GetUserByIdQuery } from '../types/schemas/getUserById/Query';
 import { SignInQuery } from '../types/schemas/signIn/Query';
 import { SignInResponse } from '../types/schemas/signIn/Response';
+import { UpdateUserQuery } from '../types/schemas/updateUser/Query';
 import currentTokenTime from '../util/currentTokenTime';
 import media from '../util/media';
 import models from './models';
 import Edge from './models/Edge';
+import User from './models/User';
 
 /**
  * Provides API endpoints to the Server class
@@ -297,5 +299,27 @@ export default class ApiProvider implements EndpointProvider {
     // No matching username/password
     this.app.log.error(`Invalid login attempt for user ${query.username}`);
     throw this.app.httpErrors.badRequest();
+  }
+
+  /**
+   * Updates existing user information
+   *
+   * @param {UpdateUserQuery} query the new information
+   * @returns {GetUserResponse} the updated user
+   */
+  public async updateUser(query: Query<'updateUser'>): Promise<Response<'updateUser'>> {
+    const user = await this.authenticate(query.token);
+    const updated = await models.User.update(
+      {
+        displayName: query.displayName,
+      },
+      {
+        returning: true,
+        where: {
+          id: user.id,
+        },
+      },
+    );
+    return (updated.filter((row) => typeof row !== 'number')[0] as User[])[0].toJSON();
   }
 }

@@ -201,6 +201,18 @@ class Store implements EndpointProvider {
     JSCookie.remove('token');
     this.token = undefined;
   }
+
+  /**
+   * Updates user information
+   *
+   * @param {SignInQuery} params the query parameters
+   * @returns {SignInResponse} the API response
+   */
+  @action public async updateUser(params: Query<'updateUser'>): Promise<Response<'updateUser'>> {
+    const res = (await axios.post<Response<'updateUser'>>(fullPath('updateUser'), params)).data;
+    this.currentUser = res as IUser;
+    return res;
+  }
 }
 
 export default new Store();

@@ -3,18 +3,11 @@ import { Component } from 'vue-property-decorator';
 import ViewComponent from './classes/ViewComponent';
 import CreatePostDialog from './components/CreatePostDialog';
 import store from './store';
+import fab from './styles/fab';
 import makeStyles from './styles/makeStyles';
 import t from './translations/en-US.json';
 
-const styles = makeStyles({
-  fab: {
-    bottom: '16px',
-    height: '56px',
-    position: 'absolute',
-    right: '16px',
-    width: '56px',
-  },
-});
+const styles = makeStyles(fab);
 
 @Component
 /**

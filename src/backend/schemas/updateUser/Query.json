@@ -1,0 +1,14 @@
+{
+  "title": "updateUser-Query",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["token", "displayName"]
+}

@@ -13,6 +13,7 @@ import GetUserRes from './getUser/Response.json';
 import GetUserByIdQs from './getUserById/Query.json';
 import SignInQs from './signIn/Query.json';
 import SignInRes from './signIn/Response.json';
+import UpdateUserQs from './updateUser/Query.json';
 
 export default {
   createAccount: {
@@ -66,5 +67,9 @@ export default {
   signIn: {
     query: SignInQs,
     response: SignInRes,
+  },
+  updateUser: {
+    query: UpdateUserQs,
+    response: GetUserRes,
   },
 };
