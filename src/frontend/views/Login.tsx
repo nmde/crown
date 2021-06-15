@@ -122,8 +122,6 @@ export default class Login extends ViewComponent<typeof styles> implements Props
         || this.messages.errors.PASSWORD.LETTERS,
       (i: string) => new PasswordValidator().has().digits(2).validate(i)
         || this.messages.errors.PASSWORD.DIGITS,
-      (i: string) => new PasswordValidator().has().symbols(1).validate(i)
-        || this.messages.errors.PASSWORD.SYMBOLS,
       (i: string) => new PasswordValidator().has().not().oneOf([form.username])
         .validate(i)
         || this.messages.errors.PASSWORD.USERNAME,
