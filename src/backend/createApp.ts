@@ -36,7 +36,7 @@ export default function createApp(authKey: string): FastifyInstance {
   // Configure fastify-cors
   app.register(fastifyCors, {
     origin: (origin, cb) => {
-      if (origin === undefined || /localhost/.test(origin)) {
+      if (origin === undefined || /localhost/.test(origin) || /herokuapp\.com/.test(origin)) {
         cb(null, true);
         return;
       }
