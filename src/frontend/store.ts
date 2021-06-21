@@ -2,6 +2,7 @@
 import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
+import path from 'path-browserify';
 import { CreateAccountQuery } from 'types/schemas/createAccount/Query';
 import { CreateAccountResponse } from 'types/schemas/createAccount/Response';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
@@ -29,7 +30,7 @@ import apiPath from '../util/apiPath';
  * @returns {string} the full URL to the endpoint
  */
 function fullPath(endpoint: Parameters<typeof apiPath>[0]) {
-  return `http://localhost:3000/${apiPath(endpoint)}`;
+  return path.join(new URL(document.URL).origin, apiPath(endpoint));
 }
 
 /**
