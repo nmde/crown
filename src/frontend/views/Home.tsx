@@ -1,82 +1,73 @@
-/* eslint-disable class-methods-use-this */
-import Vue, { VNode } from 'vue';
+import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
+import { CreateEdgeResponse } from '../../types/schemas/createEdge/Response';
+import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
+import ViewComponent from '../classes/ViewComponent';
 import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
 import store from '../store';
-import t from '../translations/en-US.json';
+import makeStyles from '../styles/makeStyles';
+
+const styles = makeStyles({});
+
+export type Props = {};
 
 @Component
 /**
- * The home page
+ * The user's home feed
  */
-export default class Home extends Vue {
-  /**
-   * The error message, if any
-   */
-  private error = '';
-
-  /**
-   * Data retrieved from the backend
-   */
+export default class Home extends ViewComponent<typeof styles> implements Props {
   private data: {
     feed: Feed;
-    foo: string;
   } = {
     feed: new Feed(),
-    foo: '',
   };
 
   /**
-   * Fetches the user data from the backend
+   * @constructs
+   */
+  public constructor() {
+    super(styles);
+  }
+
+  /**
+   * Checks if the user is signed in when the page is loaded
    */
   @Watch('$route', {
     deep: true,
     immediate: true,
   })
-  private async fetchFeed() {
-    try {
-      const { token } = store;
-      if (token === undefined) {
-        // TODO: public feed
-        console.log('public feed');
-      } else {
-        // Get the accounts the current user is following
-        const following = await store.getEdges({
-          token,
-          type: 'follow',
-        });
-        if (following.length > 0) {
-          // Generate a feed from followed accounts
-          const feed = await store.getFeed({
-            author: following.map((edge) => edge.target as string),
+  private async setup() {
+    // TODO: public feed
+    const { token } = store;
+    if (token !== undefined) {
+      // Generate the user's post feed
+      let following: CreateEdgeResponse[];
+      let feed: GetPostResponse[];
+      await this.apiCall(
+        async () => {
+          following = await store.getEdges({
+            token,
+            type: 'follow',
           });
-          this.data.feed = new Feed(feed);
-          // Trick to get the UI to update (ugh)
-          this.$set(this.data, 'foo', 'bar');
-        } else {
-          console.log('0 following');
-        }
-      }
-    } catch (err) {
-      switch (err.response.status) {
-        case 400:
-          // Expected error (the user was not found)
-          this.error = t.errors.USER_NOT_FOUND;
-          break;
-        default:
-          // Unexpected error
-          this.error = t.errors.GENERIC;
-      }
+        },
+        async () => {
+          await this.apiCall(
+            async () => {
+              feed = await store.getFeed({
+                author: following.map((user) => user.id),
+              });
+            },
+            () => {
+              this.$set(this.data, 'feed', new Feed(feed));
+            },
+            {},
+          );
+        },
+        {},
+      );
     }
-  }
-
-  /**
-   * Created lifecycle hook - ensures data is fetched when the component is rendered
-   */
-  public async created(): Promise<void> {
-    await this.fetchFeed();
   }
 
   /**
@@ -88,7 +79,7 @@ export default class Home extends Vue {
     return (
       <div>
         {(() => this.data.feed.posts.map((post) => <Post post={post} />))()}
-        <ErrorDialog header={t.errors.HOME} message={this.error} />
+        <ErrorDialog header={this.messages.errors.HOME} message={this.error} />
       </div>
     );
   }

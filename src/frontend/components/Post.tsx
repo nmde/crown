@@ -12,6 +12,9 @@ import store from '../store';
 import makeStyles from '../styles/makeStyles';
 
 const styles = makeStyles({
+  card: {
+    padding: '10px',
+  },
   description: {
     textAlign: 'right',
   },
@@ -86,7 +89,7 @@ export default class Post extends Styled<typeof styles> {
     // TODO workaround
     if (this.data.author !== undefined) {
       return (
-        <v-card>
+        <v-card class={this.className('card')}>
           <v-toolbar>
             <v-toolbar-title>
               <router-link to={`/@${this.data.author.username}`}>

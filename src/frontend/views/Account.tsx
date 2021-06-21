@@ -53,13 +53,6 @@ export default class Account extends ViewComponent<typeof styles> implements Pro
   }
 
   /**
-   * Created lifecycle hook
-   */
-  public async created(): Promise<void> {
-    await this.setup();
-  }
-
-  /**
    * Renders the component
    *
    * @returns {VNode} the component

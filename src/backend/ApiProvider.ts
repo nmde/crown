@@ -1,7 +1,7 @@
 import Tokenize from '@cyyynthia/tokenize';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
-import { WhereOptions } from 'sequelize/types';
+import { Op, WhereOptions } from 'sequelize';
 import IEdge from 'types/Edge';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
@@ -195,7 +195,9 @@ export default class ApiProvider implements EndpointProvider {
     // TODO: pagination
     const where: WhereOptions = {};
     if (query.author !== undefined) {
-      where.author = query.author;
+      where.author = {
+        [Op.any]: query.author,
+      };
     } else {
       // No valid search parameters supplied
       this.app.log.error('Invalid feed search parameters');

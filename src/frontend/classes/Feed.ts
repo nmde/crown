@@ -28,4 +28,6 @@ export default class Feed {
   public getPost(index: number): Required<IPost> {
     return this.posts[index] as Required<IPost>;
   }
+
+  // TODO: sort posts
 }
