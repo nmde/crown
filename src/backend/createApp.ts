@@ -21,7 +21,7 @@ import models from './models';
  */
 export default function createApp(authKey: string): FastifyInstance {
   const app = fastify({
-    logger: process.env.NODE_ENV === 'development',
+    logger: true,
   });
 
   // Configure fastify-auth
