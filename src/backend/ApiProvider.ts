@@ -1,4 +1,5 @@
 import Tokenize from '@cyyynthia/tokenize';
+import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize';
@@ -90,12 +91,13 @@ export default class ApiProvider implements EndpointProvider {
         username: query.username,
       },
     });
+    console.log(await bcrypt.hash(query.password, 10));
     if (results == null) {
       const user = await new models.User({
         displayName: query.displayName,
         email: query.email,
         lastTokenReset: currentTokenTime(),
-        password: query.password,
+        password: await bcrypt.hash(query.password, 10),
         profileBackground: media.BACKGROUND,
         profilePicture: media.PROFILE,
         username: query.username,
@@ -277,11 +279,10 @@ export default class ApiProvider implements EndpointProvider {
   public async signIn(query: Query<'signIn'>): Promise<Response<'signIn'>> {
     const results = await models.User.findOne({
       where: {
-        password: query.password,
         username: query.username,
       },
     });
-    if (results !== null) {
+    if (results !== null && (await bcrypt.compare(query.password, results.get('password')))) {
       const id = results.get('id');
       // Update lastTokenReset to the current time
       results.set('lastTokenReset', currentTokenTime());

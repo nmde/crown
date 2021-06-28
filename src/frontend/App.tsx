@@ -55,7 +55,7 @@ export default class App extends ViewComponent<typeof styles> {
         })()}
         <v-main>
           {(() => {
-            if (store.token !== undefined) {
+            if (store.token !== undefined && this.nav === 'home') {
               return (
                 <v-btn
                   fab
