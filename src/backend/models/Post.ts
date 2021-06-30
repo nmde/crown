@@ -28,5 +28,8 @@ export default class Post extends Model<IPost> implements IPost {
     primaryKey: true,
     type: DataType.UUID,
   })
-  public id!: string;
+  declare public id: string;
+
+  @Column(DataType.BOOLEAN)
+  public visible!: boolean;
 }

@@ -13,6 +13,8 @@ import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
 import { CreateAccountResponse } from '../types/schemas/createAccount/Response';
 import { CreatePostQuery } from '../types/schemas/createPost/Query';
 import { CreatePostResponse } from '../types/schemas/createPost/Response';
+import { DeletePostQuery } from '../types/schemas/deletePost/Query';
+import { DeletePostResponse } from '../types/schemas/deletePost/Response';
 import { GetFeedQuery } from '../types/schemas/getFeed/Query';
 import { GetPostQuery } from '../types/schemas/getPost/Query';
 import { GetPostResponse } from '../types/schemas/getPost/Response';
@@ -91,7 +93,6 @@ export default class ApiProvider implements EndpointProvider {
         username: query.username,
       },
     });
-    console.log(await bcrypt.hash(query.password, 10));
     if (results == null) {
       const user = await new models.User({
         displayName: query.displayName,
@@ -153,6 +154,7 @@ export default class ApiProvider implements EndpointProvider {
       description: query.description,
       expires: query.expires,
       media: query.media,
+      visible: true,
     }).save();
     this.app.log.info(`Created post with ID ${post.get('id')}`);
     return {
@@ -161,11 +163,46 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
+   * Deletes a post
+   *
+   * @param {DeletePostQuery} query the post to delete
+   * @returns {DeletePostResponse} the deleted post ID
+   * @throws {HttpError} if the post could not be deleted
+   */
+  public async deletePost(query: Query<'deletePost'>): Promise<Response<'deletePost'>> {
+    const user = await this.authenticate(query.token);
+    const target = await models.Post.findOne({
+      where: {
+        author: user.id,
+        id: query.id,
+      },
+    });
+    if (target !== null) {
+      const updated = await models.Post.update(
+        {
+          visible: false,
+        },
+        {
+          returning: true,
+          where: {
+            id: query.id,
+          },
+        },
+      );
+      return {
+        id: updated[1][0].get('id'),
+      };
+    }
+    this.app.log.error(`User ${user.id} failed to delete post ${query.id}`);
+    throw this.app.httpErrors.badRequest();
+  }
+
+  /**
    * Searches for edges
    *
    * @param {GetEdgesQuery} query the search parameters
    * @returns {CreateEdgeResponse[]} the list of edges
-   * @throws {HttpError} if thesearch parameters are invalid
+   * @throws {HttpError} if the search parameters are invalid
    */
   public async getEdges(query: Query<'getEdges'>): Promise<Response<'getEdges'>> {
     const source = await this.authenticate(query.token);
@@ -195,7 +232,9 @@ export default class ApiProvider implements EndpointProvider {
   public async getFeed(query: Query<'getFeed'>): Promise<Response<'getFeed'>> {
     // TODO: check post visibility permissions
     // TODO: pagination
-    const where: WhereOptions = {};
+    const where: WhereOptions = {
+      visible: true,
+    };
     if (query.author !== undefined) {
       where.author = query.author;
     } else {
@@ -221,6 +260,7 @@ export default class ApiProvider implements EndpointProvider {
     const results = await models.Post.findOne({
       where: {
         id: query.id,
+        visible: true,
       },
     });
     if (results !== null) {

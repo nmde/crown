@@ -96,6 +96,34 @@ export default class Post extends Styled<typeof styles> {
                 {this.data.author.username}
               </router-link>
             </v-toolbar-title>
+            <v-spacer />
+            <v-menu
+              scopedSlots={{
+                /**
+                 * The menu activator
+                 *
+                 * @param {any} on Vue event bindings
+                 * @returns {VNode} the activator button
+                 */
+                activator({ on: { click } }: Record<string, Record<string, () => void>>) {
+                  return (
+                    <v-btn icon onClick={click}>
+                      <v-icon>more_vert</v-icon>
+                    </v-btn>
+                  );
+                },
+              }}
+            >
+              <v-list>
+                <v-list-item
+                  onClick={() => {
+                    console.log('deleting post');
+                  }}
+                >
+                  <v-list-item-title>Delete post</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-toolbar>
           <v-img src={`${path.join(apiPath('media'), this.post.media as string)}`} />
           <v-card-actions>

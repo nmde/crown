@@ -8,6 +8,8 @@ import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { CreatePostQuery } from 'types/schemas/createPost/Query';
 import { CreatePostResponse } from 'types/schemas/createPost/Response';
+import { DeletePostQuery } from 'types/schemas/deletePost/Query';
+import { DeletePostResponse } from 'types/schemas/deletePost/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import { GetFeedQuery } from 'types/schemas/getFeed/Query';
 import { GetPostQuery } from 'types/schemas/getPost/Query';
@@ -99,6 +101,16 @@ class Store implements EndpointProvider {
    */
   @action public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
     return (await axios.post<Response<'createPost'>>(fullPath('createPost'), params)).data;
+  }
+
+  /**
+   * Deletes a post
+   *
+   * @param {DeletePostQuery} params the request parameters
+   * @returns {DeletePostResponse} the API response
+   */
+  @action public async deletePost(params: Query<'deletePost'>): Promise<Response<'deletePost'>> {
+    return (await axios.post<Response<'deletePost'>>(fullPath('deletePost'), params)).data;
   }
 
   /**
