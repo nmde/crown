@@ -95,7 +95,6 @@ export default class CreatePostDialog extends Vue {
                           description: this.description,
                           expires: '',
                           media: JSON.parse(res.data.toString()).id,
-                          token: store.token as string,
                         })
                       ).id
                     }`,

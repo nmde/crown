@@ -2,7 +2,6 @@
 import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
-import { AuthenticateQuery } from 'types/schemas/authenticate/Query';
 import { CreateAccountQuery } from 'types/schemas/createAccount/Query';
 import { CreateAccountResponse } from 'types/schemas/createAccount/Response';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
@@ -20,7 +19,9 @@ import { GetUserResponse } from 'types/schemas/getUser/Response';
 import { GetUserByIdQuery } from 'types/schemas/getUserById/Query';
 import { SignInQuery } from 'types/schemas/signIn/Query';
 import { SignInResponse } from 'types/schemas/signIn/Response';
-import { EndpointProvider, Query, Response } from '../types/Endpoints';
+import {
+  Endpoint, EndpointProvider, Query, Response,
+} from '../types/Endpoints';
 import IPost from '../types/Post';
 import IUser from '../types/User';
 import apiPath from '../util/apiPath';
@@ -31,7 +32,7 @@ import apiPath from '../util/apiPath';
  * @param {string} endpoint the name of the endpoint
  * @returns {string} the full URL to the endpoint
  */
-function fullPath(endpoint: Parameters<typeof apiPath>[0]) {
+function fullPath(endpoint: Endpoint) {
   return `/${apiPath(endpoint)}`;
 }
 
@@ -67,13 +68,31 @@ class Store implements EndpointProvider {
   }
 
   /**
+   * Shortcut for an API call using a token
+   *
+   * @param {Endpoint} endpoint the name of the endpoint
+   * @param {Query} query the API query
+   * @returns {Response} the API response
+   */
+  private async callWithToken<E extends Endpoint>(
+    endpoint: Endpoint,
+    query: Query<E>,
+  ): Promise<Response<E>> {
+    return (
+      await axios.post<Response<E>>(fullPath(endpoint), {
+        ...query,
+        token: this.token,
+      })
+    ).data;
+  }
+
+  /**
    * Authenticates the user token
    *
-   * @param {AuthenticateQuery} params the query parameters
    * @returns {GetUserResponse} the user information
    */
-  @action public async authenticate(params: Query<'authenticate'>): Promise<Response<'authenticate'>> {
-    const res = (await axios.post<Response<'authenticate'>>(fullPath('authenticate'), params)).data;
+  @action public async authenticate(): Promise<Response<'authenticate'>> {
+    const res = await this.callWithToken<'authenticate'>('authenticate', {});
     this.currentUser = res as IUser;
     return res;
   }
@@ -103,7 +122,7 @@ class Store implements EndpointProvider {
    * @returns {CreateEdgeResponse} the API response
    */
   @action public async createEdge(params: Query<'createEdge'>): Promise<Response<'createEdge'>> {
-    return (await axios.post<Response<'createEdge'>>(fullPath('createEdge'), params)).data;
+    return this.callWithToken<'createEdge'>('createEdge', params);
   }
 
   /**
@@ -113,7 +132,7 @@ class Store implements EndpointProvider {
    * @returns {CreatePostResponse} the API response
    */
   @action public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
-    return (await axios.post<Response<'createPost'>>(fullPath('createPost'), params)).data;
+    return this.callWithToken<'createPost'>('createPost', params);
   }
 
   /**
@@ -123,7 +142,7 @@ class Store implements EndpointProvider {
    * @returns {DeletePostResponse} the API response
    */
   @action public async deletePost(params: Query<'deletePost'>): Promise<Response<'deletePost'>> {
-    return (await axios.post<Response<'deletePost'>>(fullPath('deletePost'), params)).data;
+    return this.callWithToken<'deletePost'>('deletePost', params);
   }
 
   /**
@@ -133,7 +152,7 @@ class Store implements EndpointProvider {
    * @returns {CreateEdgeResponse[]} the list of edges
    */
   @action public async getEdges(params: Query<'getEdges'>): Promise<Response<'getEdges'>> {
-    return (await axios.post<Response<'getEdges'>>(fullPath('getEdges'), params)).data;
+    return this.callWithToken<'getEdges'>('getEdges', params);
   }
 
   /**
@@ -234,7 +253,7 @@ class Store implements EndpointProvider {
    * @returns {SignInResponse} the API response
    */
   @action public async updateUser(params: Query<'updateUser'>): Promise<Response<'updateUser'>> {
-    const res = (await axios.post<Response<'updateUser'>>(fullPath('updateUser'), params)).data;
+    const res = await this.callWithToken<'updateUser'>('updateUser', params);
     this.currentUser = res as IUser;
     return res;
   }

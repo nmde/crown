@@ -72,9 +72,7 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
     if (token !== undefined) {
       await this.apiCall(
         async () => {
-          await store.authenticate({
-            token,
-          });
+          await store.authenticate();
         },
         () => {
           re = true;

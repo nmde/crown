@@ -8,7 +8,9 @@ import { AuthenticateQuery } from 'types/schemas/authenticate/Query';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
-import { EndpointProvider, Query, Response } from '../types/Endpoints';
+import {
+  Endpoint, EndpointProvider, Endpoints, Response,
+} from '../types/Endpoints';
 import IUser from '../types/User';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
 import { CreateAccountResponse } from '../types/schemas/createAccount/Response';
@@ -30,6 +32,8 @@ import media from '../util/media';
 import models from './models';
 import Edge from './models/Edge';
 import User from './models/User';
+
+type Query<E extends Endpoint> = Endpoints[E]['query'];
 
 /**
  * Provides API endpoints to the Server class

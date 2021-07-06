@@ -1,5 +1,5 @@
 import path from 'path-browserify';
-import { EndpointProvider } from '../types/Endpoints';
+import { Endpoint } from '../types/Endpoints';
 
 /**
  * Helper function to format API endpoint paths
@@ -9,6 +9,6 @@ import { EndpointProvider } from '../types/Endpoints';
  * @param {string[]} rest additional path information
  * @returns {string} the API path
  */
-export default function apiPath(endpoint: keyof EndpointProvider | 'upload' | 'media', ...rest: string[]): string {
+export default function apiPath(endpoint: Endpoint | 'upload' | 'media', ...rest: string[]): string {
   return path.join('api', endpoint, ...rest);
 }

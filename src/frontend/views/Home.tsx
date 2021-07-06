@@ -48,7 +48,6 @@ export default class Home extends ViewComponent<typeof styles> implements Props 
       await this.apiCall(
         async () => {
           following = await store.getEdges({
-            token,
             type: 'follow',
           });
         },

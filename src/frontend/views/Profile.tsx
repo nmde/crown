@@ -198,7 +198,6 @@ export default class Profile extends ViewComponent<typeof styles> {
                                 try {
                                   await store.createEdge({
                                     target: this.data.id as string,
-                                    token,
                                     type: 'follow',
                                   });
                                 } catch (err) {

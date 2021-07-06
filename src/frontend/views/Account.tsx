@@ -79,7 +79,6 @@ export default class Account extends ViewComponent<typeof styles> implements Pro
                 async () => {
                   await store.updateUser({
                     displayName: this.form.displayName,
-                    token: store.token as string,
                   });
                 },
                 () => {

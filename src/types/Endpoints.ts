@@ -69,9 +69,11 @@ export type Endpoints = {
   };
 };
 
-export type Query<T extends keyof Endpoints> = Endpoints[T]['query'];
+export type Query<T extends keyof Endpoints> = Omit<Endpoints[T]['query'], 'token'>;
 export type Response<T extends keyof Endpoints> = Endpoints[T]['response'];
 
 export type EndpointProvider = {
-  [method in keyof Endpoints]: (params: Query<method>) => Promise<Response<method>>;
+  [method in keyof Endpoints]: (query: Endpoints[method]['query']) => Promise<Response<method>>;
 };
+
+export type Endpoint = keyof Endpoints;
