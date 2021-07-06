@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
 import ViewComponent from '../classes/ViewComponent';
@@ -8,9 +7,6 @@ import makeStyles from '../styles/makeStyles';
 
 const styles = makeStyles({
   ...fab,
-  header: {
-    marginTop: '8px',
-  },
 });
 
 export type Props = {};
@@ -59,44 +55,45 @@ export default class Account extends ViewComponent<typeof styles> implements Pro
    */
   public render(): VNode {
     return (
-      <div>
-        <v-btn
-          block
-          color="primary"
-          onClick={async () => {
-            await store.signOut();
-            this.$router.push('/');
-          }}
-        >
-          {this.messages.btn.SIGNOUT}
-        </v-btn>
-        <h1 class={classnames('text-h4', this.className('header'))}>
-          {this.messages.headers.ACCOUNT}
-        </h1>
-        <v-text-field label={this.messages.labels.DISPLAY_NAME} vModel={this.form.displayName} />
-        <v-btn
-          fab
-          class={this.className('fab')}
-          color="primary"
-          onClick={async () => {
-            await this.apiCall(
-              async () => {
-                await store.updateUser({
-                  displayName: this.form.displayName,
-                  token: store.token as string,
-                });
-              },
-              () => {
-                this.snackbar = true;
-              },
-              {},
-            );
-          }}
-        >
-          <v-icon>save</v-icon>
-        </v-btn>
+      <v-card>
+        <v-card-title>{this.messages.headers.ACCOUNT}</v-card-title>
+        <v-card-text>
+          <v-btn
+            block
+            color="primary"
+            onClick={async () => {
+              await store.signOut();
+              this.$router.push('/');
+            }}
+          >
+            {this.messages.btn.SIGNOUT}
+          </v-btn>
+          <v-divider />
+          <v-text-field label={this.messages.labels.DISPLAY_NAME} vModel={this.form.displayName} />
+          <v-btn
+            fab
+            class={this.className('fab')}
+            color="primary"
+            onClick={async () => {
+              await this.apiCall(
+                async () => {
+                  await store.updateUser({
+                    displayName: this.form.displayName,
+                    token: store.token as string,
+                  });
+                },
+                () => {
+                  this.snackbar = true;
+                },
+                {},
+              );
+            }}
+          >
+            <v-icon>save</v-icon>
+          </v-btn>
+        </v-card-text>
         <v-snackbar vModel={this.snackbar}>{this.messages.msg.SAVED}</v-snackbar>
-      </div>
+      </v-card>
     );
   }
 }

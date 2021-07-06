@@ -2,6 +2,7 @@
 import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
+import { AuthenticateQuery } from 'types/schemas/authenticate/Query';
 import { CreateAccountQuery } from 'types/schemas/createAccount/Query';
 import { CreateAccountResponse } from 'types/schemas/createAccount/Response';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
@@ -63,6 +64,18 @@ class Store implements EndpointProvider {
    */
   public constructor() {
     makeObservable(this);
+  }
+
+  /**
+   * Authenticates the user token
+   *
+   * @param {AuthenticateQuery} params the query parameters
+   * @returns {GetUserResponse} the user information
+   */
+  @action public async authenticate(params: Query<'authenticate'>): Promise<Response<'authenticate'>> {
+    const res = (await axios.post<Response<'authenticate'>>(fullPath('authenticate'), params)).data;
+    this.currentUser = res as IUser;
+    return res;
   }
 
   /**

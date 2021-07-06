@@ -1,3 +1,4 @@
+import store from '../store';
 import { Styles } from '../styles/makeStyles';
 import translations from '../translations';
 import Styled from './Styled';
@@ -34,7 +35,7 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
   protected async apiCall(
     method: () => Promise<void>,
     onSuccess: () => void,
-    errorMessages: Record<number, string>,
+    errorMessages?: Record<number, string>,
   ): Promise<void> {
     this.loading = true;
     try {
@@ -47,15 +48,40 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
       }
     } catch (err) {
       console.error(err);
-      if (err.message === 'Network Error') {
-        this.error = this.messages.errors.NETWORK;
-      } else if (err.response !== undefined && errorMessages[err.response.status] !== undefined) {
-        this.error = errorMessages[err.response.status];
-      } else {
-        this.error = this.messages.errors.GENERIC;
+      if (errorMessages !== undefined) {
+        if (err.message === 'Network Error') {
+          this.error = this.messages.errors.NETWORK;
+        } else if (err.response !== undefined && errorMessages[err.response.status] !== undefined) {
+          this.error = errorMessages[err.response.status];
+        } else {
+          this.error = this.messages.errors.GENERIC;
+        }
       }
     }
     this.loading = false;
+  }
+
+  /**
+   * Ensures store.currentUser exists and is correct
+   *
+   * @returns {boolean} if the user is signed in
+   */
+  protected async getCurrentUser(): Promise<boolean> {
+    const { token } = store;
+    let re = false;
+    if (token !== undefined) {
+      await this.apiCall(
+        async () => {
+          await store.authenticate({
+            token,
+          });
+        },
+        () => {
+          re = true;
+        },
+      );
+    }
+    return re;
   }
 
   /**

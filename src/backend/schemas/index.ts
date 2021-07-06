@@ -1,3 +1,4 @@
+import AuthenticateQs from './authenticate/Query.json';
 import CreateAccQs from './createAccount/Query.json';
 import CreateAccRes from './createAccount/Response.json';
 import CreateEdgeQs from './createEdge/Query.json';
@@ -18,6 +19,10 @@ import SignInRes from './signIn/Response.json';
 import UpdateUserQs from './updateUser/Query.json';
 
 export default {
+  authenticate: {
+    query: AuthenticateQs,
+    response: GetUserRes,
+  },
   createAccount: {
     query: CreateAccQs,
     response: CreateAccRes,

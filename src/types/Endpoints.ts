@@ -1,3 +1,4 @@
+import { AuthenticateQuery } from './schemas/authenticate/Query';
 import { CreateAccountQuery } from './schemas/createAccount/Query';
 import { CreateAccountResponse } from './schemas/createAccount/Response';
 import { CreateEdgeQuery } from './schemas/createEdge/Query';
@@ -18,6 +19,10 @@ import { SignInResponse } from './schemas/signIn/Response';
 import { UpdateUserQuery } from './schemas/updateUser/Query';
 
 export type Endpoints = {
+  authenticate: {
+    query: AuthenticateQuery;
+    response: GetUserResponse;
+  };
   createAccount: {
     query: CreateAccountQuery;
     response: CreateAccountResponse;

@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize';
 import IEdge from 'types/Edge';
+import { AuthenticateQuery } from 'types/schemas/authenticate/Query';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
@@ -56,12 +57,12 @@ export default class ApiProvider implements EndpointProvider {
   /**
    * Authenticates the user based on the provided auth token
    *
-   * @param {string} token the auth token
+   * @param {AuthenticateQuery} query the auth token
    * @returns {IUser} the user associated with the token
    * @throws {HttpError} if the token is invalid
    */
-  private async authenticate(token: string): Promise<IUser> {
-    const user = await this.token.validate(token, async (id) => {
+  public async authenticate(query: Query<'authenticate'>): Promise<Response<'authenticate'>> {
+    const user = await this.token.validate(query.token, async (id) => {
       const results = await models.User.findOne({
         where: {
           id,
@@ -120,7 +121,7 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} if the query is malformed
    */
   public async createEdge(query: Query<'createEdge'>): Promise<Response<'createEdge'>> {
-    const user = await this.authenticate(query.token);
+    const user = await this.authenticate({ token: query.token });
     let edge: Edge;
     // TODO: check for duplicate?
     switch (query.type) {
@@ -147,7 +148,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createPost(query: Query<'createPost'>): Promise<Response<'createPost'>> {
     // Confirm the auth token is valid
-    const user = await this.authenticate(query.token);
+    const user = await this.authenticate({ token: query.token });
     const post = await new models.Post({
       author: user.id,
       created: new Date().toISOString(),
@@ -170,7 +171,7 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} if the post could not be deleted
    */
   public async deletePost(query: Query<'deletePost'>): Promise<Response<'deletePost'>> {
-    const user = await this.authenticate(query.token);
+    const user = await this.authenticate({ token: query.token });
     const target = await models.Post.findOne({
       where: {
         author: user.id,
@@ -205,7 +206,7 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} if the search parameters are invalid
    */
   public async getEdges(query: Query<'getEdges'>): Promise<Response<'getEdges'>> {
-    const source = await this.authenticate(query.token);
+    const source = await this.authenticate({ token: query.token });
     let results;
     switch (query.type) {
       case 'follow':
@@ -349,7 +350,7 @@ export default class ApiProvider implements EndpointProvider {
    * @returns {GetUserResponse} the updated user
    */
   public async updateUser(query: Query<'updateUser'>): Promise<Response<'updateUser'>> {
-    const user = await this.authenticate(query.token);
+    const user = await this.authenticate({ token: query.token });
     const updated = await models.User.update(
       {
         displayName: query.displayName,
