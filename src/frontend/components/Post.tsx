@@ -38,7 +38,10 @@ export default class Post extends Styled<typeof styles> {
   @Prop()
   public post!: IPost;
 
-  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>>;
+  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>> &
+  tsx.DeclareOnEvents<{
+    onDelete: void;
+  }>;
 
   /**
    * Defines custom styles for the component
@@ -117,7 +120,7 @@ export default class Post extends Styled<typeof styles> {
               <v-list>
                 <v-list-item
                   onClick={() => {
-                    console.log('deleting post');
+                    this.$bus.emit('deletePost', this.post.id);
                   }}
                 >
                   <v-list-item-title>Delete post</v-list-item-title>

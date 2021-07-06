@@ -10,6 +10,7 @@
     },
     "errors": {
         "CONFLICT": "Username is taken.",
+        "DELETE": "Could not delete post.",
         "EMAIL": "Email is invalid",
         "EMPTY_FIELD": "Field cannot be empty",
         "GENERIC": "Unexpected error",
@@ -40,6 +41,7 @@
         "EXPLORE": "Explore",
         "GET_POST_ERROR": "Could not display post",
         "HOME": "Home",
+        "HOME_ERROR": "An error occurred",
         "JOIN": "Join Crown",
         "POST_ERROR": "Failed to post",
         "SIGNIN": "Sign In",

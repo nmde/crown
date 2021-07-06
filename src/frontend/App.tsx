@@ -2,6 +2,7 @@ import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import ViewComponent from './classes/ViewComponent';
 import CreatePostDialog from './components/CreatePostDialog';
+import ErrorDialog from './components/ErrorDialog';
 import store from './store';
 import fab from './styles/fab';
 import makeStyles from './styles/makeStyles';
@@ -31,6 +32,20 @@ export default class App extends ViewComponent<typeof styles> {
    */
   public constructor() {
     super(styles);
+    this.$bus.on('deletePost', async (id: string) => {
+      await this.apiCall(
+        async () => {
+          await store.deletePost({
+            id,
+            token: store.token as string,
+          });
+        },
+        () => {},
+        {
+          400: this.messages.errors.DELETE,
+        },
+      );
+    });
   }
 
   /**
@@ -98,6 +113,7 @@ export default class App extends ViewComponent<typeof styles> {
             }}
           />
         </v-dialog>
+        <ErrorDialog header={this.messages.headers.HOME_ERROR} message={this.error} />
       </v-app>
     );
   }
