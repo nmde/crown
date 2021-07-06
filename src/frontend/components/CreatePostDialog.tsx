@@ -1,3 +1,4 @@
+import APIError from 'frontend/classes/APIError';
 import { Upload } from 'upload';
 import Vue, { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
@@ -5,7 +6,6 @@ import * as tsx from 'vue-tsx-support';
 import apiPath from '../../util/apiPath';
 import store from '../store';
 import t from '../translations/en-US.json';
-import ErrorDialog from './ErrorDialog';
 
 type Events = {
   onFinished: void;
@@ -20,11 +20,6 @@ export default class CreatePostDialog extends Vue {
    * The post description
    */
   private description = '';
-
-  /**
-   * The current error message, if any
-   */
-  private error = '';
 
   /**
    * The uploaded file data
@@ -104,17 +99,16 @@ export default class CreatePostDialog extends Vue {
                   this.loading = false;
                   this.$emit('finished');
                 } catch (err) {
-                  this.error = t.errors.GENERIC;
+                  this.$bus.emit('error', new APIError(t.headers.POST_ERROR, t.errors.GENERIC, err.response.status));
                 }
               } else {
-                this.error = t.errors.GENERIC;
+                this.$bus.emit('error', new APIError(t.headers.POST_ERROR, t.errors.GENERIC, -1));
               }
             }}
           >
             {t.btn.POST}
           </v-btn>
         </v-card-actions>
-        <ErrorDialog header={t.headers.POST_ERROR} message={this.error} />
       </v-card>
     );
   }

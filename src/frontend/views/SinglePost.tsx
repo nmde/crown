@@ -1,7 +1,6 @@
 import Vue, { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
 // import { Response } from '../../types/Endpoints';
-import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
 import store from '../store';
 import t from '../translations/en-US.json';
@@ -66,7 +65,6 @@ export default class SinglePost extends Vue {
     return (
       <div>
         <Post post={this.data.post} />
-        <ErrorDialog header={t.headers.GET_POST_ERROR} message={this.error} />
       </div>
     );
   }

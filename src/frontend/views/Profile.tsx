@@ -1,11 +1,11 @@
 /* eslint-disable class-methods-use-this */
+import APIError from 'frontend/classes/APIError';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
-import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
@@ -124,11 +124,14 @@ export default class Profile extends ViewComponent<typeof styles> {
       switch (err.response.status) {
         case 400:
           // Expected error (the user was not found)
-          this.error = t.errors.USER_NOT_FOUND;
+          this.$bus.emit('error', new APIError(t.headers.USER_ERROR, t.errors.USER_NOT_FOUND, 400));
           break;
         default:
           // Unexpected error
-          this.error = t.errors.GENERIC;
+          this.$bus.emit(
+            'error',
+            new APIError(t.headers.USER_ERROR, t.errors.GENERIC, err.response.status),
+          );
       }
     }
   }
@@ -201,7 +204,14 @@ export default class Profile extends ViewComponent<typeof styles> {
                                     type: 'follow',
                                   });
                                 } catch (err) {
-                                  this.error = t.errors.GENERIC;
+                                  this.$bus.emit(
+                                    'error',
+                                    new APIError(
+                                      t.headers.USER_ERROR,
+                                      t.errors.GENERIC,
+                                      err.response.status,
+                                    ),
+                                  );
                                 }
                               }
                               this.awaitingAction = false;
@@ -244,19 +254,19 @@ export default class Profile extends ViewComponent<typeof styles> {
                     </v-row>
                     <v-row>
                       {/* TODO: limit the number of posts loaded at once */}
-                      {(() => this.data.feed.posts.map((post) => (
+                      {(() =>
+                        this.data.feed.posts.map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
                             <Post post={post} />
                           </v-col>
-                      )))()}
+                        )))()}
                     </v-row>
                   </v-container>
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
-          <ErrorDialog header={t.headers.USER_ERROR} message={this.error} />
         </v-container>
       </v-parallax>
     );

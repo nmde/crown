@@ -2,7 +2,6 @@ import PasswordValidator from 'password-validator';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import ViewComponent from '../classes/ViewComponent';
-import ErrorDialog from '../components/ErrorDialog';
 import TextBtn from '../components/TextBtn';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
@@ -270,7 +269,6 @@ export default class Login extends ViewComponent<typeof styles> implements Props
             );
           })()}
         </v-card-text>
-        <ErrorDialog header={this.header} message={this.error} />
       </v-card>
     );
   }

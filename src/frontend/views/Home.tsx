@@ -4,7 +4,6 @@ import { CreateEdgeResponse } from '../../types/schemas/createEdge/Response';
 import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
-import ErrorDialog from '../components/ErrorDialog';
 import Post from '../components/Post';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
@@ -78,7 +77,6 @@ export default class Home extends ViewComponent<typeof styles> implements Props 
     return (
       <div>
         {(() => this.data.feed.posts.map((post) => <Post post={post} />))()}
-        <ErrorDialog header={this.messages.errors.HOME} message={this.error} />
       </div>
     );
   }

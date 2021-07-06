@@ -1,6 +1,7 @@
 import store from '../store';
 import { Styles } from '../styles/makeStyles';
 import translations from '../translations';
+import APIError from './APIError';
 import Styled from './Styled';
 
 /**
@@ -12,9 +13,6 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
 
   /** view loading state */
   protected loading = false;
-
-  /** the error message, if any */
-  protected error = '';
 
   /**
    * Gets UI messages in the currently selected locale
@@ -50,11 +48,28 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
       console.error(err);
       if (errorMessages !== undefined) {
         if (err.message === 'Network Error') {
-          this.error = this.messages.errors.NETWORK;
+          this.$bus.emit(
+            'error',
+            new APIError(this.messages.headers.HOME_ERROR, this.messages.errors.NETWORK, -1),
+          );
         } else if (err.response !== undefined && errorMessages[err.response.status] !== undefined) {
-          this.error = errorMessages[err.response.status];
+          this.$bus.emit(
+            'error',
+            new APIError(
+              this.messages.headers.HOME_ERROR,
+              errorMessages[err.response.status],
+              err.response.status,
+            ),
+          );
         } else {
-          this.error = this.messages.errors.GENERIC;
+          this.$bus.emit(
+            'error',
+            new APIError(
+              this.messages.headers.HOME_ERROR,
+              this.messages.errors.GENERIC,
+              err.response.status,
+            ),
+          );
         }
       }
     }
