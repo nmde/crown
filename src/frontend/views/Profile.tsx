@@ -3,6 +3,7 @@ import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
+import IPost from '../../types/Post';
 import APIError from '../classes/APIError';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
@@ -71,9 +72,11 @@ export default class Profile extends ViewComponent<typeof styles> {
     displayName?: string;
     feed: Feed;
     id?: string;
+    posts: IPost[];
     username?: string;
   } = {
     feed: new Feed(),
+    posts: [],
   };
 
   /**
@@ -118,6 +121,7 @@ export default class Profile extends ViewComponent<typeof styles> {
       this.data.displayName = user.displayName;
       this.data.username = user.username;
       this.data.feed = new Feed(feed);
+      this.data.posts = this.data.feed.getFeed();
       // Force the UI to re-render
       this.$set(this.data, 'id', user.id);
     } catch (err) {
@@ -254,7 +258,7 @@ export default class Profile extends ViewComponent<typeof styles> {
                     </v-row>
                     <v-row>
                       {/* TODO: limit the number of posts loaded at once */}
-                      {(() => this.data.feed.getFeed().map((post) => (
+                      {(() => this.data.posts.map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
                             <Post post={post} />
