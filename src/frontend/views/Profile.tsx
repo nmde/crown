@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
-import APIError from 'frontend/classes/APIError';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
+import APIError from '../classes/APIError';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
 import Post from '../components/Post';
@@ -254,13 +254,12 @@ export default class Profile extends ViewComponent<typeof styles> {
                     </v-row>
                     <v-row>
                       {/* TODO: limit the number of posts loaded at once */}
-                      {(() =>
-                        this.data.feed.posts.map((post) => (
+                      {(() => this.data.feed.posts.map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
                             <Post post={post} />
                           </v-col>
-                        )))()}
+                      )))()}
                     </v-row>
                   </v-container>
                 </v-card-text>
