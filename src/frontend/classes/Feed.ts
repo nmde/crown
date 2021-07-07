@@ -7,7 +7,7 @@ export default class Feed {
   /**
    * The posts in the feed
    */
-  public posts: IPost[];
+  private posts: Required<IPost>[];
 
   /**
    * Creates the feed, with optional initial postss
@@ -16,7 +16,7 @@ export default class Feed {
    * @param {IPost[]} initialPosts Initial posts, if any
    */
   public constructor(initialPosts: IPost[] = []) {
-    this.posts = initialPosts;
+    this.posts = initialPosts as Required<IPost>[];
   }
 
   /**
@@ -29,5 +29,20 @@ export default class Feed {
     return this.posts[index] as Required<IPost>;
   }
 
-  // TODO: sort posts
+  /**
+   * Gets the feed of posts, sorted by date
+   *
+   * @returns {IPost[]} the feed
+   */
+  public getFeed(): IPost[] {
+    return this.posts.sort((a, b) => {
+      if (new Date(a.created) < new Date(b.created)) {
+        return 1;
+      }
+      if (new Date(a.created) > new Date(b.created)) {
+        return -1;
+      }
+      return 0;
+    });
+  }
 }

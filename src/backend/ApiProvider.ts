@@ -127,20 +127,24 @@ export default class ApiProvider implements EndpointProvider {
   public async createEdge(query: Query<'createEdge'>): Promise<Response<'createEdge'>> {
     const user = await this.authenticate({ token: query.token });
     let edge: Edge;
-    // TODO: check for duplicate?
-    switch (query.type) {
-      case 'follow':
-        edge = await new models.Edge({
-          source: user.id as string,
-          target: query.target,
-          type: 'follow',
-        }).save();
+    if (query.type === 'follow') {
+      const follow: IEdge = {
+        source: user.id as string,
+        target: query.target,
+        type: 'follow',
+      };
+      const exists = await models.Edge.findOne({
+        where: follow,
+      });
+      if (exists === null) {
+        edge = await new models.Edge(follow).save();
         this.app.log.info(`Created edge with ID ${edge.get('id')}`);
         return edge.toJSON() as Required<IEdge>;
-      default:
-        this.app.log.error(`Invalid edge type: ${query.type}`);
-        throw this.app.httpErrors.badRequest();
+      }
+      throw this.app.httpErrors.conflict();
     }
+    this.app.log.error(`Invalid edge type: ${query.type}`);
+    throw this.app.httpErrors.badRequest();
   }
 
   /**

@@ -1,9 +1,9 @@
-import APIError from 'frontend/classes/APIError';
 import { Upload } from 'upload';
 import Vue, { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import apiPath from '../../util/apiPath';
+import APIError from '../classes/APIError';
 import store from '../store';
 import t from '../translations/en-US.json';
 

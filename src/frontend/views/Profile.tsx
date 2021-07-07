@@ -254,7 +254,7 @@ export default class Profile extends ViewComponent<typeof styles> {
                     </v-row>
                     <v-row>
                       {/* TODO: limit the number of posts loaded at once */}
-                      {(() => this.data.feed.posts.map((post) => (
+                      {(() => this.data.feed.getFeed().map((post) => (
                           <v-col cols={6} sm={4} class={this.className('GalleryImage')}>
                             {/* TODO: add lazy-src to all images */}
                             <Post post={post} />
