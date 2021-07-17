@@ -4,20 +4,20 @@ import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize';
 import IEdge from 'types/Edge';
-import { AuthenticateQuery } from 'types/schemas/authenticate/Query';
-import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
-import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
-import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
 import IUser from '../types/User';
+import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
 import { CreateAccountResponse } from '../types/schemas/createAccount/Response';
+import { CreateEdgeQuery } from '../types/schemas/createEdge/Query';
+import { CreateEdgeResponse } from '../types/schemas/createEdge/Response';
 import { CreatePostQuery } from '../types/schemas/createPost/Query';
 import { CreatePostResponse } from '../types/schemas/createPost/Response';
 import { DeletePostQuery } from '../types/schemas/deletePost/Query';
 import { DeletePostResponse } from '../types/schemas/deletePost/Response';
+import { GetEdgesQuery } from '../types/schemas/getEdges/Query';
 import { GetFeedQuery } from '../types/schemas/getFeed/Query';
 import { GetPostQuery } from '../types/schemas/getPost/Query';
 import { GetPostResponse } from '../types/schemas/getPost/Response';
@@ -31,6 +31,7 @@ import currentTokenTime from '../util/currentTokenTime';
 import media from '../util/media';
 import models from './models';
 import Edge from './models/Edge';
+import Post from './models/Post';
 import User from './models/User';
 
 type Query<E extends Endpoint> = Endpoints[E]['query'];
@@ -56,6 +57,26 @@ export default class ApiProvider implements EndpointProvider {
    */
   public constructor(authKey: string) {
     this.token = new Tokenize<IUser>(authKey);
+  }
+
+  /**
+   * Helper for automatically getting only visible posts
+   *
+   * @param {WhereOptions} where where query
+   * @returns {Post[]} the results
+   */
+  private async getPosts(where: WhereOptions): Promise<Post[]> {
+    try {
+      return await models.Post.findAll({
+        where: {
+          ...where,
+          visible: true,
+        },
+      });
+    } catch (err) {
+      this.app.log.error(err.message);
+      throw this.app.httpErrors.notFound();
+    }
   }
 
   /**
@@ -180,11 +201,9 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async deletePost(query: Query<'deletePost'>): Promise<Response<'deletePost'>> {
     const user = await this.authenticate({ token: query.token });
-    const target = await models.Post.findOne({
-      where: {
-        author: user.id,
-        id: query.id,
-      },
+    const target = await this.getPosts({
+      author: user.id,
+      id: query.id,
     });
     if (target !== null) {
       const updated = await models.Post.update(
@@ -239,22 +258,14 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} If the search parameters are invalid
    */
   public async getFeed(query: Query<'getFeed'>): Promise<Response<'getFeed'>> {
-    // TODO: check post visibility permissions
     // TODO: pagination
     const where: WhereOptions = {
       visible: true,
     };
     if (query.author !== undefined) {
       where.author = query.author;
-    } else {
-      // No valid search parameters supplied
-      this.app.log.error('Invalid feed search parameters');
-      throw this.app.httpErrors.badRequest();
     }
-    const feed = await models.Post.findAll({
-      where,
-    });
-    return feed.map((model) => model.toJSON());
+    return (await this.getPosts(where)).map((model) => model.toJSON());
   }
 
   /**
@@ -266,14 +277,12 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async getPost(query: Query<'getPost'>): Promise<Response<'getPost'>> {
     // TODO: check if current user has permissions to view the post
-    const results = await models.Post.findOne({
-      where: {
-        id: query.id,
-        visible: true,
-      },
+    const results = await this.getPosts({
+      id: query.id,
+      visible: true,
     });
-    if (results !== null) {
-      return results.toJSON();
+    if (results[0] !== undefined) {
+      return results[0].toJSON();
     }
     this.app.log.error(`No post found with ID ${query.id}`);
     throw this.app.httpErrors.notFound();
