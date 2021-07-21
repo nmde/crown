@@ -32,4 +32,7 @@ export default class Post extends Model<IPost> implements IPost {
 
   @Column(DataType.BOOLEAN)
   public visible!: boolean;
+
+  @Column(DataType.STRING)
+  public category!: string;
 }

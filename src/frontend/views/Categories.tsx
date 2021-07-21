@@ -1,40 +1,41 @@
-<template>
-    <div id="categories">
-        <Category 
-            v-for="category in categoryList"
-            :key="category.id"
-            v-bind:name="category.name"   
-        />
-    </div>
-</template>
+import { VNode } from 'vue';
+import { Component } from 'vue-property-decorator';
+import categoryKey from '../../util/categoryKey';
+import ViewComponent from '../classes/ViewComponent';
+import categories from '../data/categories.json';
+import makeStyles from '../styles/makeStyles';
 
-<script>
-import Category from '../components/Category.vue';
-export default {
-    name: 'CategoriesPage',
-    data() {
-        return {
-            categoryList: [
-                {name: 'sports', src: '', id: 1},
-                {name: 'feel-good', src: '', id: 2},
-                {name: 'music', src: '', id: 3},
-                {name: 'gaming', src: '', id: 4},
-                {name: 'photography', src: '', id: 5},
-                {name: 'food', src: '', id: 6},
-            ]
-        }
-    },
-    components: {
-        Category
-    }
+const styles = makeStyles({});
+
+@Component
+/**
+ * Categories page
+ */
+export default class Categories extends ViewComponent<typeof styles> {
+  /**
+   * @constructs
+   */
+  public constructor() {
+    super(styles);
+  }
+
+  /**
+   * Renders the component
+   *
+   * @returns {VNode} the component
+   */
+  public render(): VNode {
+    return (
+      <div>
+        {(() => categories.categories.map((category) => (
+            <v-card to={`/c/${category.name}`}>
+              <v-card-title>
+                <v-icon>{category.icon}</v-icon>
+                <p class="ml-3">{this.messages.categories[categoryKey(category.name)]}</p>
+              </v-card-title>
+            </v-card>
+        )))()}
+      </div>
+    );
+  }
 }
-</script>
-
-<style scoped>
-    #categories {
-        position: absolute;
-        top: 5%;
-        display: flex;
-        flex-wrap: wrap;
-    }
-</style>

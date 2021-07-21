@@ -1,0 +1,23 @@
+{
+    "categories": [
+        {
+            "icon": "sports_soccer",
+            "name": "sports"
+        }, {
+            "icon": "sentiment_very_satisfied",
+            "name": "feel-good"
+        }, {
+            "icon": "music_note",
+            "name": "music"
+        }, {
+            "icon": "sports_esports",
+            "name": "games"
+        }, {
+            "icon": "camera",
+            "name": "photography"
+        }, {
+            "icon": "restaurant",
+            "name": "food"
+        }
+    ]
+}

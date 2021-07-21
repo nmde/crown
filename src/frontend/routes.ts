@@ -1,6 +1,7 @@
 import { RouteConfig } from 'vue-router';
 import Account from './views/Account';
-// import Categories from './views/CategoriesPage.vue';
+import Categories from './views/Categories';
+import Category from './views/Category';
 import Explore from './views/Explore';
 import Home from './views/Home';
 import Login from './views/Login';
@@ -16,12 +17,14 @@ const routes: RouteConfig[] = [
     component: Account,
     path: '/account',
   },
-  /*
   {
-    path: '/categories',
     component: Categories,
+    path: '/categories',
   },
-  */
+  {
+    component: Category,
+    path: '/c/:category',
+  },
   {
     component: Explore,
     path: '/explore',

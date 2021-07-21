@@ -8,6 +8,14 @@
         "SIGNUP": "Sign Up",
         "UNFOLLOW": "Following"
     },
+    "categories": {
+        "feel-good": "Feel Good",
+        "food": "Food",
+        "games": "Gaming",
+        "music": "Music",
+        "photography": "Photography",
+        "sports": "Sports"
+    },
     "errors": {
         "CONFLICT": "Username is taken.",
         "DELETE": "Could not delete post.",
@@ -52,6 +60,7 @@
         "USER_ERROR": "Error finding user"
     },
     "labels": {
+        "CATEGORY": "Category",
         "CONFIRM_PASSWORD": "Confirm Password",
         "DESCRIPTION": "Post description",
         "DISPLAY_NAME": "Display Name",

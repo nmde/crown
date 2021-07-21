@@ -182,6 +182,7 @@ export default class ApiProvider implements EndpointProvider {
     const user = await this.authenticate({ token: query.token });
     const post = await new models.Post({
       author: user.id,
+      category: query.category,
       created: new Date().toISOString(),
       description: query.description,
       expires: query.expires,
@@ -290,6 +291,9 @@ export default class ApiProvider implements EndpointProvider {
     };
     if (query.author !== undefined) {
       where.author = query.author;
+    }
+    if (query.category !== undefined) {
+      where.category = query.category;
     }
     return (await this.getPosts(where)).map((model) => model.toJSON());
   }

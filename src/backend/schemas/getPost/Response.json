@@ -22,6 +22,9 @@
     },
     "visible": {
       "type": "boolean"
+    },
+    "category": {
+      "type": "string"
     }
   },
   "additionalProperties": false
