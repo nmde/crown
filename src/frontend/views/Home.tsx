@@ -80,7 +80,27 @@ export default class Home extends ViewComponent<typeof styles> {
   public render(): VNode {
     return (
       <div>
-        <FeedComponent feed={this.data.feed} />
+        {(() => {
+          if (this.loading) {
+            return <div />;
+          }
+          // TODO: fix this showing briefly even when the feed is loaded
+          if (this.data.feed.length === 0) {
+            return (
+              <div>
+                <h2 class="text--h2">{this.messages.msg.EMPTY_FEED}</h2>
+                <div class="text--h3">
+                  {`${this.messages.msg.EMPTY_FEED_DETAIL[0]} `}
+                  <router-link to="/explore">{this.messages.headers.EXPLORE}</router-link>
+                  {` ${this.messages.msg.EMPTY_FEED_DETAIL[1]} `}
+                  <router-link to="/categories">{this.messages.headers.CATEGORIES}</router-link>
+                  {` ${this.messages.msg.EMPTY_FEED_DETAIL[2]}`}
+                </div>
+              </div>
+            );
+          }
+          return <FeedComponent feed={this.data.feed} />;
+        })()}
         {(() => {
           if (store.token !== undefined) {
             return (

@@ -64,6 +64,12 @@
         "USERNAME": "Username"
     },
     "msg": {
+        "EMPTY_FEED": "You are not following any accounts!",
+        "EMPTY_FEED_DETAIL": [
+            "Check out the",
+            "or",
+            "pages to find other users!"
+        ],
         "SAVED": "Account settings saved!",
         "SIGNED_OUT": "You are not signed in!"
     },

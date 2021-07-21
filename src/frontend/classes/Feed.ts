@@ -45,4 +45,13 @@ export default class Feed {
       return 0;
     });
   }
+
+  /**
+   * Gets the length of the feed
+   *
+   * @returns {number} the length of the feed
+   */
+  public get length(): number {
+    return this.posts.length;
+  }
 }
