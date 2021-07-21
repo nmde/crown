@@ -1,12 +1,11 @@
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
-import IPost from '../../types/Post';
 import { CreateEdgeResponse } from '../../types/schemas/createEdge/Response';
 import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
 import CreatePostDialog from '../components/CreatePostDialog';
-import Post from '../components/Post';
+import FeedComponent from '../components/Feed';
 import store from '../store';
 import fab from '../styles/fab';
 import makeStyles from '../styles/makeStyles';
@@ -22,10 +21,8 @@ const styles = makeStyles({
 export default class Home extends ViewComponent<typeof styles> {
   private data: {
     feed: Feed;
-    posts: IPost[];
   } = {
     feed: new Feed(),
-    posts: [],
   };
 
   private uploadDialog = false;
@@ -62,8 +59,6 @@ export default class Home extends ViewComponent<typeof styles> {
               });
             },
             () => {
-              const posts = new Feed(feed);
-              this.data.posts = posts.getFeed();
               this.$set(this.data, 'feed', new Feed(feed));
             },
             {},
@@ -85,7 +80,7 @@ export default class Home extends ViewComponent<typeof styles> {
   public render(): VNode {
     return (
       <div>
-        {(() => this.data.posts.map((post) => <Post post={post} />))()}
+        <FeedComponent feed={this.data.feed} />
         {(() => {
           if (store.token !== undefined) {
             return (

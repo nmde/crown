@@ -93,7 +93,7 @@ export default class Post extends Styled<typeof styles> {
     if (this.data.author !== undefined) {
       return (
         <v-card class={this.className('card')}>
-          <v-toolbar>
+          <v-toolbar flat>
             <v-toolbar-title>
               <router-link to={`/@${this.data.author.username}`}>
                 {this.data.author.username}

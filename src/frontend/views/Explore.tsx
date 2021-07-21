@@ -5,7 +5,7 @@ import IPost from '../../types/Post';
 import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
-import Post from '../components/Post';
+import FeedComponent from '../components/Feed';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
 
@@ -59,8 +59,6 @@ export default class Explore extends ViewComponent<typeof styles> {
    * @returns {VNode} the component
    */
   public render(): VNode {
-    return <div>
-      {(() => this.data.posts.map((post) => <Post post={post} />))()}
-    </div>;
+    return <FeedComponent feed={this.data.feed} />;
   }
 }
