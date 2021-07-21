@@ -15,6 +15,8 @@ import { CreateEdgeQuery } from '../types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from '../types/schemas/createEdge/Response';
 import { CreatePostQuery } from '../types/schemas/createPost/Query';
 import { CreatePostResponse } from '../types/schemas/createPost/Response';
+import { DeleteEdgeQuery } from '../types/schemas/deleteEdge/Query';
+import { DeleteEdgeResponse } from '../types/schemas/deleteEdge/Response';
 import { DeletePostQuery } from '../types/schemas/deletePost/Query';
 import { DeletePostResponse } from '../types/schemas/deletePost/Response';
 import { GetEdgesQuery } from '../types/schemas/getEdges/Query';
@@ -190,6 +192,30 @@ export default class ApiProvider implements EndpointProvider {
     return {
       id: post.get('id'),
     };
+  }
+
+  /**
+   * Deletes an edge
+   *
+   * @param {DeleteEdgeQuery} query the edge to delete
+   * @returns {DeleteEdgeResponse} the response
+   * @throws {HttpError} if the edge could not be deleted
+   */
+  public async deleteEdge(query: Query<'deleteEdge'>): Promise<Response<'deleteEdge'>> {
+    const user = await this.authenticate({ token: query.token });
+    const target = await models.Edge.findOne({
+      where: {
+        id: query.id,
+        source: user.id,
+      },
+    });
+    if (target !== null) {
+      await target.destroy();
+      return {
+        id: query.id,
+      };
+    }
+    throw this.app.httpErrors.unauthorized();
   }
 
   /**

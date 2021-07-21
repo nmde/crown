@@ -5,6 +5,8 @@ import { CreateEdgeQuery } from './schemas/createEdge/Query';
 import { CreateEdgeResponse } from './schemas/createEdge/Response';
 import { CreatePostQuery } from './schemas/createPost/Query';
 import { CreatePostResponse } from './schemas/createPost/Response';
+import { DeleteEdgeQuery } from './schemas/deleteEdge/Query';
+import { DeleteEdgeResponse } from './schemas/deleteEdge/Response';
 import { DeletePostQuery } from './schemas/deletePost/Query';
 import { DeletePostResponse } from './schemas/deletePost/Response';
 import { GetEdgesQuery } from './schemas/getEdges/Query';
@@ -34,6 +36,10 @@ export type Endpoints = {
   createPost: {
     query: CreatePostQuery;
     response: CreatePostResponse;
+  };
+  deleteEdge: {
+    query: DeleteEdgeQuery;
+    response: DeleteEdgeResponse;
   };
   deletePost: {
     query: DeletePostQuery;

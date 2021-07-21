@@ -13,6 +13,7 @@
         "DELETE": "Could not delete post.",
         "EMAIL": "Email is invalid",
         "EMPTY_FIELD": "Field cannot be empty",
+        "FOLLOW_CONFLICT": "You are already following this user",
         "GENERIC": "Unexpected error",
         "HOME": "Could not get home feed",
         "INVALID_CREDENTIALS": "Incorrect username and/or password.",

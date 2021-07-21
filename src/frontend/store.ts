@@ -8,6 +8,8 @@ import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
 import { CreatePostQuery } from 'types/schemas/createPost/Query';
 import { CreatePostResponse } from 'types/schemas/createPost/Response';
+import { DeleteEdgeQuery } from 'types/schemas/deleteEdge/Query';
+import { DeleteEdgeResponse } from 'types/schemas/deleteEdge/Response';
 import { DeletePostQuery } from 'types/schemas/deletePost/Query';
 import { DeletePostResponse } from 'types/schemas/deletePost/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
@@ -136,6 +138,16 @@ class Store implements EndpointProvider {
   }
 
   /**
+   * Deletes an edge
+   *
+   * @param {DeleteEdgeQuery} params the edge to delete
+   * @returns {DeleteEdgeResponse} the API response
+   */
+  @action public async deleteEdge(params: Query<'deleteEdge'>): Promise<Response<'deleteEdge'>> {
+    return this.callWithToken<'deleteEdge'>('deleteEdge', params);
+  }
+
+  /**
    * Deletes a post
    *
    * @param {DeletePostQuery} params the request parameters
@@ -193,6 +205,7 @@ class Store implements EndpointProvider {
    * @returns {GetUserResponse} information about the requested user
    */
   @action public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
+    // TODO: why is this returning hashed passwords
     if (this.users[params.username]) {
       return this.users[params.username];
     }

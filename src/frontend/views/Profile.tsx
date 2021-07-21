@@ -1,15 +1,14 @@
-/* eslint-disable class-methods-use-this */
+import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
-import APIError from '../classes/APIError';
+import IUser from '../../types/User';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
 import FeedComponent from '../components/Feed';
 import store from '../store';
 import makeStyles from '../styles/makeStyles';
-import t from '../translations/en-US.json';
 
 // Prop types
 export type Props = {
@@ -71,6 +70,8 @@ export default class Profile extends ViewComponent<typeof styles> {
     displayName?: string;
     feed: Feed;
     id?: string;
+    isFollowing?: boolean;
+    followId?: string;
     username?: string;
   } = {
     feed: new Feed(),
@@ -107,33 +108,50 @@ export default class Profile extends ViewComponent<typeof styles> {
     immediate: true,
   })
   private async fetchUser() {
-    let user;
-    try {
-      user = await store.getUser({
-        username: this.$route.params.username,
-      });
-      const feed = await store.getFeed({
-        author: [user.id as string],
-      });
-      this.data.displayName = user.displayName;
-      this.data.username = user.username;
-      this.data.feed = new Feed(feed);
-      // Force the UI to re-render
-      this.$set(this.data, 'id', user.id);
-    } catch (err) {
-      switch (err.response.status) {
-        case 400:
-          // Expected error (the user was not found)
-          this.$bus.emit('error', new APIError(t.headers.USER_ERROR, t.errors.USER_NOT_FOUND, 400));
-          break;
-        default:
-          // Unexpected error
-          this.$bus.emit(
-            'error',
-            new APIError(t.headers.USER_ERROR, t.errors.GENERIC, err.response.status),
-          );
-      }
-    }
+    let user: IUser;
+    await this.apiCall(
+      async () => {
+        user = (await store.getUser({
+          username: this.$route.params.username,
+        })) as IUser;
+      },
+      async () => {
+        if (user.id !== store.currentUser?.id) {
+          try {
+            const edges = await store.getEdges({
+              type: 'follow',
+            });
+            const followEdge = edges.find((edge) => edge.target === user.id);
+            this.data.isFollowing = followEdge !== null;
+            if (this.data.isFollowing) {
+              this.data.followId = followEdge?.id;
+            }
+          } catch (err) {
+            // just ignore it
+            console.error(err);
+          }
+        }
+        let feed: GetPostResponse[];
+        await this.apiCall(
+          async () => {
+            feed = await store.getFeed({
+              author: [user.id as string],
+            });
+          },
+          () => {
+            this.data.displayName = user.displayName;
+            this.data.username = user.username;
+            this.data.feed = new Feed(feed);
+            // Force the UI to re-render
+            this.$set(this.data, 'id', user.id);
+          },
+          {},
+        );
+      },
+      {
+        400: this.messages.errors.USER_NOT_FOUND,
+      },
+    );
   }
 
   /**
@@ -179,13 +197,32 @@ export default class Profile extends ViewComponent<typeof styles> {
                       </v-card-title>
                       <v-card-subtitle>{this.data.username}</v-card-subtitle>
                       {(() => {
-                        // TODO
-                        const isFollowing = false;
                         if (this.data.id === store.currentUser?.id) {
                           return <div class={this.className('Spacer')}></div>;
                         }
-                        if (isFollowing) {
-                          return <v-btn>{t.btn.UNFOLLOW}</v-btn>;
+                        if (this.data.isFollowing && this.data.followId !== undefined) {
+                          return (
+                            <v-btn
+                              loading={this.awaitingAction}
+                              onClick={async () => {
+                                this.awaitingAction = true;
+                                await this.apiCall(
+                                  async () => {
+                                    await store.deleteEdge({
+                                      id: this.data.followId as string,
+                                    });
+                                  },
+                                  () => {
+                                    this.data.isFollowing = false;
+                                  },
+                                  {},
+                                );
+                                this.awaitingAction = false;
+                              }}
+                            >
+                              {this.messages.btn.UNFOLLOW}
+                            </v-btn>
+                          );
                         }
                         return (
                           <v-btn
@@ -198,26 +235,27 @@ export default class Profile extends ViewComponent<typeof styles> {
                                 // If the user is not signed in, take them to the sign in page
                                 this.$router.push('/login');
                               } else {
-                                try {
-                                  await store.createEdge({
-                                    target: this.data.id as string,
-                                    type: 'follow',
-                                  });
-                                } catch (err) {
-                                  this.$bus.emit(
-                                    'error',
-                                    new APIError(
-                                      t.headers.USER_ERROR,
-                                      t.errors.GENERIC,
-                                      err.response.status,
-                                    ),
-                                  );
-                                }
+                                await this.apiCall(
+                                  async () => {
+                                    this.data.followId = (
+                                      await store.createEdge({
+                                        target: this.data.id as string,
+                                        type: 'follow',
+                                      })
+                                    ).id;
+                                  },
+                                  () => {
+                                    this.data.isFollowing = true;
+                                  },
+                                  {
+                                    409: this.messages.errors.FOLLOW_CONFLICT,
+                                  },
+                                );
+                                this.awaitingAction = false;
                               }
-                              this.awaitingAction = false;
                             }}
                           >
-                            {t.btn.FOLLOW}
+                            {this.messages.btn.FOLLOW}
                           </v-btn>
                         );
                       })()}
@@ -237,7 +275,7 @@ export default class Profile extends ViewComponent<typeof styles> {
                             return 0;
                           })()}
                         </div>
-                        {t.labels.FOLLOWERS}
+                        {this.messages.labels.FOLLOWERS}
                       </v-col>
                       <v-col cols={6}>
                         <div class="text-h5">
@@ -249,7 +287,7 @@ export default class Profile extends ViewComponent<typeof styles> {
                             return 0;
                           })()}
                         </div>
-                        {t.labels.FOLLOWING}
+                        {this.messages.labels.FOLLOWING}
                       </v-col>
                     </v-row>
                     <v-row>

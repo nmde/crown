@@ -1,7 +1,7 @@
 type IEdge = {
   source: string;
   target: string;
-  type: 'follow' | 'like';
+  type: string;
   id?: string;
 };
 

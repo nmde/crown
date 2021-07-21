@@ -5,6 +5,8 @@ import CreateEdgeQs from './createEdge/Query.json';
 import CreateEdgeRes from './createEdge/Response.json';
 import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
+import DeleteEdgeQs from './deleteEdge/Query.json';
+import DeleteEdgeRes from './deleteEdge/Response.json';
 import DeletePostQs from './deletePost/Query.json';
 import DeletePostRes from './deletePost/Response.json';
 import GetEdgesQs from './getEdges/Query.json';
@@ -34,6 +36,10 @@ export default {
   createPost: {
     query: CreatePostQs,
     response: CreatePostRes,
+  },
+  deleteEdge: {
+    query: DeleteEdgeQs,
+    response: DeleteEdgeRes,
   },
   deletePost: {
     query: DeletePostQs,
