@@ -7,6 +7,7 @@ import IEdge from 'types/Edge';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
+import IMedia from '../types/Media';
 import IUser from '../types/User';
 import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
@@ -21,6 +22,7 @@ import { DeletePostQuery } from '../types/schemas/deletePost/Query';
 import { DeletePostResponse } from '../types/schemas/deletePost/Response';
 import { GetEdgesQuery } from '../types/schemas/getEdges/Query';
 import { GetFeedQuery } from '../types/schemas/getFeed/Query';
+import { GetMediaQuery } from '../types/schemas/getMedia/Query';
 import { GetPostQuery } from '../types/schemas/getPost/Query';
 import { GetPostResponse } from '../types/schemas/getPost/Response';
 import { GetUserQuery } from '../types/schemas/getUser/Query';
@@ -296,6 +298,27 @@ export default class ApiProvider implements EndpointProvider {
       where.category = query.category;
     }
     return (await this.getPosts(where)).map((model) => model.toJSON());
+  }
+
+  /**
+   * Gets post media
+   *
+   * @param {GetMediaQuery} query The media ID.
+   * @returns {string} The media data.
+   */
+  public async getMedia(query: Query<'getMedia'>): Promise<Response<'getMedia'>> {
+    // @TODO: check visibility permissions?
+    const result = await models.Media.findOne({
+      where: {
+        id: query.id,
+      },
+    });
+    if (result !== null) {
+      const i = result.toJSON() as IMedia;
+      return `data:${i.mimeType};base64,${i.data}`;
+    }
+    this.app.log.error(`Media not found: ${query.id}`);
+    throw this.app.httpErrors.notFound();
   }
 
   /**

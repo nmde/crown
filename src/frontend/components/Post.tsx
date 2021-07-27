@@ -1,11 +1,9 @@
 /* eslint-disable class-methods-use-this */
-import path from 'path-browserify';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import IPost from '../../types/Post';
 import IUser from '../../types/User';
-import apiPath from '../../util/apiPath';
 import formatDate from '../../util/formatDate';
 import Styled from '../classes/Styled';
 import store from '../store';
@@ -30,6 +28,7 @@ export default class Post extends Styled<typeof styles> {
    */
   private data: {
     author?: IUser;
+    media?: string;
   } = {};
 
   /**
@@ -59,7 +58,7 @@ export default class Post extends Styled<typeof styles> {
     deep: true,
     immediate: true,
   })
-  private async getAuthor() {
+  private async setup() {
     if (this.post.author !== undefined) {
       try {
         this.$set(
@@ -73,14 +72,16 @@ export default class Post extends Styled<typeof styles> {
         console.log(err);
       }
     }
-  }
 
-  /**
-   * Vue lifecycle hook
-   * Keeps the author in sync
-   */
-  public created(): void {
-    this.getAuthor();
+    if (this.post.media !== undefined) {
+      this.$set(
+        this.data,
+        'media',
+        await store.getMedia({
+          id: this.post.media,
+        }),
+      );
+    }
   }
 
   /**
@@ -128,7 +129,7 @@ export default class Post extends Styled<typeof styles> {
               </v-list>
             </v-menu>
           </v-toolbar>
-          <v-img src={`${path.join(apiPath('media'), this.post.media as string)}`} />
+          <v-img src={this.data.media} />
           <v-card-actions>
             <v-btn color="primary" plain block>
               <v-icon>favorite</v-icon>

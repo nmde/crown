@@ -11,6 +11,7 @@ import DeletePostQs from './deletePost/Query.json';
 import DeletePostRes from './deletePost/Response.json';
 import GetEdgesQs from './getEdges/Query.json';
 import GetFeedQs from './getFeed/Query.json';
+import GetMediaQs from './getMedia/Query.json';
 import GetPostQs from './getPost/Query.json';
 import GetPostRes from './getPost/Response.json';
 import GetUserQs from './getUser/Query.json';
@@ -68,6 +69,9 @@ export default {
       },
       type: 'object',
     },
+  },
+  getMedia: {
+    query: GetMediaQs,
   },
   getPost: {
     query: GetPostQs,

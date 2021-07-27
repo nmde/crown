@@ -53,7 +53,7 @@ export default function createApp(authKey: string): FastifyInstance {
         connectSrc: ['*', "'unsafe-inline'"],
         defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
         frameSrc: ['*'],
-        imgSrc: ['*', "'unsafe-inline'"],
+        imgSrc: ['*', "'unsafe-inline'", 'data:'],
         scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ['*', "'unsafe-inline'"],
       },

@@ -1,13 +1,10 @@
+import concat from 'concat-stream';
 import { FastifyInstance } from 'fastify';
-import fs from 'fs-extra';
 import MimeMatcher from 'mime-matcher';
-import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
-import { pipeline } from 'stream';
 import { keys } from 'ts-transformer-keys';
-import util from 'util';
-import { v4 as uuid } from 'uuid';
 import { Endpoints } from '../types/Endpoints';
+import IMedia from '../types/Media';
 import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
 import ServerError from './ServerError';
@@ -93,51 +90,42 @@ export default class Server extends ApiProvider {
    * @throws {ServerError} If the server failed to start
    */
   public async start(port: string): Promise<FastifyInstance> {
-    // Ensure the media directory exists
-    await fs.ensureDir(this.mediaDir);
-
     // Media uploading
-    this.app.post(`/${apiPath('upload')}`, async (request) => {
-      // TODO: convert all images to jpg
-      const id = uuid();
-      const file = await request.file();
-      let valid = false;
-      ['image/*', 'video/*', 'audio/*']
-        .map((mime) => new MimeMatcher(mime))
-        .forEach((mime) => {
-          valid = valid || mime.match(file.mimetype);
-        });
-      if (valid) {
-        await util.promisify(pipeline)(
-          file.file,
-          fs.createWriteStream(
-            path.join(this.mediaDir, file.filename.replace(/.*\.([a-z]+)/, `${id}.$1`)),
-          ),
-        );
-      } else {
-        throw this.app.httpErrors.forbidden();
-      }
-      // TODO: validation
-      return {
-        id,
-      };
-    });
-
-    // Media endpoint
-    this.app.get<{
-      Params: {
-        id: string;
-      };
-    }>(`/${apiPath('media', ':id')}`, async (request) => {
-      const media = (await fs.readdir(this.mediaDir)).find(
-        (value) => path.parse(value).name === request.params.id,
-      );
-      if (media !== undefined) {
-        return fs.readFile(path.join(this.mediaDir, media));
-      }
-      // TODO: return default image if media isn't found
-      return '';
-    });
+    this.app.post(
+      `/${apiPath('upload')}`,
+      async (request) => new Promise((resolve, reject) => {
+        // TODO: convert all images to jpg
+        request
+          .file()
+          .then((file) => {
+            let valid = false;
+            ['image/*', 'video/*', 'audio/*']
+              .map((mime) => new MimeMatcher(mime))
+              .forEach((mime) => {
+                valid = valid || mime.match(file.mimetype);
+              });
+            if (valid) {
+              file.file.pipe(
+                concat(async (buffer) => {
+                  const media = await new models.Media({
+                    data: buffer.toString('base64'),
+                    mimeType: file.mimetype,
+                  }).save();
+                  resolve({
+                    id: media.getDataValue('id'),
+                  });
+                }),
+              );
+            } else {
+              reject(this.app.httpErrors.forbidden());
+            }
+            // TODO: validation
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      }),
+    );
 
     // Automatically create endpoints based on Endpoints.ts
     type QueryKeys = {

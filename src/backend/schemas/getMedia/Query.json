@@ -1,0 +1,14 @@
+{
+  "title": "getMedia-Query",
+  "type": "object",
+  "properties": {
+    "token": {
+        "type": "string"
+    },
+    "id": {
+        "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["token", "id"]
+}

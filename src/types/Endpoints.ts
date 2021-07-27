@@ -11,6 +11,7 @@ import { DeletePostQuery } from './schemas/deletePost/Query';
 import { DeletePostResponse } from './schemas/deletePost/Response';
 import { GetEdgesQuery } from './schemas/getEdges/Query';
 import { GetFeedQuery } from './schemas/getFeed/Query';
+import { GetMediaQuery } from './schemas/getMedia/Query';
 import { GetPostQuery } from './schemas/getPost/Query';
 import { GetPostResponse } from './schemas/getPost/Response';
 import { GetUserQuery } from './schemas/getUser/Query';
@@ -52,6 +53,10 @@ export type Endpoints = {
   getFeed: {
     query: GetFeedQuery;
     response: GetPostResponse[];
+  };
+  getMedia: {
+    query: GetMediaQuery;
+    response: string;
   };
   getPost: {
     query: GetPostQuery;

@@ -14,6 +14,7 @@ import { DeletePostQuery } from 'types/schemas/deletePost/Query';
 import { DeletePostResponse } from 'types/schemas/deletePost/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import { GetFeedQuery } from 'types/schemas/getFeed/Query';
+import { GetMediaQuery } from 'types/schemas/getMedia/Query';
 import { GetPostQuery } from 'types/schemas/getPost/Query';
 import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { GetUserQuery } from 'types/schemas/getUser/Query';
@@ -37,6 +38,8 @@ import apiPath from '../util/apiPath';
 function fullPath(endpoint: Endpoint) {
   return `/${apiPath(endpoint)}`;
 }
+
+// TODO: improve caching
 
 /**
  * The "store", which manages data shared across all pages
@@ -181,6 +184,16 @@ class Store implements EndpointProvider {
       }
     });
     return posts;
+  }
+
+  /**
+   * Gets post media
+   *
+   * @param {GetMediaQuery} params The media ID
+   * @returns {string} The media data.
+   */
+  @action public async getMedia(params: Query<'getMedia'>): Promise<Response<'getMedia'>> {
+    return this.callWithToken<'getMedia'>('getMedia', params);
   }
 
   /**
