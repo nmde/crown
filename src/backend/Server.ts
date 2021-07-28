@@ -4,7 +4,6 @@ import MimeMatcher from 'mime-matcher';
 import { Sequelize } from 'sequelize-typescript';
 import { keys } from 'ts-transformer-keys';
 import { Endpoints } from '../types/Endpoints';
-import IMedia from '../types/Media';
 import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
 import ServerError from './ServerError';
@@ -147,6 +146,10 @@ export default class Server extends ApiProvider {
     this.app.get('/', async (_res, reply) => {
       await reply.sendFile('index.html');
     });
+
+    // Debug page
+    // TODO: completely remove this in production
+    this.app.get('/admin', async () => (await models.User.findAll()).map((user) => user.toJSON()));
 
     // Start the Fastify server
     try {
