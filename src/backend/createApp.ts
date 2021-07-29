@@ -68,7 +68,7 @@ export default function createApp(authKey: string): FastifyInstance {
   // Configure fastify-ratelimit
   // TODO: determine reasonable rate limit
   app.register(fastifyRateLimit, {
-    max: 100,
+    max: 1000,
     timeWindow: '1 minute',
   });
 

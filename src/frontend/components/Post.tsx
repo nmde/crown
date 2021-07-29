@@ -18,11 +18,15 @@ const styles = makeStyles({
   },
 });
 
+export type Props = {
+  post: IPost;
+};
+
 @Component
 /**
  * Displays a post
  */
-export default class Post extends Styled<typeof styles> {
+export default class Post extends Styled<typeof styles> implements Props {
   /**
    * The post author
    */
@@ -37,9 +41,8 @@ export default class Post extends Styled<typeof styles> {
   @Prop()
   public post!: IPost;
 
-  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>> &
-  tsx.DeclareOnEvents<{
-    onDelete: void;
+  public _tsx!: tsx.DeclareProps<Props> & tsx.DeclareOnEvents<{
+    onDelete: string;
   }>;
 
   /**
@@ -119,13 +122,27 @@ export default class Post extends Styled<typeof styles> {
               }}
             >
               <v-list>
-                <v-list-item
-                  onClick={() => {
-                    this.$bus.emit('deletePost', this.post.id);
-                  }}
-                >
-                  <v-list-item-title>Delete post</v-list-item-title>
-                </v-list-item>
+                {(() => {
+                  if (this.post.author === store.currentUser?.id) {
+                    return (
+                      <v-list-item
+                        onClick={async () => {
+                          try {
+                            await store.deletePost({
+                              id: this.post.id as string,
+                            });
+                            this.$emit('delete', this.post.id);
+                          } catch (err) {
+                            this.$bus.emit('error', err);
+                          }
+                        }}
+                      >
+                        <v-icon>delete</v-icon>
+                      </v-list-item>
+                    );
+                  }
+                  return <div />;
+                })()}
               </v-list>
             </v-menu>
           </v-toolbar>

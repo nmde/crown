@@ -1,22 +1,51 @@
+import { EventEmitter } from 'ee-ts';
 import IPost from '../../types/Post';
 
 /**
  * Represents a stream of posts
  */
-export default class Feed {
+export default class Feed extends EventEmitter<{
+  change(posts: IPost[]): void;
+}> {
   /**
    * The posts in the feed
    */
-  private posts: Required<IPost>[];
+  private posts: Required<IPost>[] = [];
 
   /**
    * Creates the feed, with optional initial postss
    *
    * @constructs
-   * @param {IPost[]} initialPosts Initial posts, if any
    */
-  public constructor(initialPosts: IPost[] = []) {
-    this.posts = initialPosts as Required<IPost>[];
+  public constructor() {
+    super();
+  }
+
+  /**
+   * Adds posts to the feed.
+   *
+   * @param {Required<IPost>[]} posts The posts to add.
+   * @returns {Feed} This.
+   */
+  public addPosts(posts: IPost[]): Feed {
+    this.posts = posts as Required<IPost>[];
+    this.emit('change', this.posts);
+    return this;
+  }
+
+  /**
+   * Deletes a post from the feed.
+   *
+   * @param {string} id The post to delete.
+   */
+  public delete(id: string): void {
+    for (let i = 0; i < this.posts.length; i += 1) {
+      if (this.posts[i].id === id) {
+        this.posts.splice(i, 1);
+        break;
+      }
+    }
+    this.emit('change', this.posts);
   }
 
   /**

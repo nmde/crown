@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
-import IPost from '../../types/Post';
 import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
@@ -18,10 +17,8 @@ const styles = makeStyles({});
 export default class Explore extends ViewComponent<typeof styles> {
   private data: {
     feed: Feed;
-    posts: IPost[];
   } = {
     feed: new Feed(),
-    posts: [],
   };
 
   /**
@@ -45,9 +42,7 @@ export default class Explore extends ViewComponent<typeof styles> {
         feed = await store.getFeed({});
       },
       async () => {
-        const f = new Feed(feed);
-        this.data.posts = f.getFeed();
-        this.$set(this.data, 'feed', f);
+        this.data.feed.addPosts(feed);
       },
       {},
     );

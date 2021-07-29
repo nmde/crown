@@ -44,7 +44,7 @@ export default class Category extends ViewComponent<typeof styles> {
         const feed = await store.getFeed({
           category: this.$route.params.category,
         });
-        this.$set(this.data, 'feed', new Feed(feed));
+        this.data.feed.addPosts(feed);
       },
       () => {},
       {},

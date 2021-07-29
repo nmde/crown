@@ -59,7 +59,7 @@ export default class Home extends ViewComponent<typeof styles> {
               });
             },
             () => {
-              this.$set(this.data, 'feed', new Feed(feed));
+              this.data.feed.addPosts(feed);
             },
             {},
           );

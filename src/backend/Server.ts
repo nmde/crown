@@ -147,10 +147,6 @@ export default class Server extends ApiProvider {
       await reply.sendFile('index.html');
     });
 
-    // Debug page
-    // TODO: completely remove this in production
-    this.app.get('/admin', async () => (await models.User.findAll()).map((user) => user.toJSON()));
-
     // Start the Fastify server
     try {
       await this.app.listen(port, '0.0.0.0');

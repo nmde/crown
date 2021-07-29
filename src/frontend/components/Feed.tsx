@@ -1,5 +1,5 @@
 import { VNode } from 'vue';
-import { Component, Prop, Watch } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import IPost from '../../types/Post';
 import Feed from '../classes/Feed';
@@ -21,6 +21,10 @@ export default class FeedComponent extends Styled<typeof styles> implements Prop
   @Prop()
   public feed!: Feed;
 
+  private data: {
+    posts: IPost[];
+  } = { posts: [] };
+
   public _tsx!: tsx.DeclareProps<Props>;
 
   /**
@@ -31,12 +35,17 @@ export default class FeedComponent extends Styled<typeof styles> implements Prop
   }
 
   /**
-   * The posts to display
-   *
-   * @returns {IPost[]} the posts in the feed
+   * Created lifecycle hook
    */
-  private get posts(): IPost[] {
-    return this.feed.getFeed();
+  public created(): void {
+    this.feed.on('change', () => {
+      console.log(this.feed.getFeed());
+      this.$set(
+        this.data,
+        'posts',
+        this.feed.getFeed(),
+      );
+    });
   }
 
   /**
@@ -49,9 +58,14 @@ export default class FeedComponent extends Styled<typeof styles> implements Prop
     return (
       <v-container>
         <v-row justify="center">
-          {(() => this.posts.map((post) => (
+          {(() => this.data.posts.map((post) => (
               <v-col sm={4} cols={12}>
-                <Post post={post} />
+                <Post
+                  post={post}
+                  onDelete={(id) => {
+                    this.feed.delete(id);
+                  }}
+                />
               </v-col>
           )))()}
         </v-row>

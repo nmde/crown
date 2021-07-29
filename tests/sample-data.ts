@@ -37,7 +37,7 @@ export const Media: MediaRecord[] = [
 ];
 
 export const Feeds: Feed[] = [
-  new Feed([
+  new Feed().addPosts([
     {
       author: 'epicgamer123',
       created: new Date(2021, 1, 15, 13, 35).toISOString(),

@@ -141,7 +141,7 @@ export default class Profile extends ViewComponent<typeof styles> {
           () => {
             this.data.displayName = user.displayName;
             this.data.username = user.username;
-            this.data.feed = new Feed(feed);
+            this.data.feed.addPosts(feed);
             // Force the UI to re-render
             this.$set(this.data, 'id', user.id);
           },
