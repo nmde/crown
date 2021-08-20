@@ -39,12 +39,7 @@ export default class FeedComponent extends Styled<typeof styles> implements Prop
    */
   public created(): void {
     this.feed.on('change', () => {
-      console.log(this.feed.getFeed());
-      this.$set(
-        this.data,
-        'posts',
-        this.feed.getFeed(),
-      );
+      this.$set(this.data, 'posts', this.feed.getFeed());
     });
   }
 
@@ -60,12 +55,14 @@ export default class FeedComponent extends Styled<typeof styles> implements Prop
         <v-row justify="center">
           {(() => this.data.posts.map((post) => (
               <v-col sm={4} cols={12}>
-                <Post
-                  post={post}
-                  onDelete={(id) => {
-                    this.feed.delete(id);
-                  }}
-                />
+                <router-link to={`/post/${post.id}`}>
+                  <Post
+                    post={post}
+                    onDelete={(id) => {
+                      this.feed.delete(id);
+                    }}
+                  />
+                </router-link>
               </v-col>
           )))()}
         </v-row>

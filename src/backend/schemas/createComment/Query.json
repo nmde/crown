@@ -1,0 +1,17 @@
+{
+  "title": "createComment-Query",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "parent": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["token", "text", "parent"]
+}

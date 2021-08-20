@@ -12,6 +12,8 @@ import IUser from '../types/User';
 import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
 import { CreateAccountResponse } from '../types/schemas/createAccount/Response';
+import { CreateCommentQuery } from '../types/schemas/createComment/Query';
+import { CreateCommentResponse } from '../types/schemas/createComment/Response';
 import { CreateEdgeQuery } from '../types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from '../types/schemas/createEdge/Response';
 import { CreatePostQuery } from '../types/schemas/createPost/Query';
@@ -20,6 +22,8 @@ import { DeleteEdgeQuery } from '../types/schemas/deleteEdge/Query';
 import { DeleteEdgeResponse } from '../types/schemas/deleteEdge/Response';
 import { DeletePostQuery } from '../types/schemas/deletePost/Query';
 import { DeletePostResponse } from '../types/schemas/deletePost/Response';
+import { GetCommentsQuery } from '../types/schemas/getComments/Query';
+import { GetCommentsResponse } from '../types/schemas/getComments/Response';
 import { GetEdgesQuery } from '../types/schemas/getEdges/Query';
 import { GetFeedQuery } from '../types/schemas/getFeed/Query';
 import { GetMediaQuery } from '../types/schemas/getMedia/Query';
@@ -143,6 +147,24 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
+   * Creates a comment
+   *
+   * @param {CreateCommentQuery} query The comment query
+   * @returns {CreateCommentResponse} The created comment ID
+   */
+  public async createComment(query: Query<'createComment'>): Promise<Response<'createComment'>> {
+    const author = await this.authenticate({ token: query.token });
+    const comment = await new models.Comment({
+      author: author.id as string,
+      parent: query.parent,
+      text: query.text,
+    }).save();
+    return {
+      id: comment.getDataValue('id') as string,
+    };
+  }
+
+  /**
    * Creates an edge
    *
    * @param {CreateEdgeQuery} query the edge information
@@ -252,6 +274,23 @@ export default class ApiProvider implements EndpointProvider {
     }
     this.app.log.error(`User ${user.id} failed to delete post ${query.id}`);
     throw this.app.httpErrors.badRequest();
+  }
+
+  /**
+   * Gets a post's comments
+   *
+   * @param {GetCommentsQuery} query The post to get comments for
+   * @returns {GetCommentsResponse} A list of comments on the post
+   */
+  public async getComments(query: Query<'getComments'>): Promise<Response<'getComments'>> {
+    const results = await models.Comment.findAll({
+      where: {
+        parent: query.parent,
+      },
+    });
+    return {
+      comments: results.map((result) => result.toJSON() as any),
+    };
   }
 
   /**

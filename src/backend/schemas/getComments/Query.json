@@ -1,0 +1,12 @@
+{
+    "title": "getComments-Query",
+    "type": "object",
+    "properties": {
+      "parent": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "required": ["parent"]
+  }
+  

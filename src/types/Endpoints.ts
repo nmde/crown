@@ -1,6 +1,8 @@
 import { AuthenticateQuery } from './schemas/authenticate/Query';
 import { CreateAccountQuery } from './schemas/createAccount/Query';
 import { CreateAccountResponse } from './schemas/createAccount/Response';
+import { CreateCommentQuery } from './schemas/createComment/Query';
+import { CreateCommentResponse } from './schemas/createComment/Response';
 import { CreateEdgeQuery } from './schemas/createEdge/Query';
 import { CreateEdgeResponse } from './schemas/createEdge/Response';
 import { CreatePostQuery } from './schemas/createPost/Query';
@@ -9,6 +11,8 @@ import { DeleteEdgeQuery } from './schemas/deleteEdge/Query';
 import { DeleteEdgeResponse } from './schemas/deleteEdge/Response';
 import { DeletePostQuery } from './schemas/deletePost/Query';
 import { DeletePostResponse } from './schemas/deletePost/Response';
+import { GetCommentsQuery } from './schemas/getComments/Query';
+import { GetCommentsResponse } from './schemas/getComments/Response';
 import { GetEdgesQuery } from './schemas/getEdges/Query';
 import { GetFeedQuery } from './schemas/getFeed/Query';
 import { GetMediaQuery } from './schemas/getMedia/Query';
@@ -30,6 +34,10 @@ export type Endpoints = {
     query: CreateAccountQuery;
     response: CreateAccountResponse;
   };
+  createComment: {
+    query: CreateCommentQuery;
+    response: CreateCommentResponse;
+  };
   createEdge: {
     query: CreateEdgeQuery;
     response: CreateEdgeResponse;
@@ -45,6 +53,10 @@ export type Endpoints = {
   deletePost: {
     query: DeletePostQuery;
     response: DeletePostResponse;
+  };
+  getComments: {
+    query: GetCommentsQuery;
+    response: GetCommentsResponse;
   };
   getEdges: {
     query: GetEdgesQuery;

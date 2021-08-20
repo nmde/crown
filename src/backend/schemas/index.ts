@@ -1,6 +1,8 @@
 import AuthenticateQs from './authenticate/Query.json';
 import CreateAccQs from './createAccount/Query.json';
 import CreateAccRes from './createAccount/Response.json';
+import CreateCommentQs from './createComment/Query.json';
+import CreateCommentRes from './createComment/Response.json';
 import CreateEdgeQs from './createEdge/Query.json';
 import CreateEdgeRes from './createEdge/Response.json';
 import CreatePostQs from './createPost/Query.json';
@@ -9,6 +11,8 @@ import DeleteEdgeQs from './deleteEdge/Query.json';
 import DeleteEdgeRes from './deleteEdge/Response.json';
 import DeletePostQs from './deletePost/Query.json';
 import DeletePostRes from './deletePost/Response.json';
+import GetCommentsQs from './getComments/Query.json';
+import GetCommentsRes from './getComments/Response.json';
 import GetEdgesQs from './getEdges/Query.json';
 import GetFeedQs from './getFeed/Query.json';
 import GetMediaQs from './getMedia/Query.json';
@@ -30,6 +34,10 @@ export default {
     query: CreateAccQs,
     response: CreateAccRes,
   },
+  createComment: {
+    query: CreateCommentQs,
+    response: CreateCommentRes,
+  },
   createEdge: {
     query: CreateEdgeQs,
     response: CreateEdgeRes,
@@ -45,6 +53,10 @@ export default {
   deletePost: {
     query: DeletePostQs,
     response: DeletePostRes,
+  },
+  getComments: {
+    query: GetCommentsQs,
+    response: GetCommentsRes,
   },
   getEdges: {
     query: GetEdgesQs,

@@ -1,6 +1,7 @@
 {
     "btn": {
         "CLOSE": "Close",
+        "COMMENT": "Add Comment",
         "FOLLOW": "Follow",
         "POST": "Create Post",
         "SIGNIN": "Sign In",
@@ -47,6 +48,7 @@
     "headers": {
         "ACCOUNT": "My Account",
         "CATEGORIES": "Categories",
+        "COMMENT": "Add a comment",
         "EXPLORE": "Explore",
         "GET_POST_ERROR": "Could not display post",
         "HOME": "Home",

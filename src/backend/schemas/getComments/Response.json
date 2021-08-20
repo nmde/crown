@@ -1,0 +1,28 @@
+{
+    "title": "getComments-Response",
+    "type": "object",
+    "properties": {
+      "comments": {
+          "type": "array",
+          "items": {
+              "properties": {
+                  "id": {
+                      "type": "string"
+                  },
+                  "text": {
+                      "type": "string"
+                  },
+                  "author": {
+                      "type": "string"
+                  },
+                  "parent": {
+                      "type": "string"
+                  }
+              }
+          }
+      }
+    },
+    "additionalProperties": false,
+    "required": ["comments"]
+  }
+  
