@@ -35,4 +35,7 @@ export default class Post extends Model<IPost> implements IPost {
 
   @Column(DataType.STRING)
   public category!: string;
+
+  @Column(DataType.INTEGER)
+  public boosts!: number;
 }

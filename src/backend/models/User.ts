@@ -3,11 +3,15 @@ import {
 } from 'sequelize-typescript';
 import IUser from '../../types/User';
 
+type ExtendedUser = IUser & {
+  password: string;
+};
+
 @Table
 /**
  * User table
  */
-export default class User extends Model<IUser> implements IUser {
+export default class User extends Model<ExtendedUser> implements ExtendedUser {
   @Column(DataType.STRING)
   public username!: string;
 
@@ -35,4 +39,7 @@ export default class User extends Model<IUser> implements IUser {
 
   @Column(DataType.STRING)
   public profilePicture!: string;
+
+  @Column(DataType.INTEGER)
+  public boostBalance!: number;
 }

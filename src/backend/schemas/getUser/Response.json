@@ -14,11 +14,17 @@
       "displayName": {
         "type": "string"
       },
+      "lastTokenReset": {
+        "type": "number"
+      },
       "profileBackground": {
         "type": "string"
       },
       "profilePicture": {
         "type": "string"
+      },
+      "boostBalance": {
+        "type": "number"
       }
     },
     "additionalProperties": false

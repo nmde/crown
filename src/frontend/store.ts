@@ -2,6 +2,7 @@
 import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
+import { BoostQuery } from 'types/schemas/boost/Query';
 import { CreateAccountQuery } from 'types/schemas/createAccount/Query';
 import { CreateAccountResponse } from 'types/schemas/createAccount/Response';
 import { CreateCommentQuery } from 'types/schemas/createComment/Query';
@@ -104,6 +105,16 @@ class Store implements EndpointProvider {
     const res = await this.callWithToken<'authenticate'>('authenticate', {});
     this.currentUser = res as IUser;
     return res;
+  }
+
+  /**
+   * Boosts a post
+   *
+   * @param {BoostQuery} params the post to boost
+   * @returns {any} the api response
+   */
+  @action public async boost(params: Query<'boost'>): Promise<Response<'boost'>> {
+    return this.callWithToken<'boost'>('boost', params);
   }
 
   /**
@@ -262,8 +273,8 @@ class Store implements EndpointProvider {
   @action public async getUserById(params: Query<'getUserById'>): Promise<Response<'getUserById'>> {
     const response = (await axios.post<Response<'getUserById'>>(fullPath('getUserById'), params))
       .data as IUser;
-    if (!this.users[response.username]) {
-      this.users[response.username] = response;
+    if (!this.users[response.username as string]) {
+      this.users[response.username as string] = response;
     }
     return response;
   }
@@ -278,13 +289,10 @@ class Store implements EndpointProvider {
     const res = (await axios.post<Response<'signIn'>>(fullPath('signIn'), params)).data;
     JSCookie.set('token', res.token);
     this.token = res.token;
-    this.currentUser = {
-      displayName: res.displayName,
-      email: res.email,
-      profileBackground: res.profileBackground,
-      profilePicture: res.profilePicture,
-      username: res.username,
-    };
+    const user = await this.getUserById({
+      id: res.id,
+    });
+    this.currentUser = user;
     return res;
   }
 

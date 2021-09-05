@@ -44,7 +44,7 @@ export default class Account extends ViewComponent<typeof styles> implements Pro
     if (store.currentUser === undefined) {
       this.$router.push('/login');
     } else {
-      this.form.displayName = store.currentUser.displayName;
+      this.form.displayName = store.currentUser.displayName as string;
     }
   }
 

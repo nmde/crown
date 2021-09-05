@@ -1,4 +1,5 @@
 import AuthenticateQs from './authenticate/Query.json';
+import BoostQs from './boost/Query.json';
 import CreateAccQs from './createAccount/Query.json';
 import CreateAccRes from './createAccount/Response.json';
 import CreateCommentQs from './createComment/Query.json';
@@ -29,6 +30,10 @@ export default {
   authenticate: {
     query: AuthenticateQs,
     response: GetUserRes,
+  },
+  boost: {
+    query: BoostQs,
+    response: CreateEdgeRes,
   },
   createAccount: {
     query: CreateAccQs,

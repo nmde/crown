@@ -1,4 +1,5 @@
 import { AuthenticateQuery } from './schemas/authenticate/Query';
+import { BoostQuery } from './schemas/boost/Query';
 import { CreateAccountQuery } from './schemas/createAccount/Query';
 import { CreateAccountResponse } from './schemas/createAccount/Response';
 import { CreateCommentQuery } from './schemas/createComment/Query';
@@ -29,6 +30,10 @@ export type Endpoints = {
   authenticate: {
     query: AuthenticateQuery;
     response: GetUserResponse;
+  };
+  boost: {
+    query: BoostQuery;
+    response: CreateEdgeResponse;
   };
   createAccount: {
     query: CreateAccountQuery;

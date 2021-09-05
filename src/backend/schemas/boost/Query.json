@@ -1,14 +1,14 @@
 {
-  "title": "signIn-Response",
+  "title": "boost-Query",
   "type": "object",
   "properties": {
-    "id": {
+    "token": {
       "type": "string"
     },
-    "token": {
+    "target": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["id", "token"]
+  "required": ["token", "target"]
 }

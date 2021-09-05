@@ -10,6 +10,7 @@ import {
 import IMedia from '../types/Media';
 import IUser from '../types/User';
 import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
+import { BoostQuery } from '../types/schemas/boost/Query';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
 import { CreateAccountResponse } from '../types/schemas/createAccount/Response';
 import { CreateCommentQuery } from '../types/schemas/createComment/Query';
@@ -38,7 +39,6 @@ import { UpdateUserQuery } from '../types/schemas/updateUser/Query';
 import currentTokenTime from '../util/currentTokenTime';
 import media from '../util/media';
 import models from './models';
-import Edge from './models/Edge';
 import Post from './models/Post';
 import User from './models/User';
 
@@ -114,6 +114,36 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
+   * Boosts a post
+   *
+   * @param {BoostQuery} query the post to boost
+   * @returns {any} if the post was boosted
+   */
+  public async boost(query: Query<'boost'>): Promise<Response<'boost'>> {
+    const user = await this.authenticate({
+      token: query.token,
+    });
+    if (user && user.boostBalance && user.boostBalance > 0) {
+      await models.User.update(
+        {
+          boostBalance: user.boostBalance - 1,
+        },
+        {
+          where: {
+            id: user.id,
+          },
+        },
+      );
+      return this.createEdge({
+        target: query.target,
+        token: query.token,
+        type: 'boost',
+      });
+    }
+    throw this.app.httpErrors.forbidden();
+  }
+
+  /**
    * API endpoint for creating an account
    *
    * @param {CreateAccountQuery} query Account creation query
@@ -129,6 +159,7 @@ export default class ApiProvider implements EndpointProvider {
     });
     if (results == null) {
       const user = await new models.User({
+        boostBalance: 1,
         displayName: query.displayName,
         email: query.email,
         lastTokenReset: currentTokenTime(),
@@ -173,20 +204,19 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createEdge(query: Query<'createEdge'>): Promise<Response<'createEdge'>> {
     const user = await this.authenticate({ token: query.token });
-    let edge: Edge;
-    if (query.type === 'follow') {
-      const follow: IEdge = {
+    if (query.type === 'follow' || query.type === 'like' || query.type === 'boost') {
+      const edge: IEdge = {
         source: user.id as string,
         target: query.target,
-        type: 'follow',
+        type: query.type,
       };
       const exists = await models.Edge.findOne({
-        where: follow,
+        where: edge,
       });
       if (exists === null) {
-        edge = await new models.Edge(follow).save();
-        this.app.log.info(`Created edge with ID ${edge.get('id')}`);
-        return edge.toJSON() as Required<IEdge>;
+        const created = await new models.Edge(edge).save();
+        this.app.log.info(`Created edge with ID ${created.get('id')}`);
+        return created.toJSON() as Required<IEdge>;
       }
       throw this.app.httpErrors.conflict();
     }
@@ -312,6 +342,20 @@ export default class ApiProvider implements EndpointProvider {
           },
         });
         return results.map((result) => result.toJSON() as Required<IEdge>);
+      case 'like':
+      case 'boost':
+        if (query.target) {
+          results = await models.Edge.findAll({
+            where: {
+              source: source.id as string,
+              target: query.target,
+              type: query.type,
+            },
+          });
+          return results.map((result) => result.toJSON() as Required<IEdge>);
+        }
+        this.app.log.error('Missing target for edge type like');
+        throw this.app.httpErrors.badRequest();
       default:
         this.app.log.error(`Invalid edge type: ${query.type}`);
         throw this.app.httpErrors.badRequest();
@@ -438,13 +482,8 @@ export default class ApiProvider implements EndpointProvider {
       results.set('lastTokenReset', currentTokenTime());
       await results.save();
       return {
-        displayName: results.get('displayName'),
-        email: results.get('email'),
         id,
-        profileBackground: results.get('profileBackground'),
-        profilePicture: results.get('profilePicture'),
         token: this.token.generate(id),
-        username: results.get('username'),
       };
     }
     // No matching username/password

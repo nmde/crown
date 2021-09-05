@@ -2,6 +2,7 @@
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
+import IEdge from '../../types/Edge';
 import IPost from '../../types/Post';
 import IUser from '../../types/User';
 import formatDate from '../../util/formatDate';
@@ -32,8 +33,13 @@ export default class Post extends Styled<typeof styles> implements Props {
    */
   private data: {
     author?: IUser;
+    boosts: IEdge[];
+    likes: IEdge[];
     media?: string;
-  } = {};
+  } = {
+    boosts: [],
+    likes: [],
+  };
 
   /**
    * The post data
@@ -41,7 +47,8 @@ export default class Post extends Styled<typeof styles> implements Props {
   @Prop()
   public post!: IPost;
 
-  public _tsx!: tsx.DeclareProps<Props> & tsx.DeclareOnEvents<{
+  public _tsx!: tsx.DeclareProps<Props> &
+  tsx.DeclareOnEvents<{
     onDelete: string;
   }>;
 
@@ -52,6 +59,15 @@ export default class Post extends Styled<typeof styles> implements Props {
    */
   public constructor() {
     super(styles);
+  }
+
+  /**
+   * Gets the boost-altered number of likes to display
+   *
+   * @returns {number} the likes
+   */
+  private get computedLikes(): number {
+    return this.data.likes.length + this.data.boosts.length * 5;
   }
 
   /**
@@ -69,6 +85,29 @@ export default class Post extends Styled<typeof styles> implements Props {
           'author',
           await store.getUserById({
             id: this.post.author,
+          }),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    if (this.post.id !== undefined) {
+      try {
+        this.$set(
+          this.data,
+          'likes',
+          await store.getEdges({
+            target: this.post.id,
+            type: 'like',
+          }),
+        );
+        this.$set(
+          this.data,
+          'boosts',
+          await store.getEdges({
+            target: this.post.id,
+            type: 'boost',
           }),
         );
       } catch (err) {
@@ -122,23 +161,32 @@ export default class Post extends Styled<typeof styles> implements Props {
               }}
             >
               <v-list>
+                <v-list-item onClick={async () => {
+                  try {
+                    await store.boost({
+                      target: this.post.id as string,
+                    });
+                  } catch (err) {
+                    console.log(err);
+                  }
+                }}>Boost</v-list-item>
                 {(() => {
                   if (this.post.author === store.currentUser?.id) {
                     return (
-                      <v-list-item
-                        onClick={async () => {
-                          try {
-                            await store.deletePost({
-                              id: this.post.id as string,
-                            });
-                            this.$emit('delete', this.post.id);
-                          } catch (err) {
-                            this.$bus.emit('error', err);
-                          }
-                        }}
-                      >
-                        <v-icon>delete</v-icon>
-                      </v-list-item>
+                        <v-list-item
+                          onClick={async () => {
+                            try {
+                              await store.deletePost({
+                                id: this.post.id as string,
+                              });
+                              this.$emit('delete', this.post.id);
+                            } catch (err) {
+                              this.$bus.emit('error', err);
+                            }
+                          }}
+                        >
+                          <v-icon>delete</v-icon>
+                        </v-list-item>
                     );
                   }
                   return <div />;
@@ -148,8 +196,23 @@ export default class Post extends Styled<typeof styles> implements Props {
           </v-toolbar>
           <v-img src={this.data.media} />
           <v-card-actions>
-            <v-btn color="primary" plain block>
+            <v-btn
+              color="primary"
+              plain
+              block
+              onClick={async () => {
+                try {
+                  await store.createEdge({
+                    target: this.post.id as string,
+                    type: 'like',
+                  });
+                } catch (err) {
+                  console.log(err);
+                }
+              }}
+            >
               <v-icon>favorite</v-icon>
+              <span>{this.computedLikes}</span>
             </v-btn>
           </v-card-actions>
           <v-card-text>

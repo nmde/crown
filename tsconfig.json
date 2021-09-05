@@ -34,8 +34,6 @@
     "src",
     "config",
     "./*.js",
-    "./*.ts",
-    "tests",
-    "stories"
+    "./*.ts"
   ]
 }
