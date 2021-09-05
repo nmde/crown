@@ -7,6 +7,9 @@ module.exports = (async () => {
     resolver: { sourceExts },
   } = await getDefaultConfig();
   return {
+    resolver: {
+      sourceExts: [...sourceExts, 'vue'],
+    },
     transformer: {
       babelTransformerPath: require.resolve('./vueTransformerPlugin.js'),
       getTransformOptions: async () => ({
@@ -15,9 +18,6 @@ module.exports = (async () => {
           inlineRequires: false,
         },
       }),
-    },
-    resolver: {
-      sourceExts: [...sourceExts, 'vue'],
     },
   };
 })();
