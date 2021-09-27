@@ -47,19 +47,16 @@ export default function createApp(authKey: string): FastifyInstance {
 
   // Configure fastify-helmet
   const helmetOptions: Mutable<NonNullable<Parameters<typeof helmet>[0]>> = {};
-  if (process.env.NODE_ENV === 'development') {
-    // Uses the least secure CSP possible in dev mode to avoid headaches
-    helmetOptions.contentSecurityPolicy = {
-      directives: {
-        connectSrc: ['*', "'unsafe-inline'"],
-        defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
-        frameSrc: ['*'],
-        imgSrc: ['*', "'unsafe-inline'", 'data:'],
-        scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
-        styleSrc: ['*', "'unsafe-inline'"],
-      },
-    };
-  }
+  helmetOptions.contentSecurityPolicy = {
+    directives: {
+      connectSrc: ['*', "'unsafe-inline'"],
+      defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
+      frameSrc: ['*'],
+      imgSrc: ['*', "'unsafe-inline'", 'data:'],
+      scriptSrc: ['*', "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ['*', "'unsafe-inline'"],
+    },
+  };
   app.register(fastifyHelmet, helmetOptions);
 
   // Configure fastify-multipart
