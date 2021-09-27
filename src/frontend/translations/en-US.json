@@ -54,6 +54,7 @@
         "HOME": "Home",
         "HOME_ERROR": "An error occurred",
         "JOIN": "Join Crown",
+        "MESSAGES": "Messages",
         "POST_ERROR": "Failed to post",
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",
@@ -86,6 +87,7 @@
     },
     "text": {
         "CREATE_ACCOUNT": "Create an account",
-        "EXISTING_ACCOUNT": "Sign in to existing account"
+        "EXISTING_ACCOUNT": "Sign in to existing account",
+        "NO_MESSAGES": "You don't have any messages!"
     }
 }

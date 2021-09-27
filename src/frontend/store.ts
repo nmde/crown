@@ -25,6 +25,8 @@ import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { GetUserQuery } from 'types/schemas/getUser/Query';
 import { GetUserResponse } from 'types/schemas/getUser/Response';
 import { GetUserByIdQuery } from 'types/schemas/getUserById/Query';
+import { MessagesQuery } from 'types/schemas/messages/Query';
+import { MessagesResponse } from 'types/schemas/messages/Response';
 import { SignInQuery } from 'types/schemas/signIn/Query';
 import { SignInResponse } from 'types/schemas/signIn/Response';
 import {
@@ -277,6 +279,16 @@ class Store implements EndpointProvider {
       this.users[response.username as string] = response;
     }
     return response;
+  }
+
+  /**
+   * Gets a user's messages.
+   *
+   * @param {MessagesQuery} params The messages to get.
+   * @returns {MessagesResponse} The user's messages.
+   */
+  @action public async messages(params: Query<'messages'>): Promise<Response<'messages'>> {
+    return this.callWithToken<'messages'>('messages', params);
   }
 
   /**

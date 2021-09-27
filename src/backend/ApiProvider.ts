@@ -4,10 +4,12 @@ import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize';
 import IEdge from 'types/Edge';
+import IComment from '../types/Comment';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
 import IMedia from '../types/Media';
+import IMessage from '../types/Message';
 import IUser from '../types/User';
 import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
 import { BoostQuery } from '../types/schemas/boost/Query';
@@ -33,6 +35,7 @@ import { GetPostResponse } from '../types/schemas/getPost/Response';
 import { GetUserQuery } from '../types/schemas/getUser/Query';
 import { GetUserResponse } from '../types/schemas/getUser/Response';
 import { GetUserByIdQuery } from '../types/schemas/getUserById/Query';
+import { MessagesQuery } from '../types/schemas/messages/Query';
 import { SignInQuery } from '../types/schemas/signIn/Query';
 import { SignInResponse } from '../types/schemas/signIn/Response';
 import { UpdateUserQuery } from '../types/schemas/updateUser/Query';
@@ -319,7 +322,7 @@ export default class ApiProvider implements EndpointProvider {
       },
     });
     return {
-      comments: results.map((result) => result.toJSON() as any),
+      comments: results.map((result) => result.toJSON() as IComment),
     };
   }
 
@@ -461,6 +464,27 @@ export default class ApiProvider implements EndpointProvider {
     }
     this.app.log.error(`No user found with ID ${query.id}`);
     throw this.app.httpErrors.badRequest();
+  }
+
+  /**
+   * Gets a user's messages.
+   *
+   * @param {MessagesQuery} query The messages to find.
+   * @returns {IMessage} The messages.
+   */
+  public async messages(query: Query<'messages'>): Promise<Response<'messages'>> {
+    const user = await this.authenticate({
+      token: query.token,
+    });
+    const messages = await models.Message.findAll({
+      where: {
+        recipient: user.id,
+        sender: user.id,
+      },
+    });
+    return {
+      messages: messages.map((message) => message.toJSON() as IMessage),
+    };
   }
 
   /**

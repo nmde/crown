@@ -1,0 +1,28 @@
+{
+  "title": "messages-Response",
+  "type": "object",
+  "properties": {
+    "messages": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "time": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "sender": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["messages"]
+}

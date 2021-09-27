@@ -18,7 +18,8 @@
                   "parent": {
                       "type": "string"
                   }
-              }
+              },
+              "additionalProperties": false
           }
       }
     },

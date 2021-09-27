@@ -1,12 +1,20 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
+import IMessage from '../types/Message';
 import APIError from './classes/APIError';
 import ViewComponent from './classes/ViewComponent';
 import NavLink from './components/NavLink';
 import store from './store';
 import makeStyles from './styles/makeStyles';
 
-const styles = makeStyles({});
+const styles = makeStyles({
+  messages: {
+    bottom: 0,
+    display: 'none',
+    position: 'fixed',
+    right: 0,
+  },
+});
 
 @Component
 /**
@@ -15,6 +23,14 @@ const styles = makeStyles({});
 export default class App extends ViewComponent<typeof styles> {
   /** the errors */
   private errors: APIError[] = [];
+
+  private showMessages = false;
+
+  private data: {
+    messages: IMessage[];
+  } = {
+    messages: [],
+  };
 
   /**
    * @constructs
@@ -31,6 +47,16 @@ export default class App extends ViewComponent<typeof styles> {
    */
   public async created(): Promise<void> {
     await this.getCurrentUser();
+    let messages: IMessage[];
+    await this.apiCall(
+      async () => {
+        messages = (await store.messages({})).messages as IMessage[];
+      },
+      () => {
+        this.data.messages = messages;
+        console.log(messages);
+      },
+    );
   }
 
   /**
@@ -105,6 +131,24 @@ export default class App extends ViewComponent<typeof styles> {
               </v-dialog>
           );
         }))()}
+        <v-card class={this.className('messages')}>
+          <v-toolbar
+            color="primary"
+            onClick={() => {
+              this.showMessages = !this.showMessages;
+            }}
+          >
+            <v-toolbar-title>{this.messages.headers.MESSAGES}</v-toolbar-title>
+          </v-toolbar>
+          {(() => {
+            if (this.showMessages) {
+              if (this.data.messages.length === 0) {
+                return <v-card-text>{this.messages.text.NO_MESSAGES}</v-card-text>;
+              }
+            }
+            return <div />;
+          })()}
+        </v-card>
       </v-app>
     );
   }

@@ -7,6 +7,7 @@ import fastifyHelmet from 'fastify-helmet';
 import fastifyMultipart from 'fastify-multipart';
 import fastifyRateLimit from 'fastify-rate-limit';
 import fastifySensible from 'fastify-sensible';
+import fastifySocketIO from 'fastify-socket.io';
 import fastifyStatic from 'fastify-static';
 import fastifyTokenize from 'fastify-tokenize';
 import helmet from 'helmet';
@@ -74,6 +75,11 @@ export default function createApp(authKey: string): FastifyInstance {
 
   // Configure fastify-sensible
   app.register(fastifySensible);
+
+  // Configure fastify-socket.io
+  app.register(fastifySocketIO, {
+    path: '/socket',
+  });
 
   // Configure fastify-static
   app.register(fastifyStatic, {
