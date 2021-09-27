@@ -36,7 +36,7 @@ export default function createApp(authKey: string): FastifyInstance {
 
   // Configure fastify-cors
   app.register(fastifyCors, {
-    origin: (origin, cb) => {
+    origin: (_origin, cb) => {
       // TODO: make secure
       cb(null, true);
       /*
