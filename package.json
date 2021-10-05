@@ -80,7 +80,7 @@
     "fastify-rate-limit": "^5.5.0",
     "fastify-sensible": "^3.1.1",
     "fastify-socket.io": "^2.0.1",
-    "fastify-static": "^4.0.1",
+    "fastify-static": "^4.2.4",
     "fastify-tokenize": "^1.3.1",
     "fela": "^11.6.1",
     "fela-dom": "^11.6.1",
