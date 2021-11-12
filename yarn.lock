@@ -1817,10 +1817,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@cyyynthia/tokenize@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@cyyynthia/tokenize/-/tokenize-1.1.2.tgz#6a4be96f74505ac2d2720c984e9bd48ca56fe454"
-  integrity sha512-yCsppfAIkyy+eYjfTwabFqZbJaN5AgFs6r7LMeSfB5v0Omk3sXQPEJdTre+lpEqTcU+YhFq2/iZGYDc+jDx41g==
+"@cyyynthia/tokenize@^1.1.2", "@cyyynthia/tokenize@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@cyyynthia/tokenize/-/tokenize-1.1.3.tgz#790022705b860f0a19c02f274e2f095d3703c100"
+  integrity sha512-sg/0tuXC2oF51vwjzAxhf7Hxb9pEOH9I/ACGb2ZUWaSCdQqK+T70Ss4xlg0KIy2pR+N43IP/B+2Uq2UpGJbJ6w==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.3"
