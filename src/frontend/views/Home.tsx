@@ -1,5 +1,6 @@
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
+import Styled from 'vue-styled-component';
 import { CreateEdgeResponse } from '../../types/schemas/createEdge/Response';
 import { GetPostResponse } from '../../types/schemas/getPost/Response';
 import Feed from '../classes/Feed';
@@ -8,9 +9,8 @@ import CreatePostDialog from '../components/CreatePostDialog';
 import FeedComponent from '../components/Feed';
 import store from '../store';
 import fab from '../styles/fab';
-import makeStyles from '../styles/makeStyles';
 
-const styles = makeStyles({
+const styles = Styled.makeStyles({
   ...fab,
 });
 

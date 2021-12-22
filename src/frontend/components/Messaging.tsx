@@ -1,9 +1,8 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import Styled from '../classes/Styled';
-import makeStyles from '../styles/makeStyles';
+import Styled from 'vue-styled-component';
 
-const styles = makeStyles({});
+const styles = Styled.makeStyles({});
 
 @Component
 /**

@@ -85,7 +85,7 @@ export default class ApiProvider implements EndpointProvider {
         },
       });
     } catch (err) {
-      this.app.log.error(err.message);
+      this.app.log.error((err as Error).message);
       throw this.app.httpErrors.notFound();
     }
   }

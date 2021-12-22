@@ -1,6 +1,7 @@
 import { Upload } from 'upload';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
+import Styled from 'vue-styled-component';
 import * as tsx from 'vue-tsx-support';
 import { CreatePostResponse } from '../../types/schemas/createPost/Response';
 import apiPath from '../../util/apiPath';
@@ -9,9 +10,8 @@ import APIError from '../classes/APIError';
 import ViewComponent from '../classes/ViewComponent';
 import categories from '../data/categories.json';
 import store from '../store';
-import makeStyles from '../styles/makeStyles';
 
-const styles = makeStyles({});
+const styles = Styled.makeStyles({});
 
 type Events = {
   onFinished: void;

@@ -1,13 +1,13 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
+import Styled from 'vue-styled-component';
 import IMessage from '../types/Message';
 import APIError from './classes/APIError';
 import ViewComponent from './classes/ViewComponent';
 import NavLink from './components/NavLink';
 import store from './store';
-import makeStyles from './styles/makeStyles';
 
-const styles = makeStyles({
+const styles = Styled.makeStyles({
   messages: {
     bottom: 0,
     display: 'none',
@@ -54,7 +54,6 @@ export default class App extends ViewComponent<typeof styles> {
       },
       () => {
         this.data.messages = messages;
-        console.log(messages);
       },
     );
   }

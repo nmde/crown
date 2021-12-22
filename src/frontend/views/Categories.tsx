@@ -1,11 +1,11 @@
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
+import Styled from 'vue-styled-component';
 import categoryKey from '../../util/categoryKey';
 import ViewComponent from '../classes/ViewComponent';
 import categories from '../data/categories.json';
-import makeStyles from '../styles/makeStyles';
 
-const styles = makeStyles({});
+const styles = Styled.makeStyles({});
 
 @Component
 /**

@@ -1,13 +1,12 @@
 import { VNode } from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
+import Styled from 'vue-styled-component';
 import * as tsx from 'vue-tsx-support';
 import IPost from '../../types/Post';
 import Feed from '../classes/Feed';
-import Styled from '../classes/Styled';
-import makeStyles from '../styles/makeStyles';
 import Post from './Post';
 
-const styles = makeStyles({});
+const styles = Styled.makeStyles({});
 
 export type Props = {
   feed: Feed;

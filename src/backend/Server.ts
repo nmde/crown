@@ -75,7 +75,6 @@ export default class Server extends ApiProvider {
       return this.database;
     } catch (err) {
       const message = 'Could not establish database connection';
-      console.error(err);
       this.app.log.error(message);
       throw new ServerError(message);
     }
@@ -153,7 +152,7 @@ export default class Server extends ApiProvider {
       this.app.blipp();
       return this.app;
     } catch (err) {
-      throw new ServerError(err);
+      throw new ServerError(err as string);
     }
   }
 
