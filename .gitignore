@@ -560,3 +560,6 @@ storybook-static
 
 # Test media dir
 tests/media
+
+.yarn
+.editorconfig
