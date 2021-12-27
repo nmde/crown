@@ -1,11 +1,11 @@
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
-import Styled from 'vue-styled-component';
 import ViewComponent from '../classes/ViewComponent';
 import store from '../store';
 import fab from '../styles/fab';
+import makeStyles from '../styles/makeStyles';
 
-const styles = Styled.makeStyles({
+const styles = makeStyles({
   ...fab,
 });
 

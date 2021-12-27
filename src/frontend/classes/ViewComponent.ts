@@ -1,8 +1,8 @@
-import { AxiosError } from 'axios';
-import Styled, { Styles } from 'vue-styled-component';
 import store from '../store';
+import { Styles } from '../styles/makeStyles';
 import translations from '../translations';
 import APIError from './APIError';
+import Styled from './Styled';
 
 /**
  * Utility class for view component
@@ -44,9 +44,8 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
       } catch (err) {
         console.error(err);
       }
-    } catch (e) {
-      console.error(e);
-      const err = e as AxiosError;
+    } catch (err) {
+      console.error(err);
       if (errorMessages !== undefined) {
         if (err.message === 'Network Error') {
           this.$bus.emit(
@@ -68,7 +67,7 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
             new APIError(
               this.messages.headers.HOME_ERROR,
               this.messages.errors.GENERIC,
-              err.response?.status || 0,
+              err.response.status,
             ),
           );
         }

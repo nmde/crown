@@ -1,14 +1,14 @@
 import { VNode } from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
-import Styled from 'vue-styled-component';
 import IComment from '../../types/Comment';
 import IPost from '../../types/Post';
 import IUser from '../../types/User';
 import ViewComponent from '../classes/ViewComponent';
 import Post from '../components/Post';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 
-const styles = Styled.makeStyles({});
+const styles = makeStyles({});
 
 @Component
 /**

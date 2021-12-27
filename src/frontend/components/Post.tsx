@@ -1,15 +1,16 @@
 /* eslint-disable class-methods-use-this */
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import Styled from 'vue-styled-component';
 import * as tsx from 'vue-tsx-support';
 import IEdge from '../../types/Edge';
 import IPost from '../../types/Post';
 import IUser from '../../types/User';
 import formatDate from '../../util/formatDate';
+import Styled from '../classes/Styled';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 
-const styles = Styled.makeStyles({
+const styles = makeStyles({
   card: {
     padding: '10px',
   },

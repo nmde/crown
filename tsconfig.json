@@ -31,7 +31,6 @@
   },
   "include": [
     "node_modules/vue-tsx-support/enable-check.d.ts",
-    "node_modules/vue-styled-component/vue-styled-component.d.ts",
     "src",
     "config",
     "./*.js",

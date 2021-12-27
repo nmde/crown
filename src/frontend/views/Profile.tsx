@@ -1,7 +1,6 @@
 import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import Styled from 'vue-styled-component';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
 import IUser from '../../types/User';
@@ -9,13 +8,14 @@ import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
 import FeedComponent from '../components/Feed';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 
 // Prop types
 export type Props = {
   tParams: Record<string, string>;
 };
 
-const styles = Styled.makeStyles({
+const styles = makeStyles({
   AvatarContainer: {
     textAlign: 'center',
     zIndex: 100,

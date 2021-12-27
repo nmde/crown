@@ -1,12 +1,12 @@
 import PasswordValidator from 'password-validator';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import Styled from 'vue-styled-component';
 import ViewComponent from '../classes/ViewComponent';
 import TextBtn from '../components/TextBtn';
 import store from '../store';
+import makeStyles from '../styles/makeStyles';
 
-const styles = Styled.makeStyles({});
+const styles = makeStyles({});
 
 export type Props = {};
 

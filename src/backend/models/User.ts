@@ -26,7 +26,7 @@ export default class User extends Model<ExtendedUser> implements ExtendedUser {
     primaryKey: true,
     type: DataType.UUID,
   })
-  declare public id: string;
+  public id!: string;
 
   @Column(DataType.INTEGER)
   public lastTokenReset!: number;

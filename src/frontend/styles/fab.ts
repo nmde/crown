@@ -1,6 +1,6 @@
-import Styled from 'vue-styled-component';
+import makeStyles from './makeStyles';
 
-export default Styled.makeStyles({
+export default makeStyles({
   fab: {
     height: '56px',
     position: 'absolute',

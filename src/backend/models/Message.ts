@@ -13,7 +13,7 @@ export default class Message extends Model<IMessage> implements IMessage {
     primaryKey: true,
     type: DataType.UUID,
   })
-  declare public id: string;
+  public id!: string;
 
   @Column(DataType.TEXT)
   public content!: string;
