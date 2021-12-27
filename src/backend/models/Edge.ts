@@ -13,7 +13,7 @@ export default class Edge extends Model<IEdge> implements IEdge {
     primaryKey: true,
     type: DataType.UUID,
   })
-  public id!: string;
+  declare public id: string;
 
   @Column(DataType.STRING)
   public source!: string;

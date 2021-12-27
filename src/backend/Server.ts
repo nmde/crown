@@ -153,7 +153,7 @@ export default class Server extends ApiProvider {
       this.app.blipp();
       return this.app;
     } catch (err) {
-      throw new ServerError(err);
+      throw new ServerError((err as Error).message);
     }
   }
 

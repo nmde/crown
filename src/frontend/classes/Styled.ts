@@ -18,11 +18,11 @@ export default class Styled<T extends Styles<string>> extends Vue {
    * @constructs
    * @param {Styles} css The custom component styles
    */
-  public constructor(css: Record<keyof T, CSS.Properties>) {
+  public constructor(css: T) {
     super();
     // Create style rules
     Object.keys(css).forEach((key) => {
-      this.classes[key] = renderer.renderRule((props) => props, css[key]);
+      this.classes[key] = renderer.renderRule((props) => props as T, css[key]);
     });
     // Render to DOM
     render(renderer);

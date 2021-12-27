@@ -13,7 +13,7 @@ export default class Comment extends Model<IComment> implements IComment {
     primaryKey: true,
     type: DataType.UUID,
   })
-  public id!: string;
+  declare public id: string;
 
   @Column(DataType.TEXT)
   public text!: string;

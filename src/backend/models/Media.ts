@@ -13,7 +13,7 @@ export default class Media extends Model<IMedia> implements IMedia {
     primaryKey: true,
     type: DataType.UUID,
   })
-  public id!: string;
+  declare public id: string;
 
   @Column(DataType.TEXT)
   public data!: string;
