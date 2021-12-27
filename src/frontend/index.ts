@@ -1,14 +1,12 @@
+/**
+ * @file Frontend entry point.
+ */
 import Vue from 'vue';
-import VueAxe from 'vue-axe';
 import VueRouter from 'vue-router';
 import './bootstrap';
 import App from './App';
 import routes from './routes';
 import vuetify from './vuetify';
-
-// Install & configure libraries
-Vue.use(VueAxe);
-Vue.use(VueRouter);
 
 new Vue({
   render: (h) => h(App),

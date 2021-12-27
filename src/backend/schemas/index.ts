@@ -1,3 +1,6 @@
+/**
+ * @file API schemas.
+ */
 import AuthenticateQs from './authenticate/Query.json';
 import BoostQs from './boost/Query.json';
 import CreateAccQs from './createAccount/Query.json';
@@ -6,6 +9,8 @@ import CreateCommentQs from './createComment/Query.json';
 import CreateCommentRes from './createComment/Response.json';
 import CreateEdgeQs from './createEdge/Query.json';
 import CreateEdgeRes from './createEdge/Response.json';
+import CreateMessageQs from './createMessage/Query.json';
+import CreateMessageRes from './createMessage/Response.json';
 import CreatePostQs from './createPost/Query.json';
 import CreatePostRes from './createPost/Response.json';
 import DeleteEdgeQs from './deleteEdge/Query.json';
@@ -17,14 +22,15 @@ import GetCommentsRes from './getComments/Response.json';
 import GetEdgesQs from './getEdges/Query.json';
 import GetFeedQs from './getFeed/Query.json';
 import GetMediaQs from './getMedia/Query.json';
+import GetMessageQs from './getMessage/Query.json';
+import GetMessageRes from './getMessage/Response.json';
 import GetPostQs from './getPost/Query.json';
 import GetPostRes from './getPost/Response.json';
 import GetUserQs from './getUser/Query.json';
 import GetUserRes from './getUser/Response.json';
 import GetUserByIdQs from './getUserById/Query.json';
 import MessagesQs from './messages/Query.json';
-import MessagesRes from './messages/Response.json'
-;import SignInQs from './signIn/Query.json';
+import SignInQs from './signIn/Query.json';
 import SignInRes from './signIn/Response.json';
 import UpdateUserQs from './updateUser/Query.json';
 
@@ -48,6 +54,10 @@ export default {
   createEdge: {
     query: CreateEdgeQs,
     response: CreateEdgeRes,
+  },
+  createMessage: {
+    query: CreateMessageQs,
+    response: CreateMessageRes,
   },
   createPost: {
     query: CreatePostQs,
@@ -92,6 +102,10 @@ export default {
   getMedia: {
     query: GetMediaQs,
   },
+  getMessage: {
+    query: GetMessageQs,
+    response: GetMessageRes,
+  },
   getPost: {
     query: GetPostQs,
     response: GetPostRes,
@@ -106,7 +120,15 @@ export default {
   },
   messages: {
     query: MessagesQs,
-    response: MessagesRes,
+    response: {
+      properties: {
+        messages: {
+          items: GetMessageRes,
+          type: 'array',
+        },
+      },
+      type: 'object',
+    },
   },
   signIn: {
     query: SignInQs,

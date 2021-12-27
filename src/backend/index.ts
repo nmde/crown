@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
+/**
+ * @file Backend entry point.
+ */
 import dotenv from 'dotenv';
-import path from 'path';
 import Server from './Server';
 
 dotenv.config();
@@ -9,7 +11,7 @@ const { env } = process;
 if (env.authKey === undefined) {
   throw new Error('No authKey found');
 } else {
-  const server = new Server(env.authKey, path.join(__dirname, 'media'));
+  const server = new Server(env.authKey);
   // TODO: change to production database
   server
     .connect(

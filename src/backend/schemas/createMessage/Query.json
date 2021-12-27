@@ -1,14 +1,17 @@
 {
-  "title": "messages-Query",
+  "title": "createMessage-Query",
   "type": "object",
   "properties": {
     "token": {
       "type": "string"
     },
-    "to": {
+    "content": {
+      "type": "string"
+    },
+    "recipient": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["token", "to"]
+  "required": ["token", "content", "recipient"]
 }

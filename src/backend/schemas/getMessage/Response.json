@@ -1,0 +1,23 @@
+{
+  "title": "getMessage-Response",
+  "type": "object",
+  "properties": {
+    "time": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "sender": {
+      "type": "string"
+    },
+    "recipient": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["time", "content", "sender", "recipient"]
+}

@@ -1,3 +1,6 @@
+/**
+ * @file Type definitions for API endpoints.
+ */
 import { AuthenticateQuery } from './schemas/authenticate/Query';
 import { BoostQuery } from './schemas/boost/Query';
 import { CreateAccountQuery } from './schemas/createAccount/Query';
@@ -6,6 +9,8 @@ import { CreateCommentQuery } from './schemas/createComment/Query';
 import { CreateCommentResponse } from './schemas/createComment/Response';
 import { CreateEdgeQuery } from './schemas/createEdge/Query';
 import { CreateEdgeResponse } from './schemas/createEdge/Response';
+import { CreateMessageQuery } from './schemas/createMessage/Query';
+import { CreateMessageResponse } from './schemas/createMessage/Response';
 import { CreatePostQuery } from './schemas/createPost/Query';
 import { CreatePostResponse } from './schemas/createPost/Response';
 import { DeleteEdgeQuery } from './schemas/deleteEdge/Query';
@@ -17,13 +22,14 @@ import { GetCommentsResponse } from './schemas/getComments/Response';
 import { GetEdgesQuery } from './schemas/getEdges/Query';
 import { GetFeedQuery } from './schemas/getFeed/Query';
 import { GetMediaQuery } from './schemas/getMedia/Query';
+import { GetMessageQuery } from './schemas/getMessage/Query';
+import { GetMessageResponse } from './schemas/getMessage/Response';
 import { GetPostQuery } from './schemas/getPost/Query';
 import { GetPostResponse } from './schemas/getPost/Response';
 import { GetUserQuery } from './schemas/getUser/Query';
 import { GetUserResponse } from './schemas/getUser/Response';
 import { GetUserByIdQuery } from './schemas/getUserById/Query';
 import { MessagesQuery } from './schemas/messages/Query';
-import { MessagesResponse } from './schemas/messages/Response';
 import { SignInQuery } from './schemas/signIn/Query';
 import { SignInResponse } from './schemas/signIn/Response';
 import { UpdateUserQuery } from './schemas/updateUser/Query';
@@ -48,6 +54,10 @@ export type Endpoints = {
   createEdge: {
     query: CreateEdgeQuery;
     response: CreateEdgeResponse;
+  };
+  createMessage: {
+    query: CreateMessageQuery;
+    response: CreateMessageResponse;
   };
   createPost: {
     query: CreatePostQuery;
@@ -77,6 +87,10 @@ export type Endpoints = {
     query: GetMediaQuery;
     response: string;
   };
+  getMessage: {
+    query: GetMessageQuery;
+    response: GetMessageResponse;
+  };
   getPost: {
     query: GetPostQuery;
     response: GetPostResponse;
@@ -91,7 +105,7 @@ export type Endpoints = {
   };
   messages: {
     query: MessagesQuery;
-    response: MessagesResponse;
+    response: GetMessageResponse[];
   };
   signIn: {
     query: SignInQuery;

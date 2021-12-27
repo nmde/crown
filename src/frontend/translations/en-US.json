@@ -72,6 +72,7 @@
         "FOLLOWERS": "Followers",
         "FOLLOWING": "Following",
         "PASSWORD": "Password",
+        "SEND_MESSAGE": "Send a message...",
         "SUBMIT": "Submit",
         "USERNAME": "Username"
     },
@@ -88,6 +89,6 @@
     "text": {
         "CREATE_ACCOUNT": "Create an account",
         "EXISTING_ACCOUNT": "Sign in to existing account",
-        "NO_MESSAGES": "You don't have any messages!"
+        "NO_MESSAGES": "No messages yet. Start the conversation!"
     }
 }

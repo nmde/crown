@@ -1,10 +1,13 @@
+/**
+ * @file API endpoints.
+ */
 import Tokenize from '@cyyynthia/tokenize';
 import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
 import { WhereOptions } from 'sequelize';
-import IEdge from 'types/Edge';
 import IComment from '../types/Comment';
+import IEdge from '../types/Edge';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
@@ -19,6 +22,8 @@ import { CreateCommentQuery } from '../types/schemas/createComment/Query';
 import { CreateCommentResponse } from '../types/schemas/createComment/Response';
 import { CreateEdgeQuery } from '../types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from '../types/schemas/createEdge/Response';
+import { CreateMessageQuery } from '../types/schemas/createMessage/Query';
+import { CreateMessageResponse } from '../types/schemas/createMessage/Response';
 import { CreatePostQuery } from '../types/schemas/createPost/Query';
 import { CreatePostResponse } from '../types/schemas/createPost/Response';
 import { DeleteEdgeQuery } from '../types/schemas/deleteEdge/Query';
@@ -30,6 +35,8 @@ import { GetCommentsResponse } from '../types/schemas/getComments/Response';
 import { GetEdgesQuery } from '../types/schemas/getEdges/Query';
 import { GetFeedQuery } from '../types/schemas/getFeed/Query';
 import { GetMediaQuery } from '../types/schemas/getMedia/Query';
+import { GetMessageQuery } from '../types/schemas/getMessage/Query';
+import { GetMessageResponse } from '../types/schemas/getMessage/Response';
 import { GetPostQuery } from '../types/schemas/getPost/Query';
 import { GetPostResponse } from '../types/schemas/getPost/Response';
 import { GetUserQuery } from '../types/schemas/getUser/Query';
@@ -48,33 +55,35 @@ import User from './models/User';
 type Query<E extends Endpoint> = Endpoints[E]['query'];
 
 /**
- * Provides API endpoints to the Server class
+ * @class ApiProvider
+ * @classdesc Provides API endpoints to the Server class.
  */
 export default class ApiProvider implements EndpointProvider {
   /**
-   * The Fastify instance
+   * The Fastify instance.
    */
   protected app!: FastifyInstance;
 
   /**
-   * Tokenize token generator
+   * Tokenize token generator.
    */
   private token!: Tokenize<IUser>;
 
   /**
-   * Constructs ApiProvider
+   * Constructs ApiProvider.
    *
-   * @param {string} authKey Key for generating tokens
+   * @param {string} authKey Key for generating tokens.
    */
   public constructor(authKey: string) {
     this.token = new Tokenize<IUser>(authKey);
   }
 
   /**
-   * Helper for automatically getting only visible posts
+   * Helper for automatically getting only visible posts.
    *
-   * @param {WhereOptions} where where query
-   * @returns {Post[]} the results
+   * @param {WhereOptions} where Query.
+   * @returns {Post[]} Results.
+   * @throws {HttpError} 400 if no posts matching the query were found.
    */
   private async getPosts(where: WhereOptions): Promise<Post[]> {
     try {
@@ -91,11 +100,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Authenticates the user based on the provided auth token
+   * Authenticates the user based on the provided auth token.
    *
-   * @param {AuthenticateQuery} query the auth token
-   * @returns {IUser} the user associated with the token
-   * @throws {HttpError} if the token is invalid
+   * @param {AuthenticateQuery} query The auth token.
+   * @returns {IUser} The user associated with the token.
+   * @throws {HttpError} 401 if the token is invalid.
    */
   public async authenticate(query: Query<'authenticate'>): Promise<Response<'authenticate'>> {
     const user = await this.token.validate(query.token, async (id) => {
@@ -117,10 +126,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Boosts a post
+   * Boosts a post.
    *
-   * @param {BoostQuery} query the post to boost
-   * @returns {any} if the post was boosted
+   * @param {BoostQuery} query The post to boost.
+   * @returns {any} If the post was boosted.
+   * @throws {HttpError} 403 if the user is unable to boost the post.
    */
   public async boost(query: Query<'boost'>): Promise<Response<'boost'>> {
     const user = await this.authenticate({
@@ -147,11 +157,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * API endpoint for creating an account
+   * API endpoint for creating an account.
    *
-   * @param {CreateAccountQuery} query Account creation query
-   * @returns {CreateAccountResponse} The new account information
-   * @throws {HttpError} HTTP status 409 if the supplied username is already in use
+   * @param {CreateAccountQuery} query Account creation query.
+   * @returns {CreateAccountResponse} The new account information.
+   * @throws {HttpError} 409 if the supplied username is already in use.
    */
   public async createAccount(query: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check if username is already in use
@@ -181,10 +191,10 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Creates a comment
+   * Creates a comment.
    *
-   * @param {CreateCommentQuery} query The comment query
-   * @returns {CreateCommentResponse} The created comment ID
+   * @param {CreateCommentQuery} query The comment query.
+   * @returns {CreateCommentResponse} The created comment ID.
    */
   public async createComment(query: Query<'createComment'>): Promise<Response<'createComment'>> {
     const author = await this.authenticate({ token: query.token });
@@ -199,11 +209,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Creates an edge
+   * Creates an edge.
    *
-   * @param {CreateEdgeQuery} query the edge information
-   * @returns {CreateEdgeResponse} the created edge ID
-   * @throws {HttpError} if the query is malformed
+   * @param {CreateEdgeQuery} query The edge information.
+   * @returns {CreateEdgeResponse} The created edge ID.
+   * @throws {HttpError} 400 if the edge could not be created.
    */
   public async createEdge(query: Query<'createEdge'>): Promise<Response<'createEdge'>> {
     const user = await this.authenticate({ token: query.token });
@@ -221,18 +231,38 @@ export default class ApiProvider implements EndpointProvider {
         this.app.log.info(`Created edge with ID ${created.get('id')}`);
         return created.toJSON() as Required<IEdge>;
       }
-      throw this.app.httpErrors.conflict();
+      throw this.app.httpErrors.badRequest();
     }
     this.app.log.error(`Invalid edge type: ${query.type}`);
     throw this.app.httpErrors.badRequest();
   }
 
   /**
-   * Creates a post
+   * Creates a message.
    *
-   * @param {CreatePostQuery} query The post information
-   * @returns {CreatePostResponse} The created post ID
-   * @throws {HttpError} If the post could not be created
+   * @param {CreateMessageQuery} query The message information.
+   * @returns {CreateMessageResponse} The created message.
+   */
+  public async createMessage(query: Query<'createMessage'>): Promise<Response<'createMessage'>> {
+    const user = await this.authenticate({ token: query.token });
+    const message = await new models.Message({
+      content: query.content,
+      recipient: query.recipient,
+      sender: user.id as string,
+      time: new Date().toISOString(),
+    }).save();
+    this.app.log.info(`Created message with ID ${message.get('id')}`);
+    return {
+      id: message.get('id'),
+      recipient: message.get('recipient'),
+    };
+  }
+
+  /**
+   * Creates a post.
+   *
+   * @param {CreatePostQuery} query The post information.
+   * @returns {CreatePostResponse} The created post ID.
    */
   public async createPost(query: Query<'createPost'>): Promise<Response<'createPost'>> {
     // Confirm the auth token is valid
@@ -253,11 +283,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Deletes an edge
+   * Deletes an edge.
    *
-   * @param {DeleteEdgeQuery} query the edge to delete
-   * @returns {DeleteEdgeResponse} the response
-   * @throws {HttpError} if the edge could not be deleted
+   * @param {DeleteEdgeQuery} query The edge to delete.
+   * @returns {DeleteEdgeResponse} The response.
+   * @throws {HttpError} 401 if the edge could not be deleted.
    */
   public async deleteEdge(query: Query<'deleteEdge'>): Promise<Response<'deleteEdge'>> {
     const user = await this.authenticate({ token: query.token });
@@ -277,11 +307,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Deletes a post
+   * Deletes a post.
    *
-   * @param {DeletePostQuery} query the post to delete
-   * @returns {DeletePostResponse} the deleted post ID
-   * @throws {HttpError} if the post could not be deleted
+   * @param {DeletePostQuery} query The post to delete.
+   * @returns {DeletePostResponse} The deleted post ID.
+   * @throws {HttpError} 401 if the post could not be deleted.
    */
   public async deletePost(query: Query<'deletePost'>): Promise<Response<'deletePost'>> {
     const user = await this.authenticate({ token: query.token });
@@ -306,14 +336,14 @@ export default class ApiProvider implements EndpointProvider {
       };
     }
     this.app.log.error(`User ${user.id} failed to delete post ${query.id}`);
-    throw this.app.httpErrors.badRequest();
+    throw this.app.httpErrors.unauthorized();
   }
 
   /**
-   * Gets a post's comments
+   * Gets a post's comments.
    *
-   * @param {GetCommentsQuery} query The post to get comments for
-   * @returns {GetCommentsResponse} A list of comments on the post
+   * @param {GetCommentsQuery} query The post to get comments for.
+   * @returns {GetCommentsResponse} A list of comments on the post.
    */
   public async getComments(query: Query<'getComments'>): Promise<Response<'getComments'>> {
     const results = await models.Comment.findAll({
@@ -327,11 +357,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Searches for edges
+   * Searches for edges.
    *
-   * @param {GetEdgesQuery} query the search parameters
-   * @returns {CreateEdgeResponse[]} the list of edges
-   * @throws {HttpError} if the search parameters are invalid
+   * @param {GetEdgesQuery} query The search parameters.
+   * @returns {CreateEdgeResponse[]} The list of edges.
+   * @throws {HttpError} 400 if the search parameters are invalid.
    */
   public async getEdges(query: Query<'getEdges'>): Promise<Response<'getEdges'>> {
     const source = await this.authenticate({ token: query.token });
@@ -366,11 +396,10 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Gets a feed of posts matching the supplied parameters
+   * Gets a feed of posts matching the supplied parameters.
    *
-   * @param {GetFeedQuery} query Post search parameters
-   * @returns {GetPostResponse[]} The list of posts
-   * @throws {HttpError} If the search parameters are invalid
+   * @param {GetFeedQuery} query Post search parameters.
+   * @returns {GetPostResponse[]} The list of posts.
    */
   public async getFeed(query: Query<'getFeed'>): Promise<Response<'getFeed'>> {
     // TODO: pagination
@@ -387,10 +416,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Gets post media
+   * Gets post media.
    *
    * @param {GetMediaQuery} query The media ID.
    * @returns {string} The media data.
+   * @throws {HttpError} 404 if the request media was not found.
    */
   public async getMedia(query: Query<'getMedia'>): Promise<Response<'getMedia'>> {
     // @TODO: check visibility permissions?
@@ -408,11 +438,32 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Gets detailed information about an individual post
+   * Gets a message.
    *
-   * @param {GetPostQuery} query The post ID
-   * @returns {GetPostResponse} The post information
-   * @throws {HttpError} If the post could not be found
+   * @param {GetMessageQuery} query The message to get.
+   * @returns {GetMessageResponse} The message.
+   * @throws {HttpError} 404 if the message could not be found.
+   */
+  public async getMessage(query: Query<'getMessage'>): Promise<Response<'getMessage'>> {
+    // TODO: check if the user should be able to see this message
+    // const user = await this.authenticate({ token: query.token });
+    const result = await models.Message.findOne({
+      where: {
+        id: query.id,
+      },
+    });
+    if (result !== null) {
+      return result.toJSON();
+    }
+    throw this.app.httpErrors.notFound();
+  }
+
+  /**
+   * Gets detailed information about an individual post.
+   *
+   * @param {GetPostQuery} query The post ID.
+   * @returns {GetPostResponse} The post information.
+   * @throws {HttpError} 404 if the post could not be found.
    */
   public async getPost(query: Query<'getPost'>): Promise<Response<'getPost'>> {
     // TODO: check if current user has permissions to view the post
@@ -428,11 +479,11 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Gets all the required information about the specified user
+   * Gets all the required information about the specified user.
    *
-   * @param {GetUserQuery} query The user to retrieve
-   * @returns {GetUserResponse} The user information
-   * @throws {HttpError} If the user could not be found
+   * @param {GetUserQuery} query The user to retrieve.
+   * @returns {GetUserResponse} The user information.
+   * @throws {HttpError} 404 if the user could not be found.
    */
   public async getUser(query: Query<'getUser'>): Promise<Response<'getUser'>> {
     const results = await models.User.findOne({
@@ -444,14 +495,15 @@ export default class ApiProvider implements EndpointProvider {
       return results.toJSON();
     }
     this.app.log.error(`No user found with username ${query.username}`);
-    throw this.app.httpErrors.badRequest();
+    throw this.app.httpErrors.notFound();
   }
 
   /**
-   * Gets user information by user ID
+   * Gets user information by user ID.
    *
-   * @param {GetUserByIdQuery} query the query parameters
-   * @returns {GetUserResponse} the user information
+   * @param {GetUserByIdQuery} query The query parameters.
+   * @returns {GetUserResponse} The user information.
+   * @throws {HttpError} 404 if the user could not be found.
    */
   public async getUserById(query: Query<'getUserById'>): Promise<Response<'getUserById'>> {
     const results = await models.User.findOne({
@@ -463,7 +515,7 @@ export default class ApiProvider implements EndpointProvider {
       return results.toJSON();
     }
     this.app.log.error(`No user found with ID ${query.id}`);
-    throw this.app.httpErrors.badRequest();
+    throw this.app.httpErrors.notFound();
   }
 
   /**
@@ -482,17 +534,15 @@ export default class ApiProvider implements EndpointProvider {
         sender: user.id,
       },
     });
-    return {
-      messages: messages.map((message) => message.toJSON() as IMessage),
-    };
+    return messages.map((message) => message.toJSON() as IMessage);
   }
 
   /**
-   * Generates an auth token for the given username and password
+   * Generates an auth token for the given username and password.
    *
-   * @param {SignInQuery} query Sign In query
-   * @returns {SignInResponse} The auth token
-   * @throws {HttpError} If the username + password does not match a user
+   * @param {SignInQuery} query Sign In query.
+   * @returns {SignInResponse} The auth token.
+   * @throws {HttpError} 400 if the username + password does not match a user.
    */
   public async signIn(query: Query<'signIn'>): Promise<Response<'signIn'>> {
     const results = await models.User.findOne({
@@ -516,10 +566,10 @@ export default class ApiProvider implements EndpointProvider {
   }
 
   /**
-   * Updates existing user information
+   * Updates existing user information.
    *
-   * @param {UpdateUserQuery} query the new information
-   * @returns {GetUserResponse} the updated user
+   * @param {UpdateUserQuery} query The new information.
+   * @returns {GetUserResponse} The updated user.
    */
   public async updateUser(query: Query<'updateUser'>): Promise<Response<'updateUser'>> {
     const user = await this.authenticate({ token: query.token });

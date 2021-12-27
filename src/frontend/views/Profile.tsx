@@ -1,3 +1,6 @@
+/**
+ * @file Profile view.
+ */
 import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
@@ -50,21 +53,22 @@ const styles = makeStyles({
 
 @Component
 /**
- * User profile page view
+ * @class Profile
+ * @classdesc User profile page view.
  */
 export default class Profile extends ViewComponent<typeof styles> {
   /**
-   * If an action is pending
+   * If an action is pending.
    */
   private awaitingAction = false;
 
   /**
-   * The user's background image
+   * The user's background image.
    */
   private background = Users[0].profileBackground;
 
   /**
-   * The user data
+   * The user data.
    */
   private data: {
     displayName?: string;
@@ -78,22 +82,24 @@ export default class Profile extends ViewComponent<typeof styles> {
   };
 
   /**
-   * The user's profile picture
+   * The user's profile picture.
    */
   private profilePicture = Users[0].profilePicture;
 
   /**
-   * Testing route param overrides
+   * Testing route param overrides.
    */
   @Prop()
   public tParams?: Record<string, string>;
 
   /**
-   * Pass prop type information to TSX
+   * Pass prop type information to TSX.
    */
   public _tsx!: tsx.DeclareProps<Props>;
 
   /**
+   * Constructs Profile.
+   *
    * @constructs
    */
   public constructor() {
@@ -101,7 +107,7 @@ export default class Profile extends ViewComponent<typeof styles> {
   }
 
   /**
-   * Fetches the user data from the backend
+   * Fetches the user data from the backend.
    */
   @Watch('$route', {
     deep: true,
@@ -128,7 +134,7 @@ export default class Profile extends ViewComponent<typeof styles> {
             }
           } catch (err) {
             // just ignore it
-            console.error(err);
+            // console.error(err);
           }
         }
         let feed: GetPostResponse[];
@@ -155,16 +161,16 @@ export default class Profile extends ViewComponent<typeof styles> {
   }
 
   /**
-   * Created lifecycle hook - ensures data is fetched when the component is rendered
+   * Created lifecycle hook - ensures data is fetched when the component is rendered.
    */
   public async created(): Promise<void> {
     await this.fetchUser();
   }
 
   /**
-   * Renders the component
+   * Renders the component.
    *
-   * @returns {VNode} the component
+   * @returns {VNode} The component.
    */
   public render(): VNode {
     // TODO: allow users to customize their background
@@ -259,6 +265,14 @@ export default class Profile extends ViewComponent<typeof styles> {
                           </v-btn>
                         );
                       })()}
+                      <v-btn
+                        icon
+                        onClick={() => {
+                          this.$bus.emit('focusChat', this.data.id);
+                        }}
+                      >
+                        <v-icon>chat</v-icon>
+                      </v-btn>
                     </div>
                   );
                 })()}

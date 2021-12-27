@@ -1,3 +1,6 @@
+/**
+ * @file Creates the Fastify app.
+ */
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyAuth from 'fastify-auth';
 import fastifyBlipp from 'fastify-blipp';
@@ -15,10 +18,10 @@ import { Mutable } from 'type-fest';
 import models from './models';
 
 /**
- * Creates & configures the Fastify instance
+ * Creates & configures the Fastify instance.
  *
- * @param {string} authKey The main encryption key
- * @returns {FastifyInstance} The Fastify instance
+ * @param {string} authKey The main encryption key.
+ * @returns {FastifyInstance} The Fastify instance.
  */
 export default function createApp(authKey: string): FastifyInstance {
   const app = fastify({
@@ -78,9 +81,7 @@ export default function createApp(authKey: string): FastifyInstance {
   app.register(fastifySensible);
 
   // Configure fastify-socket.io
-  app.register(fastifySocketIO, {
-    path: '/socket',
-  });
+  app.register(fastifySocketIO);
 
   // Configure fastify-static
   app.register(fastifyStatic, {

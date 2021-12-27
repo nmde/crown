@@ -1,14 +1,15 @@
+/**
+ * @file Installs libraries.
+ */
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
+import VueAxe from 'vue-axe';
 import VueBus from 'vue-bus';
-import VueSocketIO from 'vue-socket.io';
+import VueRouter from 'vue-router';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 
 Vue.use(Vuetify);
 Vue.use(VueBus);
-Vue.use(
-  new VueSocketIO({
-    connection: '/socket',
-  }),
-);
+Vue.use(VueAxe);
+Vue.use(VueRouter);

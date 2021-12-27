@@ -1,9 +1,13 @@
+/**
+ * @file Server class.
+ */
 import concat from 'concat-stream';
 import { FastifyInstance } from 'fastify';
 import MimeMatcher from 'mime-matcher';
 import { Sequelize } from 'sequelize-typescript';
 import { keys } from 'ts-transformer-keys';
 import { Endpoints } from '../types/Endpoints';
+import { CreateMessageQuery } from '../types/schemas/createMessage/Query';
 import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
 import ServerError from './ServerError';
@@ -12,46 +16,40 @@ import models from './models';
 import schemas from './schemas';
 
 /**
- * The main backend server
+ * @class Server
+ * @classdesc The main backend server.
  */
 export default class Server extends ApiProvider {
   /**
-   * The Sequelize database connection
+   * The Sequelize database connection.
    */
   private database!: Sequelize;
 
   /**
-   * If the server is running in development mode
+   * If the server is running in development mode.
    */
   public devMode = process.env.NODE_ENV === 'development';
 
   /**
-   * The path to the directory where media is stored
-   */
-  private mediaDir: string;
-
-  /**
-   * Constructs Server
+   * Constructs Server.
    *
-   * @param {string} authKey The main encryption key
-   * @param {string} mediaDir The path to the directory where media is stored
+   * @param {string} authKey The main encryption key.
    */
-  public constructor(authKey: string, mediaDir: string) {
+  public constructor(authKey: string) {
     super(authKey);
     this.app = app(authKey);
-    this.mediaDir = mediaDir;
   }
 
   /**
-   * Establishes a connection to the Postgres database
+   * Establishes a connection to the Postgres database.
    *
-   * @param {string} user The Postgres user to authenticate as
-   * @param {string} password The Postgres user password
-   * @param {string} host The Postgres server host
-   * @param {string} port The Postgres server port
-   * @param {string} databaseName The name of the database on the specified Postgres server
-   * @returns {Sequelize} The Sequelize database connection
-   * @throws {ServerError} If the database connection could not be established
+   * @param {string} user The Postgres user to authenticate as.
+   * @param {string} password The Postgres user password.
+   * @param {string} host The Postgres server host.
+   * @param {string} port The Postgres server port.
+   * @param {string} databaseName The name of the database on the specified Postgres server.
+   * @returns {Sequelize} The Sequelize database connection.
+   * @throws {ServerError} If the database connection could not be established.
    */
   public async connect(
     user: string,
@@ -75,18 +73,17 @@ export default class Server extends ApiProvider {
       return this.database;
     } catch (err) {
       const message = 'Could not establish database connection';
-      console.error(err);
       this.app.log.error(message);
       throw new ServerError(message);
     }
   }
 
   /**
-   * Starts the HTTP server
+   * Starts the HTTP server.
    *
-   * @param {string} port The port to run the HTTP server on
-   * @returns {FastifyInstance} The Fastify instance
-   * @throws {ServerError} If the server failed to start
+   * @param {string} port The port to run the HTTP server on.
+   * @returns {FastifyInstance} The Fastify instance.
+   * @throws {ServerError} If the server failed to start.
    */
   public async start(port: string): Promise<FastifyInstance> {
     // Media uploading
@@ -130,16 +127,35 @@ export default class Server extends ApiProvider {
     type QueryKeys = {
       [key in keyof Endpoints]: keyof Endpoints[key]['query'];
     };
-    keys<Endpoints>().forEach((endpoint) => {
-      this.app.post<{
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Body: Record<QueryKeys[typeof endpoint], any>;
-      }>(`/${apiPath(endpoint)}`, {
-        handler: async (request) => this[endpoint](request.body),
-        schema: {
-          body: schemas[endpoint].query,
-        },
+    // Endpoints to not automatically handle
+    const override = ['createMessage'];
+    keys<Endpoints>()
+      .filter((endpoint) => override.indexOf(endpoint) < 0)
+      .forEach((endpoint) => {
+        this.app.post<{
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          Body: Record<QueryKeys[typeof endpoint], any>;
+        }>(`/${apiPath(endpoint)}`, {
+          handler: async (request) => this[endpoint](request.body),
+          schema: {
+            body: schemas[endpoint].query,
+          },
+        });
       });
+
+    // createMessage
+    this.app.post<{
+      Body: CreateMessageQuery;
+    }>(`/${apiPath('createMessage')}`, {
+      handler: async (request) => {
+        const message = await this.createMessage(request.body);
+        // TODO: use rooms or something
+        this.app.io.emit('message', message);
+        return message;
+      },
+      schema: {
+        body: schemas.createMessage.query,
+      },
     });
 
     // HTML landing page
@@ -158,7 +174,7 @@ export default class Server extends ApiProvider {
   }
 
   /**
-   * Stops the HTTP server
+   * Stops the HTTP server.
    *
    * @returns {undefined}
    */

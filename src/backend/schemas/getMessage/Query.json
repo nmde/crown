@@ -1,14 +1,14 @@
 {
-  "title": "messages-Query",
+  "title": "getMessage-Query",
   "type": "object",
   "properties": {
     "token": {
       "type": "string"
     },
-    "to": {
+    "id": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["token", "to"]
+  "required": ["token", "id"]
 }

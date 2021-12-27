@@ -1,4 +1,7 @@
 /* eslint-disable class-methods-use-this */
+/**
+ * @file Shared data store.
+ */
 import axios from 'axios';
 import JSCookie from 'js-cookie';
 import { action, makeObservable, observable } from 'mobx';
@@ -9,6 +12,8 @@ import { CreateCommentQuery } from 'types/schemas/createComment/Query';
 import { CreateCommentResponse } from 'types/schemas/createComment/Response';
 import { CreateEdgeQuery } from 'types/schemas/createEdge/Query';
 import { CreateEdgeResponse } from 'types/schemas/createEdge/Response';
+import { CreateMessageQuery } from 'types/schemas/createMessage/Query';
+import { CreateMessageResponse } from 'types/schemas/createMessage/Response';
 import { CreatePostQuery } from 'types/schemas/createPost/Query';
 import { CreatePostResponse } from 'types/schemas/createPost/Response';
 import { DeleteEdgeQuery } from 'types/schemas/deleteEdge/Query';
@@ -20,6 +25,8 @@ import { GetCommentsResponse } from 'types/schemas/getComments/Response';
 import { GetEdgesQuery } from 'types/schemas/getEdges/Query';
 import { GetFeedQuery } from 'types/schemas/getFeed/Query';
 import { GetMediaQuery } from 'types/schemas/getMedia/Query';
+import { GetMessageQuery } from 'types/schemas/getMessage/Query';
+import { GetMessageResponse } from 'types/schemas/getMessage/Response';
 import { GetPostQuery } from 'types/schemas/getPost/Query';
 import { GetPostResponse } from 'types/schemas/getPost/Response';
 import { GetUserQuery } from 'types/schemas/getUser/Query';
@@ -37,10 +44,10 @@ import IUser from '../types/User';
 import apiPath from '../util/apiPath';
 
 /**
- * Gets the full path to an API endpoint
+ * Gets the full path to an API endpoint.
  *
- * @param {string} endpoint the name of the endpoint
- * @returns {string} the full URL to the endpoint
+ * @param {string} endpoint The name of the endpoint.
+ * @returns {string} The full URL to the endpoint.
  */
 function fullPath(endpoint: Endpoint) {
   return `/${apiPath(endpoint)}`;
@@ -49,30 +56,33 @@ function fullPath(endpoint: Endpoint) {
 // TODO: improve caching
 
 /**
- * The "store", which manages data shared across all pages
+ * @class Store
+ * @classdesc Manages data shared across all pages.
  */
 class Store implements EndpointProvider {
   /**
-   * The current user
+   * The current user.
    */
   @observable public currentUser?: IUser;
 
   /**
-   * Cached posts
+   * Cached posts.
    */
   @observable public posts: Record<string, IPost> = {};
 
   /**
-   * Information about users, accessible by the user's uuid
+   * Information about users, accessible by the user's uuid.
    */
   @observable public users: Record<string, IUser> = {};
 
   /**
-   * The user's auth token
+   * The user's auth token.
    */
   @observable public token = JSCookie.get('token');
 
   /**
+   * Constructs Store.
+   *
    * @constructs
    */
   public constructor() {
@@ -80,11 +90,11 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Shortcut for an API call using a token
+   * Shortcut for an API call using a token.
    *
-   * @param {Endpoint} endpoint the name of the endpoint
-   * @param {Query} query the API query
-   * @returns {Response} the API response
+   * @param {Endpoint} endpoint The name of the endpoint.
+   * @param {Query} query The API query.
+   * @returns {Response} The API response.
    */
   private async callWithToken<E extends Endpoint>(
     endpoint: Endpoint,
@@ -99,9 +109,9 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Authenticates the user token
+   * Authenticates the user token.
    *
-   * @returns {GetUserResponse} the user information
+   * @returns {GetUserResponse} The user information.
    */
   @action public async authenticate(): Promise<Response<'authenticate'>> {
     const res = await this.callWithToken<'authenticate'>('authenticate', {});
@@ -110,20 +120,20 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Boosts a post
+   * Boosts a post.
    *
-   * @param {BoostQuery} params the post to boost
-   * @returns {any} the api response
+   * @param {BoostQuery} params The post to boost.
+   * @returns {any} The api response.
    */
   @action public async boost(params: Query<'boost'>): Promise<Response<'boost'>> {
     return this.callWithToken<'boost'>('boost', params);
   }
 
   /**
-   * Creates an account
+   * Creates an account.
    *
-   * @param {CreateAccountQuery} params the query parameters
-   * @returns {CreateAccountResponse} the API response
+   * @param {CreateAccountQuery} params The query parameters.
+   * @returns {CreateAccountResponse} The API response.
    */
   @action public async createAccount(
     params: Query<'createAccount'>,
@@ -138,80 +148,91 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Creates a comment
+   * Creates a comment.
    *
-   * @param {CreateCommentQuery} params The comment query
-   * @returns {CreateCommentResponse} The created comment
+   * @param {CreateCommentQuery} params The comment query.
+   * @returns {CreateCommentResponse} The created comment.
    */
   @action public async createComment(params: Query<'createComment'>): Promise<Response<'createComment'>> {
     return this.callWithToken<'createComment'>('createComment', params);
   }
 
   /**
-   * Creates an edge
+   * Creates an edge.
    *
-   * @param {CreateEdgeQuery} params the request parameters
-   * @returns {CreateEdgeResponse} the API response
+   * @param {CreateEdgeQuery} params The request parameters.
+   * @returns {CreateEdgeResponse} The API response.
    */
   @action public async createEdge(params: Query<'createEdge'>): Promise<Response<'createEdge'>> {
     return this.callWithToken<'createEdge'>('createEdge', params);
   }
 
   /**
-   * Creates a post
+   * Creates a message.
+   * Shouldn't be called directly! Only call through the Socket class.
    *
-   * @param {CreatePostQuery} params the request parameters
-   * @returns {CreatePostResponse} the API response
+   * @param {CreateMessageQuery} params The request parameters.
+   * @returns {CreateMessageResponse} The API response.
+   */
+  @action public async createMessage(params: Query<'createMessage'>): Promise<Response<'createMessage'>> {
+    return this.callWithToken<'createMessage'>('createMessage', params);
+  }
+
+  /**
+   * Creates a post.
+   *
+   * @param {CreatePostQuery} params The request parameters.
+   * @returns {CreatePostResponse} The API response.
    */
   @action public async createPost(params: Query<'createPost'>): Promise<Response<'createPost'>> {
     return this.callWithToken<'createPost'>('createPost', params);
   }
 
   /**
-   * Deletes an edge
+   * Deletes an edge.
    *
-   * @param {DeleteEdgeQuery} params the edge to delete
-   * @returns {DeleteEdgeResponse} the API response
+   * @param {DeleteEdgeQuery} params The edge to delete.
+   * @returns {DeleteEdgeResponse} The API response.
    */
   @action public async deleteEdge(params: Query<'deleteEdge'>): Promise<Response<'deleteEdge'>> {
     return this.callWithToken<'deleteEdge'>('deleteEdge', params);
   }
 
   /**
-   * Deletes a post
+   * Deletes a post.
    *
-   * @param {DeletePostQuery} params the request parameters
-   * @returns {DeletePostResponse} the API response
+   * @param {DeletePostQuery} params The request parameters.
+   * @returns {DeletePostResponse} The API response.
    */
   @action public async deletePost(params: Query<'deletePost'>): Promise<Response<'deletePost'>> {
     return this.callWithToken<'deletePost'>('deletePost', params);
   }
 
   /**
-   * Gets comments on a post
+   * Gets comments on a post.
    *
-   * @param {GetCommentsQuery} params query parameters
-   * @returns {GetCommentsResponse} the comments
+   * @param {GetCommentsQuery} params Query parameters.
+   * @returns {GetCommentsResponse} The comments.
    */
   @action public async getComments(params: Query<'getComments'>): Promise<Response<'getComments'>> {
     return (await axios.post<Response<'getComments'>>(fullPath('getComments'), params)).data;
   }
 
   /**
-   * Searches for edges on the backend
+   * Searches for edges on the backend.
    *
-   * @param {GetEdgesQuery} params getEdges query parameters
-   * @returns {CreateEdgeResponse[]} the list of edges
+   * @param {GetEdgesQuery} params Query parameters.
+   * @returns {CreateEdgeResponse[]} The list of edges.
    */
   @action public async getEdges(params: Query<'getEdges'>): Promise<Response<'getEdges'>> {
     return this.callWithToken<'getEdges'>('getEdges', params);
   }
 
   /**
-   * Retrieves a feed of posts matching the specified search parameter
+   * Retrieves a feed of posts matching the specified search parameter.
    *
-   * @param {GetFeedQuery} params getFeed query parameters
-   * @returns {GetPostResponse[]} the list of posts
+   * @param {GetFeedQuery} params Query parameters.
+   * @returns {GetPostResponse[]} The list of posts.
    */
   @action public async getFeed(params: Query<'getFeed'>): Promise<Response<'getFeed'>> {
     const posts = (await axios.post<Response<'getFeed'>>(fullPath('getFeed'), params)).data;
@@ -224,9 +245,9 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Gets post media
+   * Gets post media.
    *
-   * @param {GetMediaQuery} params The media ID
+   * @param {GetMediaQuery} params The media ID.
    * @returns {string} The media data.
    */
   @action public async getMedia(params: Query<'getMedia'>): Promise<Response<'getMedia'>> {
@@ -234,10 +255,20 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Gets the full data about a single post from the database
+   * Gets a message.
    *
-   * @param {GetPostQuery} params getPost query parameters
-   * @returns {GetPostResponse} the post data
+   * @param {GetMessageQuery} params The message to get.
+   * @returns {GetMessageResponse} The message.
+   */
+  @action public async getMessage(params: Query<'getMessage'>): Promise<Response<'getMessage'>> {
+    return this.callWithToken<'getMessage'>('getMessage', params);
+  }
+
+  /**
+   * Gets the full data about a single post from the database.
+   *
+   * @param {GetPostQuery} params Query parameters.
+   * @returns {GetPostResponse} The post data.
    */
   @action public async getPost(params: Query<'getPost'>): Promise<Response<'getPost'>> {
     if (this.posts[params.id]) {
@@ -249,10 +280,10 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Retrieves information about a user from the backend & stores it in memory
+   * Retrieves information about a user.
    *
-   * @param {GetUserQuery} params getUser query parameters
-   * @returns {GetUserResponse} information about the requested user
+   * @param {GetUserQuery} params Query parameters.
+   * @returns {GetUserResponse} Information about the requested user.
    */
   @action public async getUser(params: Query<'getUser'>): Promise<Response<'getUser'>> {
     // TODO: why is this returning hashed passwords
@@ -267,10 +298,10 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Gets user information by user ID
+   * Gets user information by user ID.
    *
-   * @param {GetUserByIdQuery} params the query parameters
-   * @returns {GetUserResponse} the API response
+   * @param {GetUserByIdQuery} params The query parameters.
+   * @returns {GetUserResponse} The API response.
    */
   @action public async getUserById(params: Query<'getUserById'>): Promise<Response<'getUserById'>> {
     const response = (await axios.post<Response<'getUserById'>>(fullPath('getUserById'), params))
@@ -292,10 +323,10 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Attempts to authenticate the user with the backend
+   * Attempts to authenticate the user with the backend.
    *
-   * @param {SignInQuery} params the query parameters
-   * @returns {SignInResponse} the API response
+   * @param {SignInQuery} params The query parameters.
+   * @returns {SignInResponse} The API response.
    */
   @action public async signIn(params: Query<'signIn'>): Promise<Response<'signIn'>> {
     const res = (await axios.post<Response<'signIn'>>(fullPath('signIn'), params)).data;
@@ -309,7 +340,7 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Signs the user out
+   * Signs the user out.
    */
   @action public async signOut() {
     JSCookie.remove('token');
@@ -317,10 +348,10 @@ class Store implements EndpointProvider {
   }
 
   /**
-   * Updates user information
+   * Updates user information.
    *
-   * @param {SignInQuery} params the query parameters
-   * @returns {SignInResponse} the API response
+   * @param {SignInQuery} params The query parameters.
+   * @returns {SignInResponse} The API response.
    */
   @action public async updateUser(params: Query<'updateUser'>): Promise<Response<'updateUser'>> {
     const res = await this.callWithToken<'updateUser'>('updateUser', params);
