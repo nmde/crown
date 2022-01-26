@@ -5,7 +5,6 @@ import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
 import ViewComponent from '../classes/ViewComponent';
 import Messaging from '../components/Messaging';
-import store from '../store';
 import makeStyles from '../styles/makeStyles';
 
 const styles = makeStyles({});
@@ -21,8 +20,6 @@ export default class Messages extends ViewComponent<typeof styles> {
   public constructor() {
     super(styles);
     // TODO: loading blocked when store.currentUser isn't set yet
-    console.log(store.currentUser);
-    console.log(this.$route.query);
   }
 
   /**

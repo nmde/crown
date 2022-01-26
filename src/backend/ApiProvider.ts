@@ -5,7 +5,7 @@ import Tokenize from '@cyyynthia/tokenize';
 import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
 import { HttpError } from 'fastify-sensible/lib/httpError';
-import { WhereOptions } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 import IComment from '../types/Comment';
 import IEdge from '../types/Edge';
 import {
@@ -252,10 +252,7 @@ export default class ApiProvider implements EndpointProvider {
       time: new Date().toISOString(),
     }).save();
     this.app.log.info(`Created message with ID ${message.get('id')}`);
-    return {
-      id: message.get('id'),
-      recipient: message.get('recipient'),
-    };
+    return message.toJSON();
   }
 
   /**
@@ -532,14 +529,13 @@ export default class ApiProvider implements EndpointProvider {
     const user = await this.authenticate({
       token: query.token,
     });
-    const where: WhereOptions = {
-      sender: user.id,
-    };
-    if (query.to) {
-      where.recipient = query.to;
-    }
     const messages = await models.Message.findAll({
-      where,
+      where: {
+        [Op.or]: {
+          recipient: user.id,
+          sender: user.id,
+        },
+      },
     });
     return messages.map((message) => message.toJSON() as IMessage);
   }

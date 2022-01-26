@@ -2,13 +2,22 @@
   "title": "createMessage-Response",
   "type": "object",
   "properties": {
-    "id": {
+    "time": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "sender": {
       "type": "string"
     },
     "recipient": {
       "type": "string"
+    },
+    "id": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["id", "recipient"]
+  "required": ["time", "content", "sender", "recipient"]
 }
