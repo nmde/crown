@@ -7,7 +7,6 @@ import { Component } from 'vue-property-decorator';
 import IMessage from '../types/Message';
 import APIError from './classes/APIError';
 import ViewComponent from './classes/ViewComponent';
-import Messaging from './components/Messaging';
 import NavLink from './components/NavLink';
 import store from './store';
 import makeStyles from './styles/makeStyles';
@@ -79,6 +78,7 @@ export default class App extends ViewComponent<typeof styles> {
           <v-divider />
           <v-list nav dense>
             <NavLink href="/" icon="home" text={this.messages.headers.HOME} />
+            <NavLink href="/messages" icon="forum" text={this.messages.headers.MESSAGES} />
             <NavLink href="/explore" icon="explore" text={this.messages.headers.EXPLORE} />
             <NavLink href="/categories" icon="category" text={this.messages.headers.CATEGORIES} />
             <NavLink href="/account" icon="account_circle" text={this.messages.headers.ACCOUNT} />
@@ -125,7 +125,6 @@ export default class App extends ViewComponent<typeof styles> {
               </v-dialog>
           );
         }))()}
-        <Messaging class={this.className('messages')} />
       </v-app>
     );
   }

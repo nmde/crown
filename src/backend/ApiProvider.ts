@@ -274,7 +274,10 @@ export default class ApiProvider implements EndpointProvider {
       description: query.description,
       expires: query.expires,
       media: query.media,
-      tags: query.description.match(/#[a-zA-Z]+/g)?.map((tag) => tag.substring(1)).join(','),
+      tags: query.description
+        .match(/#[a-zA-Z]+/g)
+        ?.map((tag) => tag.substring(1))
+        .join(','),
       visible: true,
     }).save();
     this.app.log.info(`Created post with ID ${post.get('id')}`);
@@ -529,11 +532,14 @@ export default class ApiProvider implements EndpointProvider {
     const user = await this.authenticate({
       token: query.token,
     });
+    const where: WhereOptions = {
+      sender: user.id,
+    };
+    if (query.to) {
+      where.recipient = query.to;
+    }
     const messages = await models.Message.findAll({
-      where: {
-        recipient: user.id,
-        sender: user.id,
-      },
+      where,
     });
     return messages.map((message) => message.toJSON() as IMessage);
   }

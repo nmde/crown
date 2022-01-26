@@ -55,6 +55,7 @@
         "HOME_ERROR": "An error occurred",
         "JOIN": "Join Crown",
         "MESSAGES": "Messages",
+        "MESSAGES_WITH": "Messages with",
         "POST_ERROR": "Failed to post",
         "SIGNIN": "Sign In",
         "SIGNIN_ERROR": "Could not sign in",

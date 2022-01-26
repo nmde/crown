@@ -268,7 +268,12 @@ export default class Profile extends ViewComponent<typeof styles> {
                       <v-btn
                         icon
                         onClick={() => {
-                          this.$bus.emit('focusChat', this.data.id);
+                          this.$router.push({
+                            path: 'messages',
+                            query: {
+                              focus: this.data.id,
+                            },
+                          });
                         }}
                       >
                         <v-icon>chat</v-icon>

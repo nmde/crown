@@ -2,9 +2,10 @@
  * @file Messaging component.
  */
 import { VNode } from 'vue';
-import { Component } from 'vue-property-decorator';
+import { Component, Watch } from 'vue-property-decorator';
 import IMessage from '../../types/Message';
 import IUser from '../../types/User';
+import { GetMessageResponse } from '../../types/schemas/getMessage/Response';
 import formatDate from '../../util/formatDate';
 import ViewComponent from '../classes/ViewComponent';
 import store from '../store';
@@ -15,8 +16,7 @@ const styles = makeStyles({
   isSender: {},
   message: {},
   messaging: {
-    marginRight: '8px',
-    width: '50%',
+    margin: '8px',
   },
 });
 
@@ -26,12 +26,10 @@ const styles = makeStyles({
  * @classdesc Instant messaging pop up box.
  */
 export default class Messaging extends ViewComponent<typeof styles> {
-  private showMessages = false;
-
   private focusedChat: string | null = null;
 
   private data: {
-    messages: Record<string, IMessage[]>;
+    messages: Record<string, IMessage[]>,
     users: Record<string, IUser>;
   } = {
     messages: {},
@@ -55,35 +53,45 @@ export default class Messaging extends ViewComponent<typeof styles> {
    * Created lifecycle hook.
    */
   public async created(): Promise<void> {
-    // Opens the chat window to a specific user
-    this.$bus.on('focusChat', async (target: string) => {
-      this.showMessages = true;
-      let messages: IMessage[] = [];
-      let user: IUser;
-      await this.apiCall(
-        async () => {
-          user = await store.getUserById({
-            id: target,
-          });
-        },
-        async () => {
-          this.data.users[target] = user;
-          await this.apiCall(
-            async () => {
-              messages = (
-                await store.messages({
-                  to: target,
-                })
-              ) as IMessage[];
-            },
-            () => {
-              this.data.messages[target] = messages;
-              this.focusedChat = target;
-            },
-          );
-        },
-      );
-    });
+    await this.fetchMessages();
+  }
+
+  /**
+   * Fetches the user's messages from the backend.
+   */
+  private async fetchMessages(): Promise<void> {
+    let messages: GetMessageResponse[] = [];
+    await this.apiCall(
+      async () => {
+        messages = await store.messages({});
+      },
+      async () => {
+        this.data.messages = {};
+        messages.forEach(async (message) => {
+          if (!this.data.users[message.recipient]) {
+            let userData: IUser;
+            await this.apiCall(
+              async () => {
+                userData = await store.getUserById({
+                  id: message.recipient,
+                });
+              },
+              () => {
+                if (!this.data.messages[message.recipient]) {
+                  this.data.messages[message.recipient] = [];
+                }
+                this.$set(this.data.users, message.recipient, {
+                  ...userData,
+                });
+              },
+              {},
+            );
+          }
+          this.data.messages[message.recipient].push(message);
+        });
+      },
+      {},
+    );
 
     // Handles incoming messages
     this.$bus.on('message', async (message) => {
@@ -110,41 +118,38 @@ export default class Messaging extends ViewComponent<typeof styles> {
   public render(): VNode {
     return (
       <v-card class={this.className('messaging')}>
-        <v-toolbar
-          color="primary"
-          onClick={() => {
-            this.showMessages = !this.showMessages;
-          }}
-        >
+        <v-toolbar color="primary">
           <v-toolbar-title>
             {(() => {
               if (typeof this.focusedChat === 'string') {
-                return this.data.users[this.focusedChat].displayName;
+                return `${this.messages.headers.MESSAGES_WITH} ${this.data.users[this.focusedChat].displayName}`;
               }
               return this.messages.headers.MESSAGES;
             })()}
           </v-toolbar-title>
         </v-toolbar>
         {(() => {
-          if (this.showMessages) {
-            if (typeof this.focusedChat === 'string') {
-              return (
-                <div>
-                  <div class={this.className('chatWindow')}>
-                    {(() => this.data.messages[this.focusedChat].map((message) => (
-                        <v-card>
-                          <v-card-text>
-                            <p>{message.content}</p>
-                            <p class="text-subtitle-1">{formatDate(message.time)}</p>
-                          </v-card-text>
-                        </v-card>
-                    )))()}
-                  </div>
-                  <v-text-field
-                    label={this.messages.labels.SEND_MESSAGE}
-                    vModel={this.newMessage}
-                  ></v-text-field>
-                  <v-btn loading={this.sending} icon onClick={async () => {
+          if (typeof this.focusedChat === 'string') {
+            return (
+              <div>
+                <div class={this.className('chatWindow')}>
+                  {(() => this.data.messages[this.focusedChat].map((message) => (
+                      <v-card>
+                        <v-card-text>
+                          <p>{message.content}</p>
+                          <p class="text-subtitle-1">{formatDate(message.time)}</p>
+                        </v-card-text>
+                      </v-card>
+                  )))()}
+                </div>
+                <v-text-field
+                  label={this.messages.labels.SEND_MESSAGE}
+                  vModel={this.newMessage}
+                ></v-text-field>
+                <v-btn
+                  loading={this.sending}
+                  icon
+                  onClick={async () => {
                     this.sending = true;
                     await this.apiCall(
                       async () => {
@@ -158,15 +163,24 @@ export default class Messaging extends ViewComponent<typeof styles> {
                         this.sending = false;
                       },
                     );
-                  }}>
-                    <v-icon>send</v-icon>
-                  </v-btn>
-                </div>
-              );
-            }
-            return <div />;
+                  }}
+                >
+                  <v-icon>send</v-icon>
+                </v-btn>
+              </div>
+            );
           }
-          return <div />;
+          return (
+            <v-list>
+              {(() => Object.values(this.data.users).map((user) => (
+                  <v-list-item onClick={() => {
+                    this.focusedChat = user.id as string;
+                  }}>
+                    <v-list-item-title>{user.displayName}</v-list-item-title>
+                  </v-list-item>
+              )))()}
+            </v-list>
+          );
         })()}
       </v-card>
     );
