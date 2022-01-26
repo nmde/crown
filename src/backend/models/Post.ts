@@ -1,3 +1,6 @@
+/**
+ * @file Post model.
+ */
 import {
   Table, Model, Column, DataType,
 } from 'sequelize-typescript';
@@ -5,7 +8,7 @@ import IPost from '../../types/Post';
 
 @Table
 /**
- * Post table
+ * Post table.
  */
 export default class Post extends Model<IPost> implements IPost {
   @Column(DataType.STRING)
@@ -38,4 +41,7 @@ export default class Post extends Model<IPost> implements IPost {
 
   @Column(DataType.INTEGER)
   public boosts!: number;
+
+  @Column(DataType.STRING)
+  public tags!: string;
 }

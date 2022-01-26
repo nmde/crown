@@ -1,4 +1,6 @@
-/* eslint-disable class-methods-use-this */
+/**
+ * @file Post component.
+ */
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
@@ -19,17 +21,18 @@ const styles = makeStyles({
   },
 });
 
-export type Props = {
-  post: IPost;
+type DescBlock = {
+  content: string;
+  type: 'text' | 'tag';
 };
 
 @Component
 /**
- * Displays a post
+ * Displays a post.
  */
-export default class Post extends Styled<typeof styles> implements Props {
+export default class Post extends Styled<typeof styles> {
   /**
-   * The post author
+   * The post author.
    */
   private data: {
     author?: IUser;
@@ -42,18 +45,18 @@ export default class Post extends Styled<typeof styles> implements Props {
   };
 
   /**
-   * The post data
+   * The post data.
    */
   @Prop()
   public post!: IPost;
 
-  public _tsx!: tsx.DeclareProps<Props> &
+  public _tsx!: tsx.DeclareProps<tsx.AutoProps<Post>> &
   tsx.DeclareOnEvents<{
     onDelete: string;
   }>;
 
   /**
-   * Defines custom styles for the component
+   * Defines custom styles for the component.
    *
    * @constructs
    */
@@ -62,16 +65,48 @@ export default class Post extends Styled<typeof styles> implements Props {
   }
 
   /**
-   * Gets the boost-altered number of likes to display
+   * Gets the boost-altered number of likes to display.
    *
-   * @returns {number} the likes
+   * @returns {number} The likes.
    */
   private get computedLikes(): number {
     return this.data.likes.length + this.data.boosts.length * 5;
   }
 
   /**
-   * Retrieves information about the post author
+   * Splits the description into objects describing text and links.
+   *
+   * @returns {DescBlock[]} The description objects.
+   */
+  private get splitDescription(): DescBlock[] {
+    const tagRe = /#([a-zA-Z]+).*/;
+    let desc = this.post.description;
+    const re: DescBlock[] = [];
+    if (desc) {
+      let match = tagRe.exec(desc);
+      while (match !== null) {
+        const tag = desc.substring(match.index).replace(tagRe, '$1');
+        re.push({
+          content: desc.substring(0, match.index),
+          type: 'text',
+        });
+        re.push({
+          content: tag,
+          type: 'tag',
+        });
+        desc = desc.substring(match.index + tag.length + 1);
+        match = tagRe.exec(desc);
+      }
+    }
+    re.push({
+      content: desc || '',
+      type: 'text',
+    });
+    return re;
+  }
+
+  /**
+   * Retrieves information about the post author.
    */
   @Watch('post', {
     deep: true,
@@ -127,9 +162,9 @@ export default class Post extends Styled<typeof styles> implements Props {
   }
 
   /**
-   * Renders the component
+   * Renders the component.
    *
-   * @returns {VNode} the post
+   * @returns {VNode} The component.
    */
   public render(): VNode {
     // TODO workaround
@@ -146,10 +181,10 @@ export default class Post extends Styled<typeof styles> implements Props {
             <v-menu
               scopedSlots={{
                 /**
-                 * The menu activator
+                 * The menu activator.
                  *
-                 * @param {any} on Vue event bindings
-                 * @returns {VNode} the activator button
+                 * @param {any} on Vue event bindings.
+                 * @returns {VNode} The activator button.
                  */
                 activator({ on: { click } }: Record<string, Record<string, () => void>>) {
                   return (
@@ -161,32 +196,36 @@ export default class Post extends Styled<typeof styles> implements Props {
               }}
             >
               <v-list>
-                <v-list-item onClick={async () => {
-                  try {
-                    await store.boost({
-                      target: this.post.id as string,
-                    });
-                  } catch (err) {
-                    console.log(err);
-                  }
-                }}>Boost</v-list-item>
+                <v-list-item
+                  onClick={async () => {
+                    try {
+                      await store.boost({
+                        target: this.post.id as string,
+                      });
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }}
+                >
+                  Boost
+                </v-list-item>
                 {(() => {
                   if (this.post.author === store.currentUser?.id) {
                     return (
-                        <v-list-item
-                          onClick={async () => {
-                            try {
-                              await store.deletePost({
-                                id: this.post.id as string,
-                              });
-                              this.$emit('delete', this.post.id);
-                            } catch (err) {
-                              this.$bus.emit('error', err);
-                            }
-                          }}
-                        >
-                          <v-icon>delete</v-icon>
-                        </v-list-item>
+                      <v-list-item
+                        onClick={async () => {
+                          try {
+                            await store.deletePost({
+                              id: this.post.id as string,
+                            });
+                            this.$emit('delete', this.post.id);
+                          } catch (err) {
+                            this.$bus.emit('error', err);
+                          }
+                        }}
+                      >
+                        <v-icon>delete</v-icon>
+                      </v-list-item>
                     );
                   }
                   return <div />;
@@ -216,7 +255,19 @@ export default class Post extends Styled<typeof styles> implements Props {
             </v-btn>
           </v-card-actions>
           <v-card-text>
-            <div class="text-body-2">{this.post.description}</div>
+            <div class="text-body-2">
+              {(() => this.splitDescription.map((section) => {
+                console.log(section);
+                switch (section.type) {
+                  case 'tag':
+                    return (
+                        <router-link to={`/tag/${section.content}`}>#{section.content}</router-link>
+                    );
+                  default:
+                    return <span>{section.content}</span>;
+                }
+              }))()}
+            </div>
             <div class={this.className('description')}>{formatDate(this.post.created || '')}</div>
           </v-card-text>
         </v-card>

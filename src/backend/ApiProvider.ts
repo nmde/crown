@@ -274,6 +274,7 @@ export default class ApiProvider implements EndpointProvider {
       description: query.description,
       expires: query.expires,
       media: query.media,
+      tags: query.description.match(/#[a-zA-Z]+/g)?.map((tag) => tag.substring(1)).join(','),
       visible: true,
     }).save();
     this.app.log.info(`Created post with ID ${post.get('id')}`);

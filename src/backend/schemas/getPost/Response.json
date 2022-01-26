@@ -25,6 +25,9 @@
     },
     "category": {
       "type": "string"
+    },
+    "tags": {
+      "type": "string"
     }
   },
   "additionalProperties": false

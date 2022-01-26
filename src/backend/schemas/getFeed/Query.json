@@ -10,6 +10,12 @@
       },
       "category": {
         "type": "string"
+      },
+      "tags": {
+        "items" :{
+          "type": "string"
+        },
+        "type": "array"
       }
     },
     "additionalProperties": false,
