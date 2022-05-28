@@ -2,9 +2,9 @@
  * @file API endpoints.
  */
 import Tokenize from '@cyyynthia/tokenize';
+import { HttpError } from '@fastify/sensible/lib/httpError';
 import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
-import { HttpError } from 'fastify-sensible/lib/httpError';
 import { Op, WhereOptions } from 'sequelize';
 import IComment from '../types/Comment';
 import IEdge from '../types/Edge';

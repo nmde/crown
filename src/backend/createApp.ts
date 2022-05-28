@@ -1,17 +1,17 @@
 /**
  * @file Creates the Fastify app.
  */
+import fastifyAuth from '@fastify/auth';
+import fastifyCookie from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
+import fastifyRateLimit from '@fastify/rate-limit';
+import fastifySensible from '@fastify/sensible';
+import fastifyStatic from '@fastify/static';
 import fastify, { FastifyInstance } from 'fastify';
-import fastifyAuth from 'fastify-auth';
 import fastifyBlipp from 'fastify-blipp';
-import fastifyCookie from 'fastify-cookie';
-import fastifyCors from 'fastify-cors';
-import fastifyHelmet from 'fastify-helmet';
-import fastifyMultipart from 'fastify-multipart';
-import fastifyRateLimit from 'fastify-rate-limit';
-import fastifySensible from 'fastify-sensible';
 import fastifySocketIO from 'fastify-socket.io';
-import fastifyStatic from 'fastify-static';
 import fastifyTokenize from 'fastify-tokenize';
 import helmet from 'helmet';
 import { Mutable } from 'type-fest';
