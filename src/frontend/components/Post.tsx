@@ -4,9 +4,7 @@
 import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
-import IEdge from '../../types/Edge';
-import IPost from '../../types/Post';
-import IUser from '../../types/User';
+import { IEdge, IPost, IUser } from '../../types';
 import formatDate from '../../util/formatDate';
 import Styled from '../classes/Styled';
 import store from '../store';
@@ -257,7 +255,6 @@ export default class Post extends Styled<typeof styles> {
           <v-card-text>
             <div class="text-body-2">
               {(() => this.splitDescription.map((section) => {
-                console.log(section);
                 switch (section.type) {
                   case 'tag':
                     return (

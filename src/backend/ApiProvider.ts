@@ -6,14 +6,10 @@ import { HttpError } from '@fastify/sensible/lib/httpError';
 import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
 import { Op, WhereOptions } from 'sequelize';
-import IComment from '../types/Comment';
-import IEdge from '../types/Edge';
+import { IAchievement, IComment, IEdge, IMedia, IMessage, IUser } from '../types';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
-import IMedia from '../types/Media';
-import IMessage from '../types/Message';
-import IUser from '../types/User';
 import { AuthenticateQuery } from '../types/schemas/authenticate/Query';
 import { BoostQuery } from '../types/schemas/boost/Query';
 import { CreateAccountQuery } from '../types/schemas/createAccount/Query';
@@ -48,7 +44,11 @@ import { SignInResponse } from '../types/schemas/signIn/Response';
 import { UpdateUserQuery } from '../types/schemas/updateUser/Query';
 import currentTokenTime from '../util/currentTokenTime';
 import media from '../util/media';
-import models from './models';
+import Achievement from './models/Achievement';
+import Comment from './models/Comment';
+import Edge from './models/Edge';
+import Media from './models/Media';
+import Message from './models/Message';
 import Post from './models/Post';
 import User from './models/User';
 
@@ -87,7 +87,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   private async getPosts(where: WhereOptions): Promise<Post[]> {
     try {
-      return await models.Post.findAll({
+      return await Post.findAll({
         where: {
           ...where,
           visible: true,
@@ -108,7 +108,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async authenticate(query: Query<'authenticate'>): Promise<Response<'authenticate'>> {
     const user = await this.token.validate(query.token, async (id) => {
-      const results = await models.User.findOne({
+      const results = await User.findOne({
         where: {
           id,
         },
@@ -137,7 +137,7 @@ export default class ApiProvider implements EndpointProvider {
       token: query.token,
     });
     if (user && user.boostBalance && user.boostBalance > 0) {
-      await models.User.update(
+      await User.update(
         {
           boostBalance: user.boostBalance - 1,
         },
@@ -165,13 +165,13 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createAccount(query: Query<'createAccount'>): Promise<Response<'createAccount'>> {
     // Check if username is already in use
-    const results = await models.User.findOne({
+    const results = await User.findOne({
       where: {
         username: query.username,
       },
     });
     if (results == null) {
-      const user = await new models.User({
+      const user = await User.create({
         boostBalance: 1,
         displayName: query.displayName,
         email: query.email,
@@ -180,10 +180,11 @@ export default class ApiProvider implements EndpointProvider {
         profileBackground: media.BACKGROUND,
         profilePicture: media.PROFILE,
         username: query.username,
-      }).save();
+      });
+      console.log(user);
       this.app.log.info(`Created account with ID ${user.get('id')}`);
       return {
-        id: user.get('id'),
+        id: user.get('id') as string,
       };
     }
     this.app.log.error(`Username ${query.username} is taken`);
@@ -198,7 +199,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createComment(query: Query<'createComment'>): Promise<Response<'createComment'>> {
     const author = await this.authenticate({ token: query.token });
-    const comment = await new models.Comment({
+    const comment = await new Comment({
       author: author.id as string,
       parent: query.parent,
       text: query.text,
@@ -223,11 +224,15 @@ export default class ApiProvider implements EndpointProvider {
         target: query.target,
         type: query.type,
       };
-      const exists = await models.Edge.findOne({
-        where: edge,
+      const exists = await Edge.findOne({
+        where: {
+          ...edge,
+        },
       });
       if (exists === null) {
-        const created = await new models.Edge(edge).save();
+        const created = await new Edge({
+          ...edge,
+        }).save();
         this.app.log.info(`Created edge with ID ${created.get('id')}`);
         return created.toJSON() as Required<IEdge>;
       }
@@ -245,7 +250,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async createMessage(query: Query<'createMessage'>): Promise<Response<'createMessage'>> {
     const user = await this.authenticate({ token: query.token });
-    const message = await new models.Message({
+    const message = await new Message({
       content: query.content,
       recipient: query.recipient,
       sender: user.id as string,
@@ -264,7 +269,7 @@ export default class ApiProvider implements EndpointProvider {
   public async createPost(query: Query<'createPost'>): Promise<Response<'createPost'>> {
     // Confirm the auth token is valid
     const user = await this.authenticate({ token: query.token });
-    const post = await new models.Post({
+    const post = await new Post({
       author: user.id,
       category: query.category,
       created: new Date().toISOString(),
@@ -279,7 +284,7 @@ export default class ApiProvider implements EndpointProvider {
     }).save();
     this.app.log.info(`Created post with ID ${post.get('id')}`);
     return {
-      id: post.get('id'),
+      id: post.get('id') as string,
     };
   }
 
@@ -292,7 +297,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async deleteEdge(query: Query<'deleteEdge'>): Promise<Response<'deleteEdge'>> {
     const user = await this.authenticate({ token: query.token });
-    const target = await models.Edge.findOne({
+    const target = await Edge.findOne({
       where: {
         id: query.id,
         source: user.id,
@@ -321,7 +326,7 @@ export default class ApiProvider implements EndpointProvider {
       id: query.id,
     });
     if (target !== null) {
-      const updated = await models.Post.update(
+      const updated = await Post.update(
         {
           visible: false,
         },
@@ -333,11 +338,29 @@ export default class ApiProvider implements EndpointProvider {
         },
       );
       return {
-        id: updated[1][0].get('id'),
+        id: updated[1][0].get('id') as string,
       };
     }
     this.app.log.error(`User ${user.id} failed to delete post ${query.id}`);
     throw this.app.httpErrors.unauthorized();
+  }
+
+  /**
+   * Gets a list of a user's achievements.
+   * 
+   * @param query The query.
+   * @returns The user's achievements.
+   */
+  public async getAchievements(query: Query<'getAchievements'>): Promise<Response<'getAchievements'>> {
+    const user = await this.authenticate({ token: query.token });
+    const results = await Achievement.findAll({
+      where: {
+        user: user.id,
+      },
+    });
+    return {
+      achievements: results.map((result) => result.toJSON() as IAchievement),
+    };
   }
 
   /**
@@ -347,7 +370,7 @@ export default class ApiProvider implements EndpointProvider {
    * @returns {GetCommentsResponse} A list of comments on the post.
    */
   public async getComments(query: Query<'getComments'>): Promise<Response<'getComments'>> {
-    const results = await models.Comment.findAll({
+    const results = await Comment.findAll({
       where: {
         parent: query.parent,
       },
@@ -369,7 +392,7 @@ export default class ApiProvider implements EndpointProvider {
     let results;
     switch (query.type) {
       case 'follow':
-        results = await models.Edge.findAll({
+        results = await Edge.findAll({
           where: {
             source: source.id as string,
             type: 'follow',
@@ -379,7 +402,7 @@ export default class ApiProvider implements EndpointProvider {
       case 'like':
       case 'boost':
         if (query.target) {
-          results = await models.Edge.findAll({
+          results = await Edge.findAll({
             where: {
               source: source.id as string,
               target: query.target,
@@ -425,7 +448,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async getMedia(query: Query<'getMedia'>): Promise<Response<'getMedia'>> {
     // @TODO: check visibility permissions?
-    const result = await models.Media.findOne({
+    const result = await Media.findOne({
       where: {
         id: query.id,
       },
@@ -448,7 +471,7 @@ export default class ApiProvider implements EndpointProvider {
   public async getMessage(query: Query<'getMessage'>): Promise<Response<'getMessage'>> {
     // TODO: check if the user should be able to see this message
     // const user = await this.authenticate({ token: query.token });
-    const result = await models.Message.findOne({
+    const result = await Message.findOne({
       where: {
         id: query.id,
       },
@@ -487,7 +510,7 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} 404 if the user could not be found.
    */
   public async getUser(query: Query<'getUser'>): Promise<Response<'getUser'>> {
-    const results = await models.User.findOne({
+    const results = await User.findOne({
       where: {
         username: query.username,
       },
@@ -507,7 +530,7 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} 404 if the user could not be found.
    */
   public async getUserById(query: Query<'getUserById'>): Promise<Response<'getUserById'>> {
-    const results = await models.User.findOne({
+    const results = await User.findOne({
       where: {
         id: query.id,
       },
@@ -529,7 +552,7 @@ export default class ApiProvider implements EndpointProvider {
     const user = await this.authenticate({
       token: query.token,
     });
-    const messages = await models.Message.findAll({
+    const messages = await Message.findAll({
       where: {
         [Op.or]: {
           recipient: user.id,
@@ -548,13 +571,13 @@ export default class ApiProvider implements EndpointProvider {
    * @throws {HttpError} 400 if the username + password does not match a user.
    */
   public async signIn(query: Query<'signIn'>): Promise<Response<'signIn'>> {
-    const results = await models.User.findOne({
+    const results = await User.findOne({
       where: {
         username: query.username,
       },
     });
-    if (results !== null && (await bcrypt.compare(query.password, results.get('password')))) {
-      const id = results.get('id');
+    if (results !== null && (await bcrypt.compare(query.password, results.get('password') as string))) {
+      const id = results.get('id') as string;
       // Update lastTokenReset to the current time
       results.set('lastTokenReset', currentTokenTime());
       await results.save();
@@ -576,7 +599,7 @@ export default class ApiProvider implements EndpointProvider {
    */
   public async updateUser(query: Query<'updateUser'>): Promise<Response<'updateUser'>> {
     const user = await this.authenticate({ token: query.token });
-    const updated = await models.User.update(
+    const updated = await User.update(
       {
         displayName: query.displayName,
       },

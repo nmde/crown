@@ -14,8 +14,8 @@ import fastifyBlipp from 'fastify-blipp';
 import fastifySocketIO from 'fastify-socket.io';
 import fastifyTokenize from 'fastify-tokenize';
 import helmet from 'helmet';
-import { Mutable } from 'type-fest';
-import models from './models';
+import { Writable } from 'type-fest';
+import User from './models/User';
 
 /**
  * Creates & configures the Fastify instance.
@@ -53,7 +53,7 @@ export default function createApp(authKey: string): FastifyInstance {
   });
 
   // Configure fastify-helmet
-  const helmetOptions: Mutable<NonNullable<Parameters<typeof helmet>[0]>> = {};
+  const helmetOptions: Writable<NonNullable<Parameters<typeof helmet>[0]>> = {};
   helmetOptions.contentSecurityPolicy = {
     directives: {
       connectSrc: ['*', "'unsafe-inline'"],
@@ -93,7 +93,7 @@ export default function createApp(authKey: string): FastifyInstance {
   app.register(fastifyTokenize, {
     fastifyAuth: true,
     fetchAccount: async (id) => {
-      const results = await models.User.findOne({
+      const results = await User.findOne({
         where: {
           id,
         },

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'ee-ts';
-import IPost from '../../types/Post';
+import { IPost } from '../../types';
 
 /**
  * Represents a stream of posts

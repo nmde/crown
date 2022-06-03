@@ -39,8 +39,7 @@ import { SignInResponse } from 'types/schemas/signIn/Response';
 import {
   Endpoint, EndpointProvider, Query, Response,
 } from '../types/Endpoints';
-import IPost from '../types/Post';
-import IUser from '../types/User';
+import { IPost, IUser } from '../types';
 import apiPath from '../util/apiPath';
 
 /**
@@ -206,6 +205,16 @@ class Store implements EndpointProvider {
    */
   @action public async deletePost(params: Query<'deletePost'>): Promise<Response<'deletePost'>> {
     return this.callWithToken<'deletePost'>('deletePost', params);
+  }
+
+  /**
+   * Gets a user's achievements.
+   * 
+   * @param params Query parameters.
+   * @returns The achievements.
+   */
+  @action public async getAchievements(params: Query<'getAchievements'>): Promise<Response<'getAchievements'>> {
+    return this.callWithToken<'getAchievements'>('getAchievements', params);
   }
 
   /**

@@ -4,7 +4,7 @@
 import concat from 'concat-stream';
 import { FastifyInstance } from 'fastify';
 import MimeMatcher from 'mime-matcher';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize';
 import { keys } from 'ts-transformer-keys';
 import { Endpoints } from '../types/Endpoints';
 import { CreateMessageQuery } from '../types/schemas/createMessage/Query';
@@ -12,8 +12,14 @@ import apiPath from '../util/apiPath';
 import ApiProvider from './ApiProvider';
 import ServerError from './ServerError';
 import app from './createApp';
-import models from './models';
+import Achievement, { achievementModel } from './models/Achievement';
 import schemas from './schemas';
+import User, { userModel } from './models/User';
+import Comment, { commentModel } from './models/Comment';
+import Edge, { edgeModel } from './models/Edge';
+import Media, { mediaModel } from './models/Media';
+import Message, { messageModel } from './models/Message';
+import Post, { postModel } from './models/Post';
 
 /**
  * @class Server
@@ -60,12 +66,32 @@ export default class Server extends ApiProvider {
   ): Promise<Sequelize> {
     const dbUrl = `postgres://${user}:${password}@${host}:${port}/${databaseName}`;
     this.database = new Sequelize(dbUrl, {
-      logging: process.env.NODE_ENV === 'development',
-      models: Object.values(models),
+      logging: false,
       native: true,
       ssl: true,
     });
     try {
+      Achievement.init(achievementModel, {
+        sequelize: this.database,
+      });
+      Comment.init(commentModel, {
+        sequelize: this.database,
+      });
+      Edge.init(edgeModel, {
+        sequelize: this.database,
+      });
+      Media.init(mediaModel, {
+        sequelize: this.database,
+      });
+      Message.init(messageModel, {
+        sequelize: this.database,
+      });
+      Post.init(postModel, {
+        sequelize: this.database,
+      });
+      User.init(userModel, {
+        sequelize: this.database,
+      });
       await this.database.authenticate();
       await this.database.sync({
         alter: true,
@@ -73,7 +99,7 @@ export default class Server extends ApiProvider {
       return this.database;
     } catch (err) {
       const message = 'Could not establish database connection';
-      this.app.log.error(message);
+      this.app.log.error(err);
       throw new ServerError(message);
     }
   }
@@ -89,38 +115,39 @@ export default class Server extends ApiProvider {
     // Media uploading
     this.app.post(
       `/${apiPath('upload')}`,
-      async (request) => new Promise((resolve, reject) => {
-        // TODO: convert all images to jpg
-        request
-          .file()
-          .then((file) => {
-            let valid = false;
-            ['image/*', 'video/*', 'audio/*']
-              .map((mime) => new MimeMatcher(mime))
-              .forEach((mime) => {
-                valid = valid || mime.match(file.mimetype);
-              });
-            if (valid) {
-              file.file.pipe(
-                concat(async (buffer) => {
-                  const media = await new models.Media({
-                    data: buffer.toString('base64'),
-                    mimeType: file.mimetype,
-                  }).save();
-                  resolve({
-                    id: media.getDataValue('id'),
-                  });
-                }),
-              );
-            } else {
-              reject(this.app.httpErrors.forbidden());
-            }
-            // TODO: validation
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      }),
+      async (request) =>
+        new Promise((resolve, reject) => {
+          // TODO: convert all images to jpg
+          request
+            .file()
+            .then((file) => {
+              let valid = false;
+              ['image/*', 'video/*', 'audio/*']
+                .map((mime) => new MimeMatcher(mime))
+                .forEach((mime) => {
+                  valid = valid || mime.match(file.mimetype);
+                });
+              if (valid) {
+                file.file.pipe(
+                  concat(async (buffer) => {
+                    const media = await new Media({
+                      data: buffer.toString('base64'),
+                      mimeType: file.mimetype,
+                    }).save();
+                    resolve({
+                      id: media.getDataValue('id'),
+                    });
+                  }),
+                );
+              } else {
+                reject(this.app.httpErrors.forbidden());
+              }
+              // TODO: validation
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }),
     );
 
     // Automatically create endpoints based on Endpoints.ts

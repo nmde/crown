@@ -1,0 +1,25 @@
+{
+  "title": "getAchievement-Response",
+  "type": "object",
+  "properties": {
+    "achievements": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "progress": {
+            "type": "number"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["id", "progress", "user"]
+}

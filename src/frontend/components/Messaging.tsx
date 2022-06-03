@@ -3,8 +3,7 @@
  */
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import IMessage from '../../types/Message';
-import IUser from '../../types/User';
+import { IMessage, IUser } from '../../types';
 import { GetMessageResponse } from '../../types/schemas/getMessage/Response';
 import formatDate from '../../util/formatDate';
 import ViewComponent from '../classes/ViewComponent';

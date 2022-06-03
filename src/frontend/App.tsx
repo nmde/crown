@@ -4,7 +4,7 @@
 import io from 'socket.io-client';
 import { VNode } from 'vue';
 import { Component } from 'vue-property-decorator';
-import IMessage from '../types/Message';
+import { IMessage } from '../types';
 import APIError from './classes/APIError';
 import ViewComponent from './classes/ViewComponent';
 import NavLink from './components/NavLink';

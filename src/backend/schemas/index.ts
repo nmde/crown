@@ -17,6 +17,8 @@ import DeleteEdgeQs from './deleteEdge/Query.json';
 import DeleteEdgeRes from './deleteEdge/Response.json';
 import DeletePostQs from './deletePost/Query.json';
 import DeletePostRes from './deletePost/Response.json';
+import GetAchievementsQs from './getAchievements/Query.json';
+import GetAchievementsRes from './getAchievements/Response.json';
 import GetCommentsQs from './getComments/Query.json';
 import GetCommentsRes from './getComments/Response.json';
 import GetEdgesQs from './getEdges/Query.json';
@@ -70,6 +72,10 @@ export default {
   deletePost: {
     query: DeletePostQs,
     response: DeletePostRes,
+  },
+  getAchievements: {
+    query: GetAchievementsQs,
+    response: GetAchievementsRes,
   },
   getComments: {
     query: GetCommentsQs,

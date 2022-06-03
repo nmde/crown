@@ -1,4 +1,8 @@
+/**
+ * @file ViewComponent class.
+ */
 import { AxiosError } from 'axios';
+import { IUser } from '../../types';
 import store from '../store';
 import { Styles } from '../styles/makeStyles';
 import translations from '../translations';
@@ -6,30 +10,30 @@ import APIError from './APIError';
 import Styled from './Styled';
 
 /**
- * Utility class for view component
+ * Utility class for view component.
  */
 export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
-  /** the current selected language */
+  /** The current selected language. */
   private lang: keyof typeof translations = 'en-US';
 
-  /** view loading state */
+  /** View loading state. */
   protected loading = false;
 
   /**
-   * Gets UI messages in the currently selected locale
+   * Gets UI messages in the currently selected .
    *
-   * @returns {Record<string, string>} the messages
+   * @returns {Record<string, string>} The messages.
    */
   protected get messages(): typeof translations['en-US'] {
     return translations[this.lang];
   }
 
   /**
-   * Utility for interacting with the API
+   * Utility for interacting with the API.
    *
-   * @param {Function} method the API method
-   * @param {Function} onSuccess called if the API query is succesfull
-   * @param {Record<number, string>} errorMessages error messages for possible response status codes
+   * @param {Function} method The API method.
+   * @param {Function} onSuccess Called if the API query is succesfull.
+   * @param {Record<number, string>} errorMessages Error messages for response status codes.
    */
   protected async apiCall(
     method: () => Promise<void>,
@@ -79,9 +83,9 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
   }
 
   /**
-   * Ensures store.currentUser exists and is correct
+   * Ensures store.currentUser exists and is correct.
    *
-   * @returns {boolean} if the user is signed in
+   * @returns {boolean} If the user is signed in.
    */
   protected async getCurrentUser(): Promise<boolean> {
     const { token } = store;
@@ -100,12 +104,34 @@ export default class ViewComponent<T extends Styles<string>> extends Styled<T> {
   }
 
   /**
-   * Check that a form field is not empty, and displays an error if it is
+   * Check that a form field is not empty, and displays an error if it is.
    *
-   * @param {string} value Value supplied by v-text-field
-   * @returns {Function} the validator function
+   * @param {string} value Value supplied by v-text-field.
+   * @returns {Function} The validator function.
    */
   protected required(value: string) {
     return (): string | boolean => value !== '' || this.messages.errors.EMPTY_FIELD;
+  }
+
+  /**
+   * Safely gets the current user.
+   *
+   * @returns {IUser} The current user.
+   */
+  protected async getUser(): Promise<IUser | null> {
+    let user: IUser | null = null;
+    await this.getCurrentUser();
+    await this.apiCall(
+      async () => {
+        if (store.currentUser) {
+          user = (await store.getUser({
+            username: store.currentUser.username as string,
+          })) as IUser;
+        }
+      },
+      () => {},
+      {},
+    );
+    return user;
   }
 }

@@ -6,7 +6,7 @@ import { VNode } from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import * as tsx from 'vue-tsx-support';
 import { Users } from '../../../tests/sample-data';
-import IUser from '../../types/User';
+import { IUser } from '../../types';
 import Feed from '../classes/Feed';
 import ViewComponent from '../classes/ViewComponent';
 import FeedComponent from '../components/Feed';

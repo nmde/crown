@@ -3,6 +3,7 @@
  */
 import { RouteConfig } from 'vue-router';
 import Account from './views/Account';
+import Achievements from './views/Achievements';
 import Categories from './views/Categories';
 import Category from './views/Category';
 import Explore from './views/Explore';
@@ -20,6 +21,10 @@ const routes: RouteConfig[] = [
   {
     component: Account,
     path: '/account',
+  },
+  {
+    component: Achievements,
+    path: '/achievements',
   },
   {
     component: Categories,

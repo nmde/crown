@@ -1,6 +1,5 @@
 import Feed from '../src/frontend/classes/Feed';
-import MediaRecord from '../src/types/MediaRecord';
-import IUser from '../src/types/User';
+import { MediaRecord, IUser } from '../src/types';
 
 export const Users: IUser[] = [
   {

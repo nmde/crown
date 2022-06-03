@@ -17,6 +17,8 @@ import { DeleteEdgeQuery } from './schemas/deleteEdge/Query';
 import { DeleteEdgeResponse } from './schemas/deleteEdge/Response';
 import { DeletePostQuery } from './schemas/deletePost/Query';
 import { DeletePostResponse } from './schemas/deletePost/Response';
+import { GetAchievementsQuery } from './schemas/getAchievements/Query';
+import { GetAchievementResponse } from './schemas/getAchievements/Response';
 import { GetCommentsQuery } from './schemas/getComments/Query';
 import { GetCommentsResponse } from './schemas/getComments/Response';
 import { GetEdgesQuery } from './schemas/getEdges/Query';
@@ -70,6 +72,10 @@ export type Endpoints = {
   deletePost: {
     query: DeletePostQuery;
     response: DeletePostResponse;
+  };
+  getAchievements: {
+    query: GetAchievementsQuery;
+    response: GetAchievementResponse;
   };
   getComments: {
     query: GetCommentsQuery;

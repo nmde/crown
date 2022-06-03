@@ -1,45 +1,40 @@
 import {
-  Table, Model, Column, DataType,
-} from 'sequelize-typescript';
-import IUser from '../../types/User';
+  Model, DataTypes,
+} from 'sequelize';
 
-type ExtendedUser = IUser & {
-  password: string;
-};
-
-@Table
 /**
  * User table
  */
-export default class User extends Model<ExtendedUser> implements ExtendedUser {
-  @Column(DataType.STRING)
-  public username!: string;
+export default class User extends Model {}
 
-  @Column(DataType.STRING)
-  public password!: string;
-
-  @Column(DataType.STRING)
-  public email!: string;
-
-  @Column({
-    defaultValue: DataType.UUIDV4,
+export const userModel = {
+  id: {
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    type: DataType.UUID,
-  })
-  declare public id: string;
-
-  @Column(DataType.INTEGER)
-  public lastTokenReset!: number;
-
-  @Column(DataType.STRING)
-  public displayName!: string;
-
-  @Column(DataType.STRING)
-  public profileBackground!: string;
-
-  @Column(DataType.STRING)
-  public profilePicture!: string;
-
-  @Column(DataType.INTEGER)
-  public boostBalance!: number;
-}
+    type: DataTypes.UUID,
+  },
+  username: {
+    type: DataTypes.TEXT,
+  },
+  password: {
+    type: DataTypes.TEXT,
+  },
+  email: {
+    type: DataTypes.TEXT,
+  },
+  lastTokenReset: {
+    type: DataTypes.INTEGER,
+  },
+  displayName: {
+    type: DataTypes.STRING,
+  },
+  profileBackground: {
+    type: DataTypes.STRING,
+  },
+  profilePicture: {
+    type: DataTypes.STRING,
+  },
+  boostBalance: {
+    type: DataTypes.INTEGER,
+  },
+};

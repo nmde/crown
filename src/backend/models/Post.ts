@@ -2,46 +2,45 @@
  * @file Post model.
  */
 import {
-  Table, Model, Column, DataType,
-} from 'sequelize-typescript';
-import IPost from '../../types/Post';
+  Model, DataTypes,
+} from 'sequelize';
 
-@Table
 /**
  * Post table.
  */
-export default class Post extends Model<IPost> implements IPost {
-  @Column(DataType.STRING)
-  public media!: string;
+export default class Post extends Model {}
 
-  @Column(DataType.STRING)
-  public author!: string;
-
-  @Column(DataType.STRING)
-  public created!: string;
-
-  @Column(DataType.STRING)
-  public expires!: string;
-
-  @Column(DataType.STRING)
-  public description!: string;
-
-  @Column({
-    defaultValue: DataType.UUIDV4,
+export const postModel = {
+  media: {
+    type: DataTypes.TEXT,
+  },
+  author: {
+    type: DataTypes.TEXT,
+  },
+  created: {
+    type: DataTypes.TEXT,
+  },
+  expires: {
+    type: DataTypes.TEXT,
+  },
+  description: {
+    type: DataTypes.TEXT,
+  },
+  id: {
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    type: DataType.UUID,
-  })
-  declare public id: string;
-
-  @Column(DataType.BOOLEAN)
-  public visible!: boolean;
-
-  @Column(DataType.STRING)
-  public category!: string;
-
-  @Column(DataType.INTEGER)
-  public boosts!: number;
-
-  @Column(DataType.STRING)
-  public tags!: string;
-}
+    type: DataTypes.UUID,
+  },
+  visible: {
+    type: DataTypes.BOOLEAN,
+  },
+  category: {
+    type: DataTypes.TEXT,
+  },
+  boosts: {
+    type: DataTypes.INTEGER,
+  },
+  tags: {
+    type: DataTypes.STRING,
+  },
+};
