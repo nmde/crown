@@ -1,7 +1,6 @@
 /**
  * @file Installs libraries.
  */
-import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
 import VueAxe from 'vue-axe';
 import VueBus from 'vue-bus';
@@ -11,5 +10,5 @@ import 'vuetify/dist/vuetify.min.css';
 
 Vue.use(Vuetify);
 Vue.use(VueBus);
-Vue.use(VueAxe);
+// Vue.use(VueAxe);
 Vue.use(VueRouter);

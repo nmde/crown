@@ -6,7 +6,9 @@ import { HttpError } from '@fastify/sensible/lib/httpError';
 import bcrypt from 'bcrypt';
 import { FastifyInstance } from 'fastify';
 import { Op, WhereOptions } from 'sequelize';
-import { IAchievement, IComment, IEdge, IMedia, IMessage, IUser } from '../types';
+import {
+  IAchievement, IComment, IEdge, IMedia, IMessage, IUser,
+} from '../types';
 import {
   Endpoint, EndpointProvider, Endpoints, Response,
 } from '../types/Endpoints';
@@ -347,7 +349,7 @@ export default class ApiProvider implements EndpointProvider {
 
   /**
    * Gets a list of a user's achievements.
-   * 
+   *
    * @param query The query.
    * @returns The user's achievements.
    */

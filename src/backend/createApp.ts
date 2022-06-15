@@ -1,20 +1,18 @@
 /**
  * @file Creates the Fastify app.
  */
-import fastifyAuth from '@fastify/auth';
 import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
-import fastifyHelmet from '@fastify/helmet';
+import fastifyHelmet, { FastifyHelmetOptions } from '@fastify/helmet';
 import fastifyMultipart from '@fastify/multipart';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifySensible from '@fastify/sensible';
 import fastifyStatic from '@fastify/static';
 import fastify, { FastifyInstance } from 'fastify';
+import fastifyAuth from 'fastify-auth';
 import fastifyBlipp from 'fastify-blipp';
 import fastifySocketIO from 'fastify-socket.io';
 import fastifyTokenize from 'fastify-tokenize';
-import helmet from 'helmet';
-import { Writable } from 'type-fest';
 import User from './models/User';
 
 /**
@@ -53,7 +51,7 @@ export default function createApp(authKey: string): FastifyInstance {
   });
 
   // Configure fastify-helmet
-  const helmetOptions: Writable<NonNullable<Parameters<typeof helmet>[0]>> = {};
+  const helmetOptions: FastifyHelmetOptions = {};
   helmetOptions.contentSecurityPolicy = {
     directives: {
       connectSrc: ['*', "'unsafe-inline'"],
